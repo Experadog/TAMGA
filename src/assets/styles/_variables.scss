@@ -1,0 +1,17 @@
+@use 'helpers' as *;
+
+:root {
+    --font-onest: 'Onest', sans-serif;
+
+    --transition-duration: 0.2s;
+
+    --container-width: #{rem(1312)};
+    --container-padding-x: #{rem(16)};
+
+
+    --100vw: calc(100vw - var(--scrollbar-width));
+
+    @include tablet {
+        --container-width: #{rem(720)};
+    }
+}
