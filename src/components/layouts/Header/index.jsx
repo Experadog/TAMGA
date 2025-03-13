@@ -3,12 +3,19 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { BurgerButton } from '@/components/BurgerButton';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import './index.scss'
 
 function Header() {
     const [open, setOpen] = useState(false)
+
+    useEffect(() => {
+        if (open) document.body.classList.add('no-scroll');
+        else document.body.classList.remove('no-scroll');
+
+        return () => document.body.classList.remove('no-scroll');
+    }, [open]);
 
     return (
         <header className='header'>

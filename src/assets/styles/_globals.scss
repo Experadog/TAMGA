@@ -2,6 +2,12 @@
 
 body {
     font-family: var(--font-onest);
+    background-color: var(--color-background);
+
+    &.no-scroll {
+        overflow: hidden;
+        height: 100vh;
+    }
 }
 
 ul,

@@ -5,6 +5,20 @@
     justify-content: space-between;
     align-items: center;
     padding-block: rem(19.5);
+    background-color: var(--color-light);
+
+    padding-left: rem(64);
+    padding-right: rem(64);
+
+    @include tablet {
+        padding-left: rem(24);
+        padding-right: rem(24);
+    }
+
+    @include mobile{
+        padding-left: rem(16);
+        padding-right: rem(16);
+    }
 
     @include tablet {
         padding-block: rem(23);
@@ -75,13 +89,13 @@
         display: flex;
         align-items: center;
         column-gap: rem(48);
-        background: var(--color-light);
-
+        
         @include mobile {
             display: flex;
             flex-direction: column;
             padding: rem(62) rem(16) rem(24);
             border-radius: 0 0 16px 16px;
+            background: var(--color-light); 
         }
 
     }

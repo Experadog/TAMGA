@@ -1,5 +1,6 @@
 import { Onest } from "next/font/google";
 import { Header } from "@/components/layouts/Header";
+import { Footer } from "@/components/layouts/Footer";
 
 import "../assets/styles/main.scss";
 
@@ -16,9 +17,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ru">
-      <body className={`${onest.variable} container`}>
+      <body className={onest.variable}>
         <Header />
-        {children}
+        <main className="container">{children}</main>
+        <Footer />
       </body>
     </html>
   );
