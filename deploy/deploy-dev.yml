@@ -1,0 +1,75 @@
+---
+- name: Deploy Docker Compose
+  hosts:
+    - dev
+  become: true
+  gather_facts: false
+  tasks:
+    # Nginx config for frontend
+    - name: Copy nginx configuration file
+      ansible.builtin.template:
+        src: nginx/tamga.kg.conf.j2
+        dest: /etc/nginx/conf.d/tamga.kg.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    # Check nginx and restart
+    - name: Check nginx configuration
+      ansible.builtin.command: 'nginx -t'
+      changed_when: false
+
+    - name: Reload nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: reloaded
+
+    - name: Restart nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted
+    
+    # Ensure dev-tamga network exists
+    - name: Ensure dev-tamga network exists
+      ansible.builtin.command: docker network create dev-tamga
+      ignore_errors: yes
+
+    # Deploy Docker Compose
+    - name: Ensure /opt/tamga-web exist
+      ansible.builtin.file:
+        path: "/opt/tamga-web"
+        state: directory
+        mode: '0755'
+
+    - name: Copy docker compose file
+      ansible.builtin.template:
+        src: ./templates/docker/docker-compose.yml.j2
+        dest: /opt/tamga-web/docker-compose.yml
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Docker login
+      ansible.builtin.shell:
+        cmd: >
+          docker login \
+            -u "{{ lookup('env', 'CI_REGISTRY_USER') }}" \
+            -p "{{ lookup('env', 'CI_REGISTRY_PASSWORD') }}" \
+            "{{ lookup('env', 'CI_REGISTRY') }}"
+      changed_when: false
+
+    - name: Docker compose down
+      ansible.builtin.shell:
+        cmd: >
+          cd /opt/tamga-web && docker compose down
+      register: docker_compose_down
+      changed_when: false
+      failed_when: "docker_compose_down.rc != 0"
+
+    - name: Docker compose up
+      ansible.builtin.shell:
+        cmd: >
+          cd /opt/tamga-web && docker compose up -d
+      register: docker_compose_up
+      changed_when: false
+      failed_when: "docker_compose_up.rc != 0"

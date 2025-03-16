@@ -1,0 +1,114 @@
+stages:
+  - build
+  - test
+  - deploy
+
+
+################### development CI ##############################
+
+
+.dind:
+  image: docker:28.0.1
+  services:
+  - name: docker:28.0.1-dind
+    alias: docker
+
+
+build-ci-image:
+  extends: .dind
+  stage: build
+  environment: ci
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:ci-image-$CI_COMMIT_REF_SLUG --target dev -f docker/Dockerfile .;
+    - docker push $CI_REGISTRY_IMAGE:ci-image-$CI_COMMIT_REF_SLUG
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH != "dev"'
+      changes:
+        paths:
+          - docker/Dockerfile
+          - pyproject.toml
+          - poetry.lock
+    - when: never
+
+
+test-within-ci-image:
+  stage: test
+  environment: ci
+  image: $CI_REGISTRY_IMAGE:ci-image-$CI_COMMIT_REF_SLUG
+  script:
+    - npm install --ignore-scripts --prefer-offline
+    - npm run lint
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH != "dev" && $CI_PIPELINE_SOURCE == "merge_request_event"'
+  allow_failure: true
+
+
+build-dev:
+  extends: .dind
+  stage: build
+  environment: dev
+  variables:
+    APP_ENV_FILE: .env.development
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHA --target app -f docker/Dockerfile --build-arg APP_ENV_FILE=$APP_ENV_FILE .;
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHA
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+
+deploy-dev:
+  stage: deploy
+  needs: ["build-dev"]
+  environment: dev
+  image: python:3.13
+  variables:
+    ANSIBLE_HOST_KEY_CHECKING: "False"
+  before_script:
+    - cd deploy
+    - pip install ansible-core
+    - mkdir -p .ssh
+    - echo "${ANSIBLE_SSH_PRIVATE_KEY}" | tr -d '\r' > .ssh/private_key
+    - chmod 400 .ssh/private_key
+  script:
+    - ansible-playbook -i hosts.yml deploy-dev.yml
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      when: manual
+  manual_confirmation: 'Are you sure you want to deploy?'
+
+build-prod:
+  extends: .dind
+  stage: build
+  environment: prod
+  variables:
+    APP_ENV_FILE: .env.production
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHA --target app -f docker/Dockerfile --build-arg APP_ENV_FILE=$APP_ENV_FILE .;
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHA
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+deploy-prod:
+  stage: deploy
+  needs: ["build-prod"]
+  environment: prod
+  image: python:3.13
+  variables:
+    ANSIBLE_HOST_KEY_CHECKING: "False"
+  before_script:
+    - cd deploy
+    - pip install ansible-core
+    - mkdir -p .ssh
+    - echo "${ANSIBLE_SSH_PRIVATE_KEY}" | tr -d '\r' > .ssh/private_key
+    - chmod 400 .ssh/private_key
+  script:
+    - ansible-playbook -i hosts.yml deploy-prod.yml
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
+  manual_confirmation: 'Are you sure you want to deploy?'
