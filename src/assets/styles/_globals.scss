@@ -1,0 +1,58 @@
+@use 'helpers' as *;
+
+body {
+    font-family: var(--font-onest);
+    background-color: var(--color-background);
+
+    &.no-scroll {
+        overflow: hidden;
+        height: 100vh;
+    }
+}
+
+ul,
+li {
+    list-style-type: none;
+}
+
+a,
+button,
+label,
+input,
+textarea,
+select,
+svg * {
+    transition-duration: var(--transition-duration);
+}
+
+a {
+    color: inherit;
+
+    @include hover {
+        color: var(--color-accent);
+    }
+
+    &[class] {
+        text-decoration: none;
+    }
+}
+
+:focus-visible {
+    outline: rem(2) solid var(--color-dark);
+    outline-offset: rem(4);
+    transition-duration: 0s !important;
+}
+
+a,
+button {
+    &[aria-label] {
+        position: relative;
+
+        &::before {
+            @include abs-center;
+            @include square(rem(44));
+
+            content: '';
+        }
+    }
+}

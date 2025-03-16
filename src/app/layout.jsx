@@ -1,5 +1,8 @@
 import { Onest } from "next/font/google";
-import "./globals.css";
+import { Header } from "@/components/layouts/Header";
+import { Footer } from "@/components/layouts/Footer";
+
+import "../assets/styles/main.scss";
 
 const onest = Onest({
   variable: "--font-onest",
@@ -15,7 +18,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ru">
       <body className={onest.variable}>
-        {children}
+        <Header />
+        <main className="container">{children}</main>
+        <Footer />
       </body>
     </html>
   );
