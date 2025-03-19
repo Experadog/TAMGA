@@ -1,0 +1,20 @@
+{
+    "Error": {
+        "description": "<p>Unfortunately, a problem has occurred.</p><p>You can try to <retry>reload this page</retry>.</p>",
+        "title": "Something went wrong!"
+    },
+    "IndexPage": {
+        "title": "Example"
+    },
+    "LocaleLayout": {
+        "title": "next-intl Example"
+    },
+    "NotFoundPage": {
+        "description": "Please check your browser's address bar or use navigation to go to a known page.",
+        "title": "Page Not Found"
+    },
+    "PathnamesPage": {
+        "description": "<p>Pathnames are also internationalized.</p><p>If you use the default language English, you will see <code>/en/pathnames</code> in the browser's address bar on this page.</p><p>If you change the language to German, the URL will be localized accordingly (<code>/de/pfadnamen</code>).</p>",
+        "title": "Pathnames"
+    }
+}
