@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Install dependencies
 COPY package*.json *config.* ./
-RUN npm install --ignore-scripts --prefer-offline
+RUN npm install --ignore-scripts --prefer-offline --registry https://registry.npmjs.org
 
 # Add commands
 COPY docker/commands $ROOT/commands
