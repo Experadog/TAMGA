@@ -39,7 +39,7 @@ export default async function RootLayout({ children, params }) {
       <body className={onest.variable}>
         <NextIntlClientProvider>
           <Header />
-          <main className="container">{children}</main>
+          <main className="main">{children}</main>
           <Footer />
         </NextIntlClientProvider>
       </body>

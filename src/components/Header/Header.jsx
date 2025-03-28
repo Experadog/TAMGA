@@ -13,7 +13,7 @@ function Header() {
     const MENU_ITEMS = [
         {name: t('search'), path: '/'},
         {name: t('glossary'), path: '/'},
-        {name: t('map'), path: '/'},
+        {name: t('map'), path: '/map'},
         {name: t('blog'), path: '/blog'},
         {name: t('about'), path: '/'},
     ]
