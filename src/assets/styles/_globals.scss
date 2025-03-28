@@ -27,13 +27,11 @@ svg * {
 
 a {
     color: inherit;
+    text-decoration: none;
 
     @include hover {
         color: var(--color-accent);
-    }
-
-    &[class] {
-        text-decoration: none;
+        text-decoration: underline;
     }
 }
 

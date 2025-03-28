@@ -1,0 +1,87 @@
+@use '../../assets/styles/helpers/' as *;
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: rem(19.5) 4rem;
+    background-color: var(--color-light);
+
+    @include tablet {
+        padding: rem(24) rem(24);
+    }
+
+    @include mobile {
+        padding: 1rem;
+    }
+
+    &__logo {
+        display: flex;
+        align-items: flex-end;
+        column-gap: rem(9);
+
+        &:hover {
+            text-decoration: none;
+            color: currentColor;
+        }
+
+        @include mobile {
+            column-gap: rem(7);
+        }
+    }
+
+    &__img {
+        width: auto;
+
+        @include tablet {
+            height: rem(27);
+            width: rem(32);
+        }
+
+        @include mobile {
+            height: rem(22);
+            width: rem(37);
+        }
+    }
+
+    &__title {
+        font-weight: 700;
+        font-size: rem(20);
+        line-height: 120%;
+        letter-spacing: 0.01em;
+        color: var(--color-blue);
+
+        @include tablet {
+            font-size: 1rem;
+        }
+
+        @include mobile {
+            font-size: rem(14);
+            line-height: 100%;
+        }
+    }
+
+    &__nav {
+        @include mobile {
+            display: none;
+        }
+    }
+
+    &__navList {
+        display: flex;
+        column-gap: 3rem;
+
+        @include tablet {
+            column-gap: rem(24);
+        }
+    }
+
+    &__navItem {
+        font-weight: 500;
+        font-size: 1rem;
+        line-height: 150%;
+        letter-spacing: 0.03em;
+        text-align: center;
+        color: var(--color-blue-10);
+    }
+}

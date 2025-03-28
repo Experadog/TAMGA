@@ -7,7 +7,7 @@
         "title": "Пример"
     },
     "LocaleLayout": {
-        "title": "Пример next-intl"
+        "title": "KG Map"
     },
     "NotFoundPage": {
         "description": "Пожалуйста, проверьте адресную строку вашего браузера или используйте навигацию, чтобы перейти на известную страницу.",
@@ -16,5 +16,34 @@
     "PathnamesPage": {
         "description": "<p>Имена путей также интернационализированы.</p><p>Если вы используете язык по умолчанию (английский), в адресной строке браузера на этой странице вы увидите <code>/en/pathnames</code>.</p><p>Если вы измените язык на немецкий, URL будет локализован соответственно (<code>/de/pfadnamen</code>).</p>",
         "title": "Имена путей"
+    },
+    "Navitations": {
+        "search": "Поиск",
+        "glossary": "Глоссарий",
+        "map": "Карта",
+        "blog": "Блог",
+        "about": "О проекте"
+    },
+    "LocaleSwitcher": {
+        "ru": "Рус",
+        "en": "Aнгл",
+        "kg": "Кырг"
+    },
+    "Footer": {
+        "aboutNeuros-title": "О Neuros",
+        "aboutNeuros-company-overview": "Обзор компании",
+        "aboutNeuros-careers": "Карьера",
+        "aboutNeuros-press-media": "Пресса и медиа",
+        "aboutNeuros-testimonials": "Отзывы",
+        "support-title": "Поддержка и контакты",
+        "support-contact": "Контакты",
+        "support-technical": "Техническая поддержка",
+        "support-feedback": "Обратная связь",
+        "support-community": "Форум сообщества",
+        "connect-title": "Связаться",
+        "copyright": "Все права защищены",
+        "term-of-use": "Условия использования",
+        "privacy-policy": "Политика конфиденциальности",
+        "security": "Безопасность"  
     }
 }

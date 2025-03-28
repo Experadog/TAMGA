@@ -1,0 +1,24 @@
+@use '../../assets/styles/helpers/' as *;
+
+.label {
+    display: flex;
+    align-items: center;
+    column-gap: rem(4);
+
+    &__img {
+        @include mobile {
+            height: 1rem;
+            width: 1rem;
+        }
+    }
+
+    &__select {
+        border: none;
+        appearance: none;
+        font-size: rem(12);
+        line-height: 200%;
+        letter-spacing: 0.04em;
+        color: #486284;
+        outline: none;
+    }
+}

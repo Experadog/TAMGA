@@ -1,0 +1,65 @@
+@use '../../assets/styles/helpers/' as *;
+
+.burger {
+
+    &__btn {
+        border: none;
+        background: none;
+    }
+
+    &__overlay {
+        position: fixed;
+        inset: 0;
+        transition-duration: var(--transition-duration);
+        background: var(--color-background-overlay);
+    }
+
+    &__content {
+        padding: 0 1rem rem(24);
+
+        border-radius: 0 0 1rem 1rem;
+        background-color: var(--color-light);
+    }
+
+    &__header {
+        display: flex;
+        padding-block: rem(19.5);
+    }
+
+    &__cancelBtn {
+        border: none;
+        background: none;
+    }
+
+    &__logo {
+        display: flex;
+        align-items: flex-end;
+        column-gap: rem(9);
+        top: 2.75%;
+
+        @include abs-x;
+    }
+
+    &__title {
+        font-size: rem(18);
+        line-height: 1.2;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        color: var(--color-blue);
+    }
+
+    &__menu {
+        margin: 0;
+        padding: 0;
+    }
+
+    &__menuItem {
+        font-weight: 500;
+        font-size: rem(18);
+        line-height: 122%;
+        text-align: center;
+        padding-block: rem(20);
+        color: var(--color-dark-blessed);
+        border-top: 1px solid var(--color-text-border);
+    }
+}

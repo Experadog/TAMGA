@@ -12,7 +12,6 @@ export default function Home({ params }) {
 
   return (
     <>
-      <p>{t('title')}</p>
     </>
   );
 }

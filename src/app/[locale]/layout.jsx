@@ -1,11 +1,12 @@
 import { Onest } from "next/font/google";
-import { Header } from "@/components/layouts/Header";
-import { Footer } from "@/components/layouts/Footer";
 
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer/Footer";
 
 import "../../assets/styles/main.scss";
 
@@ -14,10 +15,11 @@ const onest = Onest({
   subsets: ["latin"],
 });
 
-export const metadata = {
-  title: "KG Map",
-  description: "Каталог географических названий Кыргызской Республики",
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'LocaleLayout' });
+  return { title: t('title') };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -36,9 +38,9 @@ export default async function RootLayout({ children, params }) {
     <html lang={locale}>
       <body className={onest.variable}>
         <NextIntlClientProvider>
-          {/* <Header /> */}
+          <Header />
           <main className="container">{children}</main>
-          {/* <Footer /> */}
+          <Footer />
         </NextIntlClientProvider>
       </body>
     </html>

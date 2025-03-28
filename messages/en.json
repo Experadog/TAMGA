@@ -7,7 +7,7 @@
         "title": "Example"
     },
     "LocaleLayout": {
-        "title": "next-intl Example"
+        "title": "KG Map"
     },
     "NotFoundPage": {
         "description": "Please check your browser's address bar or use navigation to go to a known page.",
@@ -16,5 +16,34 @@
     "PathnamesPage": {
         "description": "<p>Pathnames are also internationalized.</p><p>If you use the default language English, you will see <code>/en/pathnames</code> in the browser's address bar on this page.</p><p>If you change the language to German, the URL will be localized accordingly (<code>/de/pfadnamen</code>).</p>",
         "title": "Pathnames"
+    },
+    "Navitations": {
+        "search": "Search",
+        "glossary": "Glossary",
+        "map": "Map",
+        "blog": "Blog",
+        "about": "About project"
+    },
+    "LocaleSwitcher": {
+        "ru": "Russ",
+        "en": "Engl",
+        "kg": "Kyrg"
+    },
+    "Footer": {
+        "aboutNeuros-title": "About Neuros",
+        "aboutNeuros-company-overview": "Company Overview",
+        "aboutNeuros-careers": "Careers",
+        "aboutNeuros-press-media": "Press & Media",
+        "aboutNeuros-testimonials": "Testimonials",
+        "support-title": "Support & Contact",
+        "support-contact": "Contact",
+        "support-technical": "Technical Support",
+        "support-feedback": "Feedback",
+        "support-community": "Community Forum",
+        "connect-title": "Connect",
+        "copyright": "All rights reserved",
+        "term-of-use": "Term of use",
+        "privacy-policy": "Privacy policy",
+        "security": "Security" 
     }
 }
