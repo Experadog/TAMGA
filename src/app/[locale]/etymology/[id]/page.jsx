@@ -65,6 +65,10 @@ export default async function Etymology({ params }) {
                                 <div className={clss.etymologyArticle__etymologyLangContent}  key={el.id}>
                                     <span className={clss.etymologyArticle__etymologyLang}>{el.language[tranlateSuffix] || el.language[defaultSuffix]}</span>
 
+                                    {el.transcription && (
+                                        <span className={clss.etymologyArticle__transcription}>[{el.transcription}]</span>
+                                    )}
+
                                     {el.translations.some(item => item[tranlateSuffix] || item[defaultSuffix]) && (
                                         <span className={clss.etymologyArticle__etymologyMeanings}>
                                             {el.translations
