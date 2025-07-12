@@ -117,6 +117,10 @@
             line-height: 126%;
             text-align: center;
             color: #4b5162;
+
+            @include mobile-s {
+                font-size: 12px;
+            }
         }
     }
 
