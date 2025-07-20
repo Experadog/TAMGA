@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import styles from './index.module.scss';
 import cancelIcon from '@/assets/icons/cancel.svg';
 import burgerIcon from '@/assets/icons/burger.svg'
-import useMediaQuery from '@/hooks/useMediaQuery';
+import useMediaQuery from '@/lib/hooks/useMediaQuery';
 import { Link } from '@/i18n/navigation';
 
 function BurgerMenu({ items }) {

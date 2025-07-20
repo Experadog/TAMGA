@@ -15,11 +15,10 @@ const onest = Onest({
   subsets: ["latin"],
 });
 
-export async function generateMetadata({ params }) {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'LocaleLayout' });
-  return { title: t('title') };
-}
+// export async function generateMetadata({ params }) {
+//   const { locale } = await params;
+//   return { title: 'KG MAP' };
+// }
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -38,9 +37,9 @@ export default async function RootLayout({ children, params }) {
     <html lang={locale}>
       <body className={onest.variable}>
         <NextIntlClientProvider>
-          <Header />
-          <main className="main">{children}</main>
-          <Footer />
+          {/* <Header /> */}
+          <main className="main container">{children}</main>
+          {/* <Footer /> */}
         </NextIntlClientProvider>
       </body>
     </html>

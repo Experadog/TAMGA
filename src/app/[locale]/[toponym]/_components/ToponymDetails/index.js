@@ -1,0 +1,1 @@
+export { ToponymDetails } from './ToponymDetails'

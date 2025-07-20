@@ -1,0 +1,45 @@
+@use '../../../../../assets/styles/helpers/' as *;
+
+.toponymDetails {
+    position: relative;
+    padding: rem(24) 0;
+
+    @include tablet {
+        position: static;
+        padding: rem(12) 0;
+    }
+
+    @include mobile {
+        padding: rem(10) 0;
+    }
+
+    &__summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        pointer-events: none;
+
+        &::marker {
+            display: none;
+            content: '';
+        }
+
+        @include tablet {
+            pointer-events: auto;
+          
+        }
+    }
+
+    &__chevron {
+        display: none;
+        @include tablet {
+            display: block;
+            width: rem(12);
+            height: rem(7);
+        }
+    }
+
+    &[open] &__chevron {
+        transform: rotate(180deg);
+    }
+}
