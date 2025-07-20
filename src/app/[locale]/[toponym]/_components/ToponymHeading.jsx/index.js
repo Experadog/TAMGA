@@ -1,0 +1,1 @@
+export { ToponymHeading } from './ToponymHeading'

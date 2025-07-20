@@ -1,0 +1,67 @@
+@use '../../../../../assets/styles/helpers/' as *;
+
+.toponymHierarchy {
+
+    display: flex;
+    flex-direction: column;
+    gap: rem(24);
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: rem(8);
+    }
+
+    &__heading {
+        font-weight: 700;
+        font-size: rem(20);
+        letter-spacing: 0.03em;
+        color: var(--color-dark-10);
+    }
+
+    &__list {
+        position: relative;
+        padding-left: rem(9);
+
+        &::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: rem(132); 
+            left: 0;
+            top: 12px;
+            background-color: #00C274;
+      }
+    }
+
+    &__listHeading {
+        position: relative;
+        font-weight: 400;
+        font-size: rem(12);
+        line-height: 200%;
+        text-transform: uppercase;
+        margin-bottom: rem(6);
+        color: #6b6b6b;
+
+        &::before {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            left: -10.8px;
+            top: 4px;
+            border-radius: 50%;
+            background-color: #00C274;
+        }
+    }
+
+    &__listItem {
+        font-weight: 500;
+        font-size: rem(16);
+        line-height: 150%;
+        color: var(--color-dark);
+        &:not(:last-child) {
+            margin-bottom: rem(16);
+        }
+    }
+}

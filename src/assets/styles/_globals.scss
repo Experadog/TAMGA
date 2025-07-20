@@ -3,6 +3,7 @@
 body {
     font-family: var(--font-onest);
     background-color: var(--color-background);
+    scroll-behavior: smooth;
 
     &.no-scroll {
         overflow: hidden;
@@ -58,4 +59,19 @@ button {
             content: '';
         }
     }
+}
+
+.png {
+    background-color: #0094eb;
+    text-transform: uppercase;
+}
+
+.pdf {
+    background-color: #f04438;
+    text-transform: uppercase;
+}
+
+.pptx {
+    background-color: #f97066;
+    text-transform: uppercase;
 }

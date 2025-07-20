@@ -1,0 +1,1 @@
+export { ToponymAsideItem } from './ToponymAsideItem'

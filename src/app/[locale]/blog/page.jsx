@@ -13,7 +13,7 @@ export default async function Blog({ params }) {
     let blogs = data.results
     return (
         <>
-            <section className={styles.blog__hero}>
+            <section className={`${styles.blog__hero} full-width`}>
                 <h1 className={styles.blog__heroHeading}>Блог</h1>
                 <p className={styles.blog__heroDesc}>
                     We understand that every heartbeat, every breath, and every moment matters. As a beacon of health and healing in England, we are dedicated to 
@@ -29,9 +29,9 @@ export default async function Blog({ params }) {
                     {blogs.map((blog) => (
                         <li className={styles.blog__contentItem} key={blog.id}>
                             {/* FIXME: Remove testBlogImg */}
-                            <Image 
+                            <img 
                                 className={styles.blog__contentItemImg}
-                                src={testBlogImg} 
+                                src={blog?.image} 
                                 width={264} 
                                 height={264} 
                                 alt="" 
@@ -45,7 +45,7 @@ export default async function Blog({ params }) {
                                 </span>
                                 <h3 className={styles.blog__contentItemHeading}>{blog.title_ky}</h3>
                                 <p className={styles.blog__contentItemDesc}>Capitalize on low-hanging fruit to identify a value added matrix economically activity to beta test override the digital.</p>
-                                <Link href={`blogs/${blog.slug}`} className={styles.blog__contentItemLink}>
+                                <Link href={`blog/${blog.slug}`} className={styles.blog__contentItemLink}>
                                     <span>Подробнее</span>
                                     <svg width="22" height="13" viewBox="0 0 22 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M15.3195 1.5L21 6.5L15.3195 11.5M20.211 6.5H1" stroke="#0094EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

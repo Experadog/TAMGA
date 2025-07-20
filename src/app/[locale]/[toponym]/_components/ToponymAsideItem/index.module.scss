@@ -1,0 +1,31 @@
+@use '../../../../../assets/styles/helpers/' as *;
+
+.toponymAsideItem {
+   
+    &__heading {
+        font-weight: 400;
+        font-size: rem(18);
+        color: var(--color-dark-20);
+        opacity: 0.78;
+    }
+
+    &__list {
+        margin-top: rem(24);
+        display: flex;
+        flex-wrap: wrap;
+        gap: rem(12);
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 400;
+        font-size: 16px;
+        color: #333;
+        border-radius: 100px;
+        background: #deeaff;
+        opacity: 0.78;
+        padding: rem(10) rem(32);
+    }
+}
