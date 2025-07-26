@@ -3,7 +3,7 @@ import { getRequestConfig } from 'next-intl/server';
 import { routing } from './routing';
 
 async function fetchTranslations() {
-    const res = await fetch(`${process.env.API_URL}/translate`, { cache: 'force-cache' });
+    const res = await fetch(`${process.env.API_URL}/translate`);
     if (!res.ok) throw new Error(`Failed to fetch translations: ${res.statusText}`);
 
     const { results } = await res.json();
@@ -51,9 +51,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
     const rawMessages = await fetchTranslations();
     const messages = transformMessages(rawMessages, locale);
-
-    console.log(messages);
     
-
     return { locale, messages };
 });

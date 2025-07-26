@@ -1,0 +1,13 @@
+.toponymPernamentLink {
+    display: flex;
+    justify-content: space-between;
+    padding: 13px 1rem;
+    margin-top: 1rem;
+    line-height: 187%;
+    border-radius: 1rem;
+    border: 1px solid #d8d8d8;
+
+    &__icon {
+        cursor: pointer;
+    }
+}
