@@ -16,6 +16,8 @@ import twoArrowsIcon from '@/assets/icons/two-arrow.svg';
 import chevronIcon from '@/assets/icons/chevron.svg';
 import fileIcon from '@/assets/icons/file.svg';
 import AudioPlayer from "@/components/AudioPlayer/AudioPlayer";
+import { headers } from "next/headers";
+import { ToponymPernamentLink } from "./_components/ToponymPernamentLink/ToponymPernamentLink";
 
 export async function fetchData({ toponym }) {
     try {
@@ -66,6 +68,12 @@ export async function generateMetadata({ params }) {
 
 export default async function ToponymPage({ params }) {
     const { locale, toponym } = params;
+
+    const headersList = headers();
+    const host = headersList.get('host');
+    const protocol = headersList.get('x-forwarded-proto') || 'http';
+
+    const fullPath = `${protocol}://${host}/${params.locale}/${params.toponym}`;
     
     const t = await getTranslations({ locale, namespace: 'toponym' });
     const l = await getTranslations({ locale, namespace: 'link' });
@@ -96,7 +104,8 @@ export default async function ToponymPage({ params }) {
     const description = getLocalizedValue(data, 'description', locale);
     const cleanDescription = stripHtmlTags(description);
     const term = getLocalizedValue(data?.terms_topomyns, 'name', locale);
-    const termsChildren = data?.terms_topomyns?.children.map(term => getLocalizedValue(term, 'name', locale)).join(' ');
+    const termClassToponym = getLocalizedValue(data?.terms_topomyns?.class_toponym, 'name', locale);
+    const termsClassParent = getLocalizedValue(data?.terms_topomyns?.class_toponym?.parent, 'name', locale);
     const information = getLocalizedValue(data, 'information', locale);
     const cleanInformation = stripHtmlTags(information);
 
@@ -133,8 +142,9 @@ export default async function ToponymPage({ params }) {
                     <section className={clss.toponymArticle__section}>
                         <ToponymDetails heading={heading} headingLevel={1}>
                             <ul className={clss.toponymTerms}>
-                                <li key={term}>{term && <span className={clss.toponymTerm}>{term}</span>}</li>
-                                {termsChildren && <li key={termsChildren} className={clss.toponymTerm}>{termsChildren}</li>}
+                                <li key={1}>{termsClassParent && <span className={clss.toponymTerm}>{termsClassParent}</span>}</li>
+                                <li key={2}>{termClassToponym && <span className={clss.toponymTerm}>{termClassToponym}</span>}</li>
+                                <li key={3}>{term && <span className={clss.toponymTerm}>{term}</span>}</li>
                             </ul>
 
                             {description && (
@@ -360,6 +370,11 @@ export default async function ToponymPage({ params }) {
                         </section>
                     )}
 
+                    <section className={clss.toponymArticle__section}>
+                        <ToponymDetails heading={t('pernament-link.heading')} headingLevel={2}>
+                            <ToponymPernamentLink fullPath={fullPath}/>
+                        </ToponymDetails>
+                    </section>
                 </article>
 
                 <aside className={clss.toponymAside}>

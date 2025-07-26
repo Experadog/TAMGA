@@ -1,0 +1,144 @@
+@use '../../../../assets/styles/helpers/' as *;
+
+.toponymWrapper {
+    display: flex;
+    gap: rem(24);
+    padding: rem(24) 0 rem(132);
+
+    @include tablet {
+        flex-direction: column;
+        padding-bottom: rem(100);
+    }
+
+    @include mobile {
+        gap: rem(16);
+        padding: rem(59) 0 rem(64);
+    }
+
+}
+
+.toponymArticle {
+    max-width: rem(978);
+    width: 100%;
+    padding: rem(24);
+    border-radius: 16px;
+    border: 1px solid var(--color-wrapper-border);
+    background-color: var(--color-light);
+
+    &__section {
+        background-color: var(--color-light);
+
+        &:not(:first-of-type) {
+            border-top: 1px solid var(--color-text-border);
+        }
+    }
+
+    @include tablet {
+        padding: rem(16);
+    }
+
+    @include mobile {
+        padding: rem(12);
+    }
+
+    &__audio {
+        margin-top: rem(16);
+        max-width: rem(572);
+        width: 100%;
+    }
+}
+
+.toponymDesc {
+    font-weight: 500;
+    font-size: rem(16);
+    line-height: 150%;
+    color: var(--color-dark);
+    margin-top: rem(16);
+}
+
+.toponym__label {
+    display: inline-block;
+    font-weight: 500;
+    font-size: rem(16);
+    color: var(--color-dark);
+    background-color: var(--color-gray-90);
+    border-radius: rem(8);
+    padding: rem(8) rem(16);
+    margin-right: rem(16);
+}
+
+.toponymEtymology {
+    &__heading {
+        display: inline-block;
+        font-weight: 500;
+        font-size: rem(16);
+        border-radius: 100px;
+        padding: rem(8) rem(32);
+        background: var(--color-blue-20);
+        color: var(--color-dark);
+        opacity: 0.78;
+        margin-top: rem(16);
+    }
+
+    &__desc {
+        font-weight: 400;
+        font-size: rem(18);
+        line-height: 160%;
+        color: var(--color-dark-20);
+        margin-top: rem(16);
+    }
+
+    &__dictionaries {
+        margin-top: rem(16);
+        display: flex;
+        flex-direction: column;
+        gap: rem(16);
+    }
+
+    &__dictionary {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 16px;
+        color: #000;
+        opacity: 0.78;
+
+        @include tablet {
+            // flex-direction: column;
+            // align-items: flex-start;
+            // gap: rem(8);
+        }
+    }
+
+    &__transcription {
+        font-weight: 700;
+        margin-right: rem(16);
+        opacity: 1;
+    }
+
+    &__translations {
+        display: flex;
+        align-items: center;
+        gap: rem(16);
+        margin-right: rem(16);
+
+        @include tablet {
+            // flex-direction: column;
+            // align-items: flex-start;
+        }
+    }
+
+    &__link {
+        display: flex;
+        align-items: center;
+        gap: rem(10);
+        font-weight: 500;
+        font-size: rem(16);
+        color: var(--color-accent-light);
+        opacity: 0.78;
+    }
+
+    &__arrow {
+        height: rem(12);
+    }
+}
