@@ -46,12 +46,16 @@
 
     // CONTAINER
     --container-width: #{rem(1312)};
-    --container-padding-x: #{rem(16)};
+    --container-padding-x: #{rem(32)};
 
 
     --100vw: calc(100vw - var(--scrollbar-width));
 
     @include tablet {
-        --container-width: #{rem(720)};
+        --container-padding-x: #{rem(24)};
+    }
+
+    @include mobile {
+        --container-padding-x: #{rem(16)};
     }
 }

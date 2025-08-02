@@ -4,6 +4,7 @@ body {
     font-family: var(--font-onest);
     background-color: var(--color-background);
     scroll-behavior: smooth;
+    overflow-x: hidden;
 
     &.no-scroll {
         overflow: hidden;

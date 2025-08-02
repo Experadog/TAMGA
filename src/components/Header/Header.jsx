@@ -1,15 +1,13 @@
-import { useTranslations } from 'next-intl';
 import { LocaleSwitcher } from '../LocaleSwitcher';
 import { BurgerMenu } from '../BurgerMenu'
+import { getTranslations } from 'next-intl/server';
 
 import styles from './index.module.scss';
 import Link from 'next/link';
 import Image from 'next/image';
 
-function Header() {
-    
-    const t = useTranslations('Navitations');
-
+async function Header({ locale }) {
+    const t = await getTranslations({ locale, namespace: 'header.navigation' });
     const MENU_ITEMS = [
         {name: t('search'), path: '/'},
         {name: t('glossary'), path: '/'},
