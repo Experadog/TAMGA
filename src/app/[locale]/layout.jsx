@@ -37,7 +37,7 @@ export default async function RootLayout({ children, params }) {
     <html lang={locale}>
       <body className={onest.variable}>
         <NextIntlClientProvider>
-          {/* <Header /> */}
+          <Header locale={locale} />
           <main className="main container">{children}</main>
           {/* <Footer /> */}
         </NextIntlClientProvider>

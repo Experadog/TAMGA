@@ -4,15 +4,6 @@
     max-width: calc(var(--container-width) + var(--container-padding-x) * 2);
     margin-inline: auto;
     padding-inline: var(--container-padding-x);
-
-    @include tablet {
-        max-width: 100%;
-        padding-inline: rem(24)
-    }
-
-    @include mobile {
-        padding-inline: rem(16)
-    }
 }
 
 .visually-hidden {
@@ -26,4 +17,6 @@
   right: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
+  z-index: -1; // CHECK:ME
+  overflow: hidden;
 }
