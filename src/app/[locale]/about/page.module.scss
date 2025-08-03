@@ -1,0 +1,298 @@
+@use '../../../assets/styles/helpers/' as *;
+
+.section {
+    padding: rem(100) 0;
+
+    @include tablet {
+        padding: rem(64) 0;
+    }
+
+    @include mobile {
+        padding: rem(32) 0;
+    }
+}
+
+.about {
+    &__aim {
+        display: flex;
+        column-gap: rem(32);
+
+        @include tablet {
+            flex-direction: column;
+            column-gap: rem(24);
+        }
+
+        @include mobile {
+            row-gap: rem(16);
+        }
+    }
+
+    &__aimTitle {
+        min-width: rem(488);
+        width: 100%;
+        font-weight: 500;
+        font-size: rem(48);
+        line-height: 142%;
+        letter-spacing: -0.03em;
+        color: #1d1f1e;
+
+        @include tablet {
+            min-width: 100%;
+            font-size: rem(36);
+            line-height: 189%;
+        }
+
+        @include mobile {
+            font-size: rem(24);
+            line-height: 116%;
+            margin-top: rem(32);
+        }
+    }
+
+    &__aimList {
+        display: flex;
+        flex-direction: column;
+        font-size: rem(20);
+
+        @include tablet {
+            font-size: rem(16);
+        }
+    }
+
+    &__aimItemTitle {
+        font-size: rem(24);
+
+        @include tablet {
+            font-size: rem(18);
+        }
+    }
+
+    &__aimItemDescription {
+        font-size: rem(20);
+        line-height: 180%;
+        letter-spacing: -0.01em;
+        color: #4b5162;
+        opacity: 0.9;
+        margin: rem(12) 0 rem(16);
+
+        @include tablet {
+            font-size: rem(16);
+            line-height: 160%;
+        }
+    }
+
+    &__mission {
+        background-color: var(--color-light);
+    }
+
+    &__missionTitle {
+        font-weight: 700;
+        font-size: rem(39);
+        line-height: 116%;
+        color: #1c1f25;
+
+        @include tablet {
+            font-size: rem(36);
+        }
+
+        @include mobile {
+            font-size: rem(24);
+        }
+    }
+
+    &__missionDescription {
+        font-size: rem(16);
+        line-height: 160%;
+        color: #4b5162;
+        opacity: 0.8;
+        margin-top: rem(16);
+    }
+
+    &__faq {
+        position: relative;
+        z-index: 1;
+        background-color: var(--color-light);
+
+        & div:first-of-type {
+            display: flex;
+            gap: rem(91);
+
+            @include tablet {
+                flex-direction: column;
+                gap: rem(32);
+            }
+        }
+    }
+
+    &__faqTitle {
+        font-weight: 700;
+        font-size: rem(39);
+        line-height: 116%;
+        color: #1c1f25;
+        min-width: rem(476);
+
+        @include tablet {
+            min-width: 100%;
+            font-size: rem(36);
+        }
+
+        @include mobile {
+            font-size: rem(24);
+        }
+    }
+
+    &__faqList {
+        display: flex;
+        flex-direction: column;
+        gap: rem(24);
+        width: 100%;
+    }
+
+    &__faqItem {
+        padding-bottom: rem(24);
+        border-bottom: 1px solid #b6bccd;
+    }
+
+    &__faqDetails {
+        &[open] .about__faqChevron {
+            transform: rotate(180deg);
+        }
+
+        padding-right: rem(24);
+        transition: transform 0.3s ease;
+    }
+
+    &__faqSummary {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        padding-left: rem(20);
+
+        &::marker {
+            display: none;
+            content: '';
+        }
+
+        &::before {
+            content: '';
+            position: absolute;
+            width: rem(4);
+            height: 78%;
+            border-radius: 2px;
+            background-color: #387ff5;
+            left: 0;
+            @include abs-y;
+        }
+    }
+
+    &__faqItemTitle {
+        font-weight: 700;
+        font-size: rem(20);
+        line-height: 142%;
+        color: #1c1f25;
+
+        @include mobile {
+            font-size: rem(16);
+        }
+    }
+
+    &__faqChevron {
+        margin-top: rem(12);
+        align-self: flex-start;
+        transition: transform 0.3s ease;
+    }
+
+    &__faqDescription {
+        font-weight: 400;
+        font-size: rem(16);
+        line-height: 160%;
+        color: #4b5162;
+        margin-top: rem(24);
+
+        @include mobile {
+            font-size: rem(14);
+        }
+    }
+
+    &__contacts {
+        display: flex;
+        flex-direction: column;
+        gap: rem(48);
+
+        @include tablet {
+            gap: rem(32);
+        }
+
+        @include mobile {
+            gap: rem(24);
+        }
+    }
+
+    &__contactsHeading {
+        font-weight: 700;
+        font-size: rem(39);
+        line-height: 116%;
+        color: #1c1f25;
+
+        @include tablet {
+            font-size: rem(36);
+        }
+
+        @include mobile {
+            font-size: rem(24);
+        }
+    }
+
+    &__contactsList {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: rem(32);
+
+        @include tablet {
+            grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
+        }
+    }
+
+    &__contactsItem {
+        display: flex;
+        flex-direction: column;
+        gap: rem(32);
+        width: 100%;
+        border-radius: rem(16);
+        background-color: var(--color-light);
+        padding: rem(32) rem(32) rem(56) rem(32);
+    }
+
+    &__contactsInfo {
+        display: flex;
+        align-items: center;
+        gap: rem(16);
+    }
+
+    &__contactsIconWrapper {
+        display: flex;
+        place-content: center;
+        width: rem(48);
+        height: rem(48);
+        border-radius: 50%;
+        background-color: #387ff5;    
+    }
+
+    &__contactsTitle {
+        font-weight: 500;
+        font-size: rem(24);
+        line-height: 150%;
+        letter-spacing: -0.01em;
+        color: #1d1f1e;
+    }
+
+    &__contactsLink {
+        font-weight: 500;
+        font-size: rem(18);
+        line-height: 133%;
+        letter-spacing: 0em;
+        text-decoration: underline;
+        text-decoration-skip-ink: none;
+        color: #1d1f1e;
+    }
+}

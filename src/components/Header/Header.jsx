@@ -13,7 +13,7 @@ async function Header({ locale }) {
         {name: t('glossary'), path: '/'},
         {name: t('map'), path: '/map'},
         {name: t('blog'), path: '/blog'},
-        {name: t('about'), path: '/'},
+        {name: t('about'), path: '/about'},
     ]
 
     return (
