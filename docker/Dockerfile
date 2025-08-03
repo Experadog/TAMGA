@@ -27,7 +27,6 @@ ARG APP_ENV_FILE .env
 
 COPY $APP_ENV_FILE .env
 COPY public public
-COPY messages messages
 COPY src src
 
 RUN npm run build

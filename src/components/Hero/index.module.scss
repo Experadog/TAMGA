@@ -1,0 +1,33 @@
+@use '../../assets/styles/helpers/' as *;
+
+.hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5.4375rem 0;
+    background: url('../../assets/images/blog-bg.jpg');
+
+    @include mobile {
+        padding-left: 28px;
+        padding-right: 28px;
+    }
+
+    &__heading {
+        font-weight: 600;
+        font-size: 2.25rem;
+        line-height: 106%;
+        letter-spacing: -0.01em;
+        color: #1e293b;
+    }
+
+    &__desc {
+        font-weight: 400;
+        font-size: 1.125rem;
+        line-height: 160%;
+        color: #364253;
+        text-align: center;
+        max-width: 710px;
+        margin-top: 20px;
+    }
+}

@@ -2,6 +2,7 @@ import Image from 'next/image';
 import styles from './page.module.scss';
 import testBlogImg from '@/assets/images/article.jpg';
 import Link from 'next/link';
+import { Hero } from '@/components/Hero/Hero';
 {/* FIXME: Remove testBlogImg */}
 
 
@@ -13,12 +14,7 @@ export default async function Blog({ params }) {
     let blogs = data.results
     return (
         <>
-            <section className={`${styles.blog__hero} full-width`}>
-                <h1 className={styles.blog__heroHeading}>Блог</h1>
-                <p className={styles.blog__heroDesc}>
-                    We understand that every heartbeat, every breath, and every moment matters. As a beacon of health and healing in England, we are dedicated to 
-                </p>
-            </section>
+            <Hero />
             <section className={`container ${styles.blog__content}`}>
                 <h2 className={styles.blog__contentHeading}>Интересные статьи</h2>
                 <p className={styles.blog__contentDesc}>
