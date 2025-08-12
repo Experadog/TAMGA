@@ -67,7 +67,14 @@ function BurgerMenu({ items }) {
                             {items.length > 1 &&
                                 items.map((item, idx) => (
                                     <li key={idx} className={styles.burger__menuItem}>
-                                        <Link href={item.path}>{item.name}</Link>
+                                        <Link 
+                                            className={styles.burger__menuLink}
+                                            href={item.path}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setOpen(false);
+                                            }}
+                                        >{item.name}</Link>
                                     </li>
                                 ))}
                         </ul>

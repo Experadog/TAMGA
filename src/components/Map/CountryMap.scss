@@ -1,0 +1,21 @@
+@use '../../assets/styles/helpers/' as *;
+
+.country-map {
+    padding: 0 rem(64);
+}
+
+.leaflet-container {
+    border-radius: 1rem;
+    background-color: #d3ecfd;
+}
+
+.custom-marker-icon {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    background-color: #00c274;
+    border-radius: 50%;
+    box-shadow: 0 0 5px #5effbf;
+}

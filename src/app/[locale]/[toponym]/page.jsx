@@ -18,6 +18,7 @@ import fileIcon from '@/assets/icons/file.svg';
 import AudioPlayer from "@/components/AudioPlayer/AudioPlayer";
 import { headers } from "next/headers";
 import { ToponymPernamentLink } from "./_components/ToponymPernamentLink/ToponymPernamentLink";
+import ClientMapWrapper from "./_components/ClientMapWrapper";
 
 export async function fetchData({ toponym }) {
     try {
@@ -136,7 +137,7 @@ export default async function ToponymPage({ params }) {
             <div className={clss.toponymWrapper}>
                 <article className={clss.toponymArticle}>
                     <section className={clss.toponymArticle__section}>
-                        <Image src={mapTestImg} width='930' height='auto' alt='' priority />
+                        <ClientMapWrapper toponym={data} />
                     </section>
 
                     <section className={clss.toponymArticle__section}>
@@ -404,7 +405,7 @@ export default async function ToponymPage({ params }) {
                     {matching_toponyms?.length > 0 && (
                         <section className={clss.toponymAside__section}>
                             <ToponymAsideItem
-                                heading={t('matching-toponyms')}
+                                heading={t('matches')}
                                 data={matching_toponyms}
                                 amount={matching_toponyms_count}
                                 locale={locale}
