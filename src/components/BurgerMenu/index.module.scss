@@ -58,8 +58,13 @@
         font-size: rem(18);
         line-height: 122%;
         text-align: center;
-        padding-block: rem(20);
         color: var(--color-dark-blessed);
         border-top: 1px solid var(--color-text-border);
+    }
+
+    &__menuLink {
+        display: block;
+        width: 100%;
+        padding-block: rem(20);
     }
 }

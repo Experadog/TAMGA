@@ -271,7 +271,8 @@
 
     &__contactsIconWrapper {
         display: flex;
-        place-content: center;
+        align-items: center;
+        justify-content: center;
         width: rem(48);
         height: rem(48);
         border-radius: 50%;
