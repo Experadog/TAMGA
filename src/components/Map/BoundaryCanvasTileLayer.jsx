@@ -1,5 +1,4 @@
 // BoundaryCanvasTileLayer.js
-import osmtogeojson from 'osmtogeojson';
 import { useState, useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import * as L from 'leaflet';
@@ -23,52 +22,40 @@ function BoundaryCanvasTileLayer({ tileUrl }) {
         let layer;
         let mounted = true;
 
-        const CACHE_KEY = 'kgz-geojson';
-        const CACHE_TIME_KEY = 'kgz-geojson-timestamp';
-        const CACHE_TTL = 24 * 60 * 60 * 1000; // 1 день
-
-        const getCachedGeoJSON = () => {
-            const json = localStorage.getItem(CACHE_KEY);
-            const timestamp = localStorage.getItem(CACHE_TIME_KEY);
-            if (!json || !timestamp) return null;
-
-            const age = Date.now() - parseInt(timestamp, 10);
-            if (age > CACHE_TTL) return null;
-
-            try {
-                return JSON.parse(json);
-            } catch {
-                return null;
-            }
-        };
-
-        const saveGeoJSONToCache = (data) => {
-            localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-            localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
-        };
-
         const fetchKGZGeoJSON = async () => {
-            const cached = getCachedGeoJSON();
-            if (cached) {
-                return cached;
+            try {
+                const response = await fetch('/data/kyrgyzstan-boundary.json');
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить границы Кыргызстана');
+                }
+                const geoJSON = await response.json();
+                return geoJSON;
+            } catch (error) {
+                console.error('Ошибка загрузки границ:', error);
+                // Fallback: простая граница Кыргызстана
+                return {
+                    type: "FeatureCollection",
+                    features: [
+                        {
+                            type: "Feature",
+                            properties: { name: "Kyrgyzstan" },
+                            geometry: {
+                                type: "Polygon",
+                                coordinates: [
+                                    [
+                                        [69.25, 41.85],
+                                        [78.18, 41.18],
+                                        [78.12, 40.83],
+                                        [73.49, 39.43],
+                                        [69.46, 39.53],
+                                        [69.25, 41.85]
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                };
             }
-
-            const query = `
-                [out:json][timeout:25];
-                relation["ISO3166-1"="KG"];
-                out body;
-                >;
-                out skel qt;
-            `;
-
-            const response = await fetch(
-                `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`
-            );
-            const overpassData = await response.json();
-            const geoJSON = osmtogeojson(overpassData);
-
-            saveGeoJSONToCache(geoJSON);
-            return geoJSON;
         };
 
         const addLayer = async () => {

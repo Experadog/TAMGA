@@ -1,12 +1,16 @@
 @use '../../assets/styles/helpers/' as *;
 
 .country-map {
-    padding: 0 rem(64);
+    padding: rem(24) 0 rem(91);
+
+    @include mobile {
+        padding: rem(20) 0 rem(64);
+    }
 }
 
 .leaflet-container {
     border-radius: 1rem;
-    background-color: #d3ecfd;
+    background-color: var(--color-map-bg);
 }
 
 .custom-marker-icon {
@@ -18,4 +22,54 @@
     background-color: #00c274;
     border-radius: 50%;
     box-shadow: 0 0 5px #5effbf;
+}
+
+.leaflet-popup-content-wrapper {
+    min-width: 310px;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px -4px rgba(24, 39, 75, 0.08), 0 6px 12px -6px rgba(24, 39, 75, 0.12);
+    background: #fff;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+    top: 5px;
+    right: 5px;
+}
+
+.leaflet-popup-content {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.popup-title {
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: 0.03em;
+}
+
+.popup-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.popup-matching {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 143%;
+    color: #7e7e7e;
+}
+
+.popup-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 171%;
+    letter-spacing: 0.04em;
 }
