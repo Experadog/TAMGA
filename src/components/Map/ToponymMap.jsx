@@ -69,7 +69,7 @@ export default function ToponymMap({ toponym, osmId }) {
         <MapContainer
             ref={mapRef}
             center={[toponym.latitude, toponym.longitude]}
-            zoom={6}
+            zoom={5}
             minZoom={6}
             maxZoom={18}
             maxBounds={[

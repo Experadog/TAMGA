@@ -19,7 +19,7 @@ export default function CountryMap({ locale }) {
         <MapContainer
             center={[41.2, 74.6]}
             zoom={6}
-            minZoom={6}
+            minZoom={5}
             maxZoom={18}
             maxBounds={[
                 [39.0, 69.0], 
