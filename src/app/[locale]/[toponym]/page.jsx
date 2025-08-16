@@ -15,7 +15,6 @@ import coordinatesIcon from '@/assets/icons/coordinates.svg';
 import twoArrowsIcon from '@/assets/icons/two-arrow.svg';
 import chevronIcon from '@/assets/icons/chevron.svg';
 import fileIcon from '@/assets/icons/file.svg';
-import AudioPlayer from "@/components/AudioPlayer/AudioPlayer";
 import { headers } from "next/headers";
 import { ToponymPernamentLink } from "./_components/ToponymPernamentLink/ToponymPernamentLink";
 import ClientMapWrapper from "./_components/ClientMapWrapper";
@@ -98,6 +97,7 @@ export default async function ToponymPage({ params }) {
         longitude,
         archived_records,
         historical_backgrounds,
+        osm_id
     } = data;
 
     const heading = getLocalizedValue(data, 'name', locale);
@@ -136,8 +136,8 @@ export default async function ToponymPage({ params }) {
         <>
             <div className={clss.toponymWrapper}>
                 <article className={clss.toponymArticle}>
-                    <section className={clss.toponymArticle__section}>
-                        <ClientMapWrapper toponym={data} />
+                    <section className={`${clss.toponymArticle__section} ${clss.toponymMap}`}>
+                        <ClientMapWrapper toponym={data} osmId={osm_id} />
                     </section>
 
                     <section className={clss.toponymArticle__section}>
@@ -226,14 +226,6 @@ export default async function ToponymPage({ params }) {
                                         </React.Fragment>
                                     );
                                 })}
-                            </ToponymDetails>
-                        </section>
-                    )}
-
-                    {name_ky && (
-                        <section className={clss.toponymArticle__section}>
-                            <ToponymDetails heading={t('pronunciation.heading')} headingLevel={2}>
-                                <AudioPlayer text={name_ky} className={clss.toponymArticle__audio} />
                             </ToponymDetails>
                         </section>
                     )}
