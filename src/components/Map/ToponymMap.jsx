@@ -6,7 +6,6 @@ import { useEffect, useMemo } from 'react';
 import L from 'leaflet';
 
 import 'leaflet/dist/leaflet.css';
-import './ToponymMap.scss';
 
 function GeoJSONWithZoom({ data }) {
     const map = useMap();

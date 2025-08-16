@@ -1,6 +1,8 @@
 // BoundaryCanvasTileLayer.js
 import { useState, useEffect } from 'react';
 import { useMap } from 'react-leaflet';
+import { useFetch } from '../../lib/hooks/useFetch';
+
 import * as L from 'leaflet';
 
 const loadBoundaryCanvas = () => {
@@ -16,85 +18,78 @@ function BoundaryCanvasTileLayer({ tileUrl }) {
     const map = useMap();
     const [loading, setLoading] = useState(true);
 
+    const { data: geoJSON, isLoading: isGeoJSONLoading, isError } = useFetch(`${process.env.NEXT_PUBLIC_KG_BOUNDARY_API_URL}`);
+
+    useEffect(() => {
+        if (isError) {
+            console.warn('Не удалось загрузить границы Кыргызстана, будет использован обычный слой карты');
+        }
+    }, [isError]);
+
     useEffect(() => {
         loadBoundaryCanvas();
 
         let layer;
         let mounted = true;
 
-        const fetchKGZGeoJSON = async () => {
-            try {
-                const response = await fetch('/data/kyrgyzstan-boundary.json');
-                if (!response.ok) {
-                    throw new Error('Не удалось загрузить границы Кыргызстана');
-                }
-                const geoJSON = await response.json();
-                return geoJSON;
-            } catch (error) {
-                console.error('Ошибка загрузки границ:', error);
-                // Fallback: простая граница Кыргызстана
-                return {
-                    type: "FeatureCollection",
-                    features: [
-                        {
-                            type: "Feature",
-                            properties: { name: "Kyrgyzstan" },
-                            geometry: {
-                                type: "Polygon",
-                                coordinates: [
-                                    [
-                                        [69.25, 41.85],
-                                        [78.18, 41.18],
-                                        [78.12, 40.83],
-                                        [73.49, 39.43],
-                                        [69.46, 39.53],
-                                        [69.25, 41.85]
-                                    ]
-                                ]
-                            }
-                        }
-                    ]
-                };
-            }
-        };
-
         const addLayer = async () => {
-            setLoading(true);
-            const geoJSON = await fetchKGZGeoJSON();
+            try {
+                setLoading(true);
 
-            if (!L.TileLayer.BoundaryCanvas) {
-                // Wait until plugin is loaded
-                await new Promise((resolve) => {
-                    const interval = setInterval(() => {
-                        if (L.TileLayer.BoundaryCanvas) {
-                            clearInterval(interval);
-                            resolve();
-                        }
-                    }, 100);
+                if (!mounted) return;
+
+                if (isError) {
+                    layer = new L.TileLayer(tileUrl);
+                    map.addLayer(layer);
+                    setLoading(false);
+                    return;
+                }
+
+                if (!geoJSON) return;
+
+                if (!L.TileLayer.BoundaryCanvas) {
+                    await new Promise((resolve) => {
+                        const interval = setInterval(() => {
+                            if (L.TileLayer.BoundaryCanvas) {
+                                clearInterval(interval);
+                                resolve();
+                            }
+                        }, 100);
+                    });
+                }
+
+                if (!mounted) return;
+
+                layer = new L.TileLayer.BoundaryCanvas(tileUrl, {
+                    boundary: geoJSON,
                 });
+
+                map.addLayer(layer);
+                const bounds = L.geoJSON(geoJSON).getBounds();
+                map.fitBounds(bounds);
+                setLoading(false);
+            } catch (error) {
+                console.error('Ошибка при добавлении слоя карты:', error);
+
+                if (mounted && map) {
+                    layer = new L.TileLayer(tileUrl);
+                    map.addLayer(layer);
+                    setLoading(false);
+                }
             }
-
-            if (!mounted) return;
-
-            layer = new L.TileLayer.BoundaryCanvas(tileUrl, {
-                boundary: geoJSON,
-            });
-
-            map.addLayer(layer);
-            const bounds = L.geoJSON(geoJSON).getBounds();
-            map.fitBounds(bounds);
-            setLoading(false);
         };
 
-        addLayer();
+        if (!isGeoJSONLoading && (geoJSON || isError)) {
+            addLayer();
+        }
 
         return () => {
             mounted = false;
             if (layer) map.removeLayer(layer);
         };
-    }, [map, tileUrl]);
+    }, [map, tileUrl, geoJSON, isGeoJSONLoading, isError]);
 
-    return loading ? (
+    return (loading || isGeoJSONLoading) ? (
         <div
             style={{
                 position: 'absolute',
@@ -107,7 +102,7 @@ function BoundaryCanvasTileLayer({ tileUrl }) {
                 zIndex: 1000,
             }}
         >
-            Загрузка границ Кыргызстана...
+            {isError ? 'Загрузка карты...' : 'Загрузка границ Кыргызстана...'}
         </div>
     ) : null;
 }
