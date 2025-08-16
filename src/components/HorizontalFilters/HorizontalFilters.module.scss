@@ -1,0 +1,287 @@
+.horizontalFilters {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+// Алфавитная секция
+.alphabetSection {
+  background: #f8f9fa;
+  padding: 15px 20px;
+  border-bottom: 1px solid #e9ecef;
+
+  .alphabetLabel {
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 12px;
+  }
+
+  .alphabetGrid {
+    margin-bottom: 12px;
+  }
+
+  .alphabetRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 6px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .alphabetButton {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #495057;
+
+    &:hover {
+      background: #e9ecef;
+      border-color: #adb5bd;
+    }
+
+    &.active {
+      background: #007bff;
+      border-color: #007bff;
+      color: white;
+
+      &:hover {
+        background: #0056b3;
+        border-color: #0056b3;
+      }
+    }
+  }
+
+  .alphabetActions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .clearButton {
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: #c82333;
+      }
+    }
+
+    .filterCount {
+      font-size: 12px;
+      color: #6c757d;
+      font-weight: 500;
+    }
+  }
+}
+
+// Строка фильтров
+.filtersRow {
+  display: flex;
+  gap: 12px;
+  padding: 15px 20px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .filterGroup {
+    flex: 1;
+    min-width: 140px;
+    max-width: 200px;
+
+    &:last-child {
+      flex: 0 0 auto;
+      min-width: auto;
+      max-width: none;
+    }
+  }
+
+  .searchInput {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+
+    &::placeholder {
+      color: #6c757d;
+    }
+  }
+
+  .filterSelect {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+  }
+
+  .customSelect {
+    width: 100%;
+    min-width: 140px;
+  }
+
+  .resetButton {
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: #5a6268;
+    }
+  }
+}
+
+// Выбранные фильтры (чипы)
+.selectedFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 20px 20px 15px 20px;
+  border-top: 1px solid #e9ecef;
+  background: #f8f9fa;
+
+
+  .filterChip {
+    display: flex;
+    align-items: center;
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 16px;
+    padding: 4px 8px 4px 12px;
+    font-size: 12px;
+    color: #1976d2;
+    gap: 6px;
+
+    span {
+      font-weight: 500;
+    }
+
+    button {
+      background: none;
+      border: none;
+      color: #1976d2;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      padding: 0;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: rgba(25, 118, 210, 0.1);
+      }
+    }
+  }
+}
+
+// Адаптивность
+@media (max-width: 1200px) {
+  .filtersRow {
+    .filterGroup {
+      min-width: 120px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .horizontalFilters {
+    margin-bottom: 15px;
+  }
+
+  .alphabetSection {
+    padding: 12px 15px;
+
+    .alphabetButton {
+      min-width: 28px;
+      height: 28px;
+      padding: 4px 6px;
+      font-size: 11px;
+    }
+
+    .alphabetActions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      
+      .clearButton {
+        align-self: stretch;
+        text-align: center;
+      }
+      
+      .filterCount {
+        text-align: center;
+      }
+    }
+  }
+
+  .filtersRow {
+    padding: 12px 15px;
+    flex-direction: column;
+    gap: 10px;
+
+    .filterGroup {
+      width: 100%;
+      min-width: auto;
+    }
+
+    .resetButton {
+      align-self: center;
+      margin-top: 5px;
+    }
+  }
+
+  .selectedFilters {
+    padding: 0 15px 12px 15px;
+  }
+}

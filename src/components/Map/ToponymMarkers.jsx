@@ -7,7 +7,10 @@ import MarkerClusterGroup from 'react-leaflet-markercluster';
 import 'react-leaflet-markercluster/styles'
 import clss from './ToponymMarkers.module.scss';
 
-export default function ToponymMarkers({ toponyms, locale }) {
+export default function ToponymMarkers({ toponyms = [], locale }) {
+    // Проверяем что toponyms является массивом
+    const toponymsArray = Array.isArray(toponyms) ? toponyms : [];
+    
     const clusterStyleIcon = L.divIcon({
         html: '<div><span>1</span></div>',
         className: 'marker-cluster marker-cluster-small',
@@ -20,7 +23,7 @@ export default function ToponymMarkers({ toponyms, locale }) {
                 color: '#0094EB',
             }}
         >
-            {toponyms.map((toponym) => (
+            {toponymsArray.map((toponym) => (
                 <Marker
                     key={toponym.id}
                     position={[toponym.latitude, toponym.longitude]}
