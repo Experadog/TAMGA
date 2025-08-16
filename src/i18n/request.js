@@ -51,8 +51,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
     const rawMessages = await fetchTranslations();
     const messages = transformMessages(rawMessages, locale);
-
-    console.log(messages)
     
     return { locale, messages };
 });
