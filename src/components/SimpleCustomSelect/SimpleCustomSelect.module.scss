@@ -1,0 +1,125 @@
+.simpleCustomSelect {
+    position: relative;
+    min-width: 200px;
+}
+
+.selectButton {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    min-height: 40px;
+    transition: border-color 0.2s ease;
+
+    &:hover {
+        border-color: #999;
+    }
+
+    &.open {
+        border-color: #007bff;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+}
+
+.selectText {
+    flex: 1;
+    text-align: left;
+    color: #333;
+    font-size: 14px;
+    
+    &:empty::before {
+        content: attr(data-placeholder);
+        color: #999;
+    }
+}
+
+.arrow {
+    color: #666;
+    font-size: 12px;
+    transition: transform 0.2s ease;
+    
+    &.up {
+        transform: rotate(180deg);
+    }
+    
+    &.down {
+        transform: rotate(0deg);
+    }
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #007bff;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: 250px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.optionsList {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 250px;
+}
+
+.optionGroup {
+    // Группировка опций для иерархических элементов
+    border: none;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    
+    &:hover {
+        background-color: #f8f9fa;
+    }
+    
+    &.childOption {
+        background-color: #fafafa;
+        
+        &:hover {
+            background-color: #f0f0f0;
+        }
+    }
+}
+
+.checkbox {
+    margin-right: 8px;
+    cursor: pointer;
+    accent-color: #007bff;
+}
+
+.optionLabel {
+    flex: 1;
+    text-align: left;
+    font-size: 14px;
+    color: #333;
+    user-select: none;
+}
+
+.noOptions {
+    padding: 16px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}

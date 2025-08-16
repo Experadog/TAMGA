@@ -1,19 +1,17 @@
-'use client';
-
-import dynamic from 'next/dynamic';
-import { use } from 'react';
 import clss from './page.module.scss';
+import HorizontalFilters from '@/components/HorizontalFilters/HorizontalFilters';
+import MapClient from '@/components/Map/MapClient';
 
-const CountryMap = dynamic(() => import('@/components/Map/CountryMap'), {
-  ssr: false, 
-});
-
-export default function MapPage({ params }) {
-  const { locale } = use(params);
+export default async function MapPage({ params, searchParams }) {
+  const { locale } = await params;
+  const resolvedSearchParams = await searchParams;
   
   return (
-    <div className={clss.mapWrapper}>
-      <CountryMap locale={locale} />
+    <div className={clss.pageContainer}>
+      <HorizontalFilters locale={locale} directories={{}} />
+      <div className={clss.mapWrapper}>
+        <MapClient searchParams={resolvedSearchParams} locale={locale} />
+      </div>
     </div>
   )
 }
