@@ -1,5 +1,11 @@
 @use '../../../assets/styles/helpers/' as *;
 
+.toponymBreadcrumb {
+    @include tablet {
+        display: none;
+    }
+}
+
 .toponymWrapper {
     display: flex;
     gap: rem(24);
