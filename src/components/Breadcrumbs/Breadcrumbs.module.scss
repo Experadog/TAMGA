@@ -1,0 +1,53 @@
+@use '../../assets/styles/helpers/' as *;
+
+.breadcrumbs {
+    padding: rem(16) 0;
+}
+
+.breadcrumbs__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0.5rem;
+}
+
+.breadcrumbs__item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+.breadcrumbs__link {
+    font-size: 14px;
+    line-height: 171%;
+    color: #605f5f;
+
+    &:hover {
+        color: #1d4ed8;
+        text-decoration: underline;
+    }
+
+    &:focus {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+        border-radius: 0.25rem;
+    }
+}
+
+.breadcrumbs__current {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 171%;
+    color: #121212;
+}
+
+.breadcrumbs__separator {
+    color: #9ca3af;
+    user-select: none;
+    margin: 0 0.25rem;
+}

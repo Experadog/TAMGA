@@ -1,5 +1,28 @@
 @use '../../../../assets/styles/helpers/' as *;
 
+.blogBackLink {
+    display: flex;
+    align-items: center;
+    gap: rem(6);
+    margin-top: rem(32);
+    font-weight: 500;
+    font-size: rem(18);
+    line-height: 133%;
+    letter-spacing: 0em;
+    color: #022c22;
+
+    @include tablet {
+        display: none;
+    }
+}
+
+.blogBreadcrumbs {
+    display: none;
+    @include tablet {
+        display: block;
+    }
+}
+
 .blogPost {
     margin: rem(40) 0 rem(100);
     padding: rem(24);
@@ -101,5 +124,13 @@
         display: flex;
         flex-direction: column;
         gap: rem(16);
+    }
+
+    @include tablet {
+        margin-top: rem(16);
+    }
+
+    @include mobile {
+        margin-top: rem(4);
     }
 }

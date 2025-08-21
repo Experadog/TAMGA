@@ -18,6 +18,7 @@ import fileIcon from '@/assets/icons/file.svg';
 import { headers } from "next/headers";
 import { ToponymPernamentLink } from "./_components/ToponymPernamentLink/ToponymPernamentLink";
 import ClientMapWrapper from "./_components/ClientMapWrapper";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export async function fetchData({ toponym }) {
     try {
@@ -77,6 +78,7 @@ export default async function ToponymPage({ params }) {
     
     const t = await getTranslations({ locale, namespace: 'toponym' });
     const l = await getTranslations({ locale, namespace: 'link' });
+    const b = await getTranslations({ locale, namespace: 'breadcrumbs.toponym' });
 
     const data = await fetchData({ toponym });
     if (!data) throw new Error('Toponym data not found');
@@ -101,6 +103,24 @@ export default async function ToponymPage({ params }) {
     } = data;
 
     const heading = getLocalizedValue(data, 'name', locale);
+
+    const breadcrumbsItems = [
+        {
+            name: b('home'),
+            href: `/${locale}`,
+            isLink: true
+        },
+        {
+            name: b('catalog'),
+            href: `/${locale}/map`,
+            isLink: true
+        },
+        {
+            name: heading,
+            href: null,
+            isLink: false
+        }
+    ];
 
     const description = getLocalizedValue(data, 'description', locale);
     const cleanDescription = stripHtmlTags(description);
@@ -134,6 +154,10 @@ export default async function ToponymPage({ params }) {
 
     return (
         <>
+            <Breadcrumbs
+                className={clss.toponymBreadcrumb}
+                items={breadcrumbsItems}
+            />
             <div className={clss.toponymWrapper}>
                 <article className={clss.toponymArticle}>
                     <section className={`${clss.toponymArticle__section} ${clss.toponymMap}`}>
