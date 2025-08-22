@@ -56,6 +56,48 @@
 .toponymMap {
     border-radius: rem(16);
     height: rem(363);
+    overflow: hidden;
+    position: relative;
+    transition: opacity 0.3s ease;
+    
+    & > div {
+        height: 100%;
+        width: 100%;
+        border-radius: rem(16);
+    }
+    
+    .leaflet-container {
+        border-radius: rem(16);
+        background-color: #d3ecfd;
+        
+        .leaflet-control-container {
+            .leaflet-top {
+                .leaflet-control {
+                    border-radius: rem(8);
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                }
+            }
+        }
+        
+        .leaflet-overlay-pane {
+            svg {
+                pointer-events: auto;
+                
+                path {
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                }
+            }
+        }
+    }
+    
+    &[data-loading="true"] {
+        opacity: 0.7;
+    }
+    
+    @include mobile {
+        height: rem(300);
+    }
 }
 
 .toponymAside {

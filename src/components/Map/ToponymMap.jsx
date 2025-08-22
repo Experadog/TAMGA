@@ -9,105 +9,130 @@ import LocationControl from './LocationControl';
 
 import 'leaflet/dist/leaflet.css';
 
-export default function ToponymMap({ toponym, osmId }) {
-    const [coords, setCoords] = useState([]);
-    const [elementType, setElementType] = useState(null);
-    const [isClosedWay, setIsClosedWay] = useState(false);
+const checkLeafletAvailability = () => {
+    return typeof window !== 'undefined' && window.L;
+};
+
+export default function ToponymMap({ toponym, osmData, onError }) {
+    const [isMapReady, setIsMapReady] = useState(false);
+    const [leafletReady, setLeafletReady] = useState(false);
     const mapRef = useRef(null);
 
     useEffect(() => {
-        const query = `
-            [out:json];
-            way(${osmId});
-            out geom;
-        `;
-
-        fetch("https://overpass-api.de/api/interpreter", {
-            method: "POST",
-            body: query
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.elements.length > 0) {
-                    const element = data.elements[0];
-                    const points = element.geometry.map(p => [p.lat, p.lon]);
-                    setCoords(points);
-                    setElementType(element.type);
-
-                    if (points.length > 2) {
-                        const firstPoint = points[0];
-                        const lastPoint = points[points.length - 1];
-                        const isClosed = firstPoint[0] === lastPoint[0] && firstPoint[1] === lastPoint[1];
-                        setIsClosedWay(isClosed);
-                    }
-                }
-            });
-    }, [osmId]);
+        const checkLeaflet = () => {
+            if (checkLeafletAvailability()) {
+                setLeafletReady(true);
+            } else {
+                setTimeout(checkLeaflet, 100);
+            }
+        };
+        
+        checkLeaflet();
+    }, []);
 
     useEffect(() => {
-        if (coords.length > 0 && mapRef.current) {
-            setTimeout(() => {
+        if (osmData?.coords?.length > 0 && mapRef.current && isMapReady) {
+            const timeoutId = setTimeout(() => {
                 const map = mapRef.current;
                 
-                if (map) {
-                    const lats = coords.map(coord => coord[0]);
-                    const lngs = coords.map(coord => coord[1]);
-                    
-                    const minLat = Math.min(...lats);
-                    const maxLat = Math.max(...lats);
-                    const minLng = Math.min(...lngs);
-                    const maxLng = Math.max(...lngs);
-                    
-                    const bounds = [[minLat, minLng], [maxLat, maxLng]];
-                    map.fitBounds(bounds, { padding: [20, 20] });
+                if (map && map.getContainer()) {
+                    try {
+                        const coords = osmData.coords;
+                        const lats = coords.map(coord => coord[0]);
+                        const lngs = coords.map(coord => coord[1]);
+                        
+                        const minLat = Math.min(...lats);
+                        const maxLat = Math.max(...lats);
+                        const minLng = Math.min(...lngs);
+                        const maxLng = Math.max(...lngs);
+                        
+                        const bounds = [[minLat, minLng], [maxLat, maxLng]];
+                        map.fitBounds(bounds, { padding: [20, 20] });
+                    } catch (error) {
+                        console.error('Error fitting bounds:', error);
+                        onError?.(error);
+                    }
                 }
-            }, 100);
+            }, 200);
+
+            return () => clearTimeout(timeoutId);
         }
-    }, [coords]);
+    }, [osmData, isMapReady, onError]);
+
+    const handleMapReady = () => {
+        setIsMapReady(true);
+    };
+
+    if (!leafletReady) {
+        return (
+            <div style={{
+                height: '100%',
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#f5f5f5',
+                borderRadius: '16px',
+                border: '1px solid #e0e0e0',
+                color: '#666'
+            }}>
+                ️ Инициализация карты...
+            </div>
+        );
+    }
 
     return (
-        <MapContainer
-            ref={mapRef}
-            center={[toponym.latitude, toponym.longitude]}
-            zoom={5}
-            minZoom={6}
-            maxZoom={18}
-            maxBounds={[
-                [39.0, 69.0],
-                [43.5, 81.0]
-            ]}
-            maxBoundsViscosity={1.0}
-            attributionControl={false}
-            style={{ height: '100%', width: '100%', backgroundColor: '#d3ecfd', borderRadius: '16px' }}
-        >
-            <BoundaryCanvasTileLayer
-                tileUrl="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
+        <div style={{ position: 'relative', height: '100%', width: '100%' }}>
+            <MapContainer
+                ref={mapRef}
+                center={[toponym.latitude, toponym.longitude]}
+                zoom={5}
+                minZoom={6}
+                maxZoom={18}
+                maxBounds={[
+                    [39.0, 69.0],
+                    [43.5, 81.0]
+                ]}
+                maxBoundsViscosity={1.0}
+                attributionControl={false}
+                style={{ height: '100%', width: '100%', backgroundColor: '#d3ecfd', borderRadius: '16px' }}
+                whenReady={handleMapReady}
+            >
+                <BoundaryCanvasTileLayer
+                    tileUrl="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
 
-            <FullScreenControl />
-            <LocationControl />
+                <FullScreenControl />
+                <LocationControl />
 
-            {coords.length > 0 && elementType === 'way' && (
-                <>
-                    {isClosedWay ? (
-                        <Polygon
-                            positions={coords}
-                            pathOptions={{
-                                color: "#0094EB",
-                                weight: 3,
-                                fill: true,
-                                fillColor: "#0094EB",
-                                fillOpacity: 0.2
-                            }}
-                        />
-                    ) : (
-                        <Polyline
-                            positions={coords}
-                            pathOptions={{ color: "#0094EB", weight: 4 }}
-                        />
-                    )}
-                </>
-            )}
-        </MapContainer>
+                {osmData?.coords?.length > 0 && osmData.elementType === 'way' && isMapReady && (
+                    <>
+                        {osmData.isClosedWay ? (
+                            <Polygon
+                                positions={osmData.coords}
+                                pathOptions={{
+                                    color: "#0094EB",
+                                    weight: 3,
+                                    fill: true,
+                                    fillColor: "#0094EB",
+                                    fillOpacity: 0.2,
+                                    stroke: true
+                                }}
+                            />
+                        ) : (
+                            <Polyline
+                                positions={osmData.coords}
+                                pathOptions={{ 
+                                    color: "#0094EB", 
+                                    weight: 4,
+                                    opacity: 1,
+                                    stroke: true
+                                }}
+                            />
+                        )}
+                    </>
+                )}
+            </MapContainer>
+        </div>
     );
 }
