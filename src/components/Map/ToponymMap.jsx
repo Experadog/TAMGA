@@ -61,6 +61,8 @@ export default function ToponymMap({ toponym, osmData, onError }) {
 
     const handleMapReady = () => {
         setIsMapReady(true);
+        // Уведомляем MapHealthMonitor о том, что карта загружена
+        document.dispatchEvent(new CustomEvent('leaflet-map-loaded'));
     };
 
     if (!leafletReady) {
@@ -82,22 +84,28 @@ export default function ToponymMap({ toponym, osmData, onError }) {
     }
 
     return (
-        <div style={{ position: 'relative', height: '100%', width: '100%' }}>
-            <MapContainer
-                ref={mapRef}
-                center={[toponym.latitude, toponym.longitude]}
-                zoom={5}
-                minZoom={6}
-                maxZoom={18}
-                maxBounds={[
-                    [39.0, 69.0],
-                    [43.5, 81.0]
-                ]}
-                maxBoundsViscosity={1.0}
-                attributionControl={false}
-                style={{ height: '100%', width: '100%', backgroundColor: '#d3ecfd', borderRadius: '16px' }}
-                whenReady={handleMapReady}
-            >
+        <div style={{ position: 'relative', height: '100%', width: '100%' }}>                
+        <MapContainer
+                    ref={mapRef}
+                    center={[toponym.latitude, toponym.longitude]}
+                    zoom={5}
+                    minZoom={6}
+                    maxZoom={18}
+                    maxBounds={[
+                        [39.0, 69.0],
+                        [43.5, 81.0]
+                    ]}
+                    maxBoundsViscosity={1.0}
+                    attributionControl={false}
+                    style={{ height: '100%', width: '100%', backgroundColor: '#d3ecfd', borderRadius: '16px' }}
+                    whenReady={handleMapReady}
+                    eventHandlers={{
+                        click: () => document.dispatchEvent(new CustomEvent('leaflet-map-activity')),
+                        zoom: () => document.dispatchEvent(new CustomEvent('leaflet-map-activity')),
+                        move: () => document.dispatchEvent(new CustomEvent('leaflet-map-activity')),
+                        drag: () => document.dispatchEvent(new CustomEvent('leaflet-map-activity'))
+                    }}
+                >
                 <BoundaryCanvasTileLayer
                     tileUrl="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
