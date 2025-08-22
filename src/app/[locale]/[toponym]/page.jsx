@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import mapTestImg from '@/assets/images/map-test.png';
-import { getLocalizedValue, stripHtmlTags } from "@/lib/utils";
+import { cleanHtml, getLocalizedValue, stripHtmlTags } from "@/lib/utils";
 
 import clss from './page.module.scss'
 import { ToponymDetails } from "./_components/ToponymDetails";
@@ -175,7 +175,7 @@ export default async function ToponymPage({ params }) {
     ];
 
     const description = getLocalizedValue(data, 'description', locale);
-    const cleanDescription = stripHtmlTags(description);
+    const cleanDescription = cleanHtml(stripHtmlTags(description));
     const term = getLocalizedValue(data?.terms_topomyns, 'name', locale);
     const termClassToponym = getLocalizedValue(data?.terms_topomyns?.class_toponym, 'name', locale);
     const termsClassParent = getLocalizedValue(data?.terms_topomyns?.class_toponym?.parent, 'name', locale);
