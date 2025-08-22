@@ -2,7 +2,6 @@
 
 import dynamic from 'next/dynamic';
 import { Suspense, useState } from 'react';
-import MapHealthMonitor from '@/components/Map/MapHealthMonitor';
 
 const ToponymMap = dynamic(() => import('@/components/Map/ToponymMap'), {
     ssr: false,
@@ -73,7 +72,6 @@ export default function ClientMapWrapper({ toponym, osmId, osmData }) {
 
     return (
         <>
-            <MapHealthMonitor onMapError={handleMapError} />
             <Suspense fallback={
                 <div style={{
                     height: '363px',
