@@ -13,7 +13,7 @@ const checkLeafletAvailability = () => {
     return typeof window !== 'undefined' && window.L;
 };
 
-export default function ToponymMap({ toponym, osmData, onError }) {
+export default function ToponymMap({ toponym, osmData }) {
     const [isMapReady, setIsMapReady] = useState(false);
     const [leafletReady, setLeafletReady] = useState(false);
     const mapRef = useRef(null);
@@ -50,19 +50,16 @@ export default function ToponymMap({ toponym, osmData, onError }) {
                         map.fitBounds(bounds, { padding: [20, 20] });
                     } catch (error) {
                         console.error('Error fitting bounds:', error);
-                        onError?.(error);
                     }
                 }
             }, 200);
 
             return () => clearTimeout(timeoutId);
         }
-    }, [osmData, isMapReady, onError]);
+    }, [osmData, isMapReady]);
 
     const handleMapReady = () => {
         setIsMapReady(true);
-        // Уведомляем MapHealthMonitor о том, что карта загружена
-        document.dispatchEvent(new CustomEvent('leaflet-map-loaded'));
     };
 
     if (!leafletReady) {
@@ -85,27 +82,21 @@ export default function ToponymMap({ toponym, osmData, onError }) {
 
     return (
         <div style={{ position: 'relative', height: '100%', width: '100%' }}>                
-        <MapContainer
-                    ref={mapRef}
-                    center={[toponym.latitude, toponym.longitude]}
-                    zoom={5}
-                    minZoom={6}
-                    maxZoom={18}
-                    maxBounds={[
-                        [39.0, 69.0],
-                        [43.5, 81.0]
-                    ]}
-                    maxBoundsViscosity={1.0}
-                    attributionControl={false}
-                    style={{ height: '100%', width: '100%', backgroundColor: '#d3ecfd', borderRadius: '16px' }}
-                    whenReady={handleMapReady}
-                    eventHandlers={{
-                        click: () => document.dispatchEvent(new CustomEvent('leaflet-map-activity')),
-                        zoom: () => document.dispatchEvent(new CustomEvent('leaflet-map-activity')),
-                        move: () => document.dispatchEvent(new CustomEvent('leaflet-map-activity')),
-                        drag: () => document.dispatchEvent(new CustomEvent('leaflet-map-activity'))
-                    }}
-                >
+            <MapContainer
+                ref={mapRef}
+                center={[toponym.latitude, toponym.longitude]}
+                zoom={5}
+                minZoom={6}
+                maxZoom={18}
+                maxBounds={[
+                    [39.0, 69.0],
+                    [43.5, 81.0]
+                ]}
+                maxBoundsViscosity={1.0}
+                attributionControl={false}
+                style={{ height: '100%', width: '100%', backgroundColor: '#d3ecfd', borderRadius: '16px' }}
+                whenReady={handleMapReady}
+            >
                 <BoundaryCanvasTileLayer
                     tileUrl="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />

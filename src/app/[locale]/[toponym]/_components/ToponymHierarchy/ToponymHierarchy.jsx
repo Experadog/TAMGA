@@ -21,88 +21,47 @@ export async function ToponymHierarchy({ region, city, district, aiylAimak, aiyl
         ky: 'Кыргызстан'
     }
 
-    const fallbackTranslations = {
-        ru: {
-            heading: 'Иерархия',
-            republic: 'Республика',
-            region: 'Область', 
-            district: 'Район',
-            city: 'Город',
-            village: 'Айыл окмоту',
-            aiyl: 'Айыл'
-        },
-        ky: {
-            heading: 'Иерархия',
-            republic: 'Республика',
-            region: 'Облус',
-            district: 'Район', 
-            city: 'Шаар',
-            village: 'Айыл окмоту',
-            aiyl: 'Айыл'
-        },
-        en: {
-            heading: 'Hierarchy',
-            republic: 'Republic',
-            region: 'Region',
-            district: 'District',
-            city: 'City', 
-            village: 'Village council',
-            aiyl: 'Village'
-        }
-    };
-
-    const getTranslationWithFallback = (key) => {
-        if (key === 'heading') {
-            try {
-                return t(key);
-            } catch {
-                return fallbackTranslations[locale]?.heading || 'Иерархия';
-            }
-        }
-        return fallbackTranslations[locale]?.[key] || key;
-    };
-
     return (
         <div className={clss.toponymHierarchy}>
             <div className={clss.toponymHierarchy__header}>
                 <Image src={hierarchy} alt="" width={24} height={24} />
-                <h3 className={clss.toponymHierarchy__heading}>{getTranslationWithFallback('heading')}</h3>
+                <h3 className={clss.toponymHierarchy__heading}>{t('heading')}</h3>
             </div>
             <div className={clss.toponymHierarchy__list}>
-                <span className={clss.toponymHierarchy__listHeading}>{getTranslationWithFallback('republic')}</span>
+                <span className={clss.toponymHierarchy__listHeading}>{t('republic')}</span>
                 <p className={clss.toponymHierarchy__listItem}>{republicName[locale]}</p>
 
                 {regionName && (
                     <>
-                        <span className={clss.toponymHierarchy__listHeading}>{getTranslationWithFallback('region')}</span>
+                        <span className={clss.toponymHierarchy__listHeading}>{t('region')}</span>
                         <p className={clss.toponymHierarchy__listItem}>{regionName}</p>
                     </>
                 )}
 
                 {districtName && (
                     <>
-                        <span className={clss.toponymHierarchy__listHeading}>{getTranslationWithFallback('district')}</span>
+                        <span className={clss.toponymHierarchy__listHeading}>{t('disctrict')}</span>
                         <p className={clss.toponymHierarchy__listItem}>{districtName}</p>
                     </>
                 )}
 
                 {cityName && (
                     <>
-                        <span className={clss.toponymHierarchy__listHeading}>{getTranslationWithFallback('city')}</span>
+                        <span className={clss.toponymHierarchy__listHeading}>{t('city')}</span>
                         <p className={clss.toponymHierarchy__listItem}>{cityName}</p>
                     </>
                 )}
 
                 {aiylAimakName && (
                     <>
-                        <span className={clss.toponymHierarchy__listHeading}>{getTranslationWithFallback('village')}</span>
+                        <span className={clss.toponymHierarchy__listHeading}>{t('village')}</span>
                         <p className={clss.toponymHierarchy__listItem}>{aiylAimakName}</p>
                     </>
                 )}
 
                 {aiylName && (
                     <>
-                        <span className={clss.toponymHierarchy__listHeading}>{getTranslationWithFallback('aiyl')}</span>
+                        <span className={clss.toponymHierarchy__listHeading}>{t('aiyl')}</span>
                         <p className={clss.toponymHierarchy__listItem}>{aiylName}</p>
                     </>
                 )}

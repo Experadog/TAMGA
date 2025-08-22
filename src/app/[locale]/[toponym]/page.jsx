@@ -308,7 +308,7 @@ export default async function ToponymPage({ params }) {
 
                     {topoformants?.length > 0 && (
                         <section className={clss.toponymArticle__section}>
-                            <ToponymDetails heading={'Топофарманты'} headingLevel={2}>
+                            <ToponymDetails heading={t('topoformants.heading')} headingLevel={2}>
                                 {topoformants.map((topoformant, index) => {
                                     const mainName = getLocalizedValue(topoformant, 'name', locale);
                                     const description = getLocalizedValue(topoformant, 'description', locale);
@@ -467,6 +467,7 @@ export default async function ToponymPage({ params }) {
                                                                             </Link>
                                                                         ) : (
                                                                             <div className={clss.toponymSourseces__sourceText}>
+                                                                                <div style={{maxWidth: '40px', width: '100%'}}></div>
                                                                                 <span>{getLocalizedValue(source, 'name', locale)}</span>
                                                                             </div>
                                                                         )}
