@@ -99,6 +99,7 @@ export default async function ToponymPage({ params }) {
         longitude,
         archived_records,
         historical_backgrounds,
+        topoformants,
         osm_id
     } = data;
 
@@ -229,19 +230,19 @@ export default async function ToponymPage({ params }) {
                                                             <span className={clss.toponym__label}>{getLocalizedValue(dict?.language, 'name', locale)}</span>
                                                             {dict?.transcription && <span className={clss.toponymEtymology__transcription}>[{dict.transcription}]</span>}
                                                             {dict?.translations?.length > 0 && (
-                                                                <>
-                                                                    <ul className={clss.toponymEtymology__translations}>
-                                                                        {dict.translations.map((translation, transIndex) => (
-                                                                            <li key={transIndex}>
-                                                                                <span>{getLocalizedValue(translation, 'name', locale)}</span>
-                                                                            </li>
-                                                                        ))}
-                                                                    </ul>
-                                                                    <Link className={clss.toponymEtymology__link} href={`#source-${dict.id}`}>
-                                                                        {l('source')}
-                                                                        <Image className={clss.toponymEtymology__arrow} src={arrowIcon} width='12' height='12' alt='' />
-                                                                    </Link>
-                                                                </>
+                                                                <ul className={clss.toponymEtymology__translations}>
+                                                                    {dict.translations.map((translation, transIndex) => (
+                                                                        <li key={transIndex}>
+                                                                            <span>{getLocalizedValue(translation, 'name', locale)}{transIndex < dict.translations.length - 1 ? ';' : ''}</span>
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            )}
+                                                            {dict?.sources?.some(source => getLocalizedValue(source, 'name', locale)) && (
+                                                                <Link className={clss.toponymEtymology__link} href={`#source-${dict.id}`}>
+                                                                    {l('source')}
+                                                                    <Image className={clss.toponymEtymology__arrow} src={arrowIcon} width='12' height='12' alt='' />
+                                                                </Link>
                                                             )}
                                                         </li>
                                                     ))}
@@ -254,6 +255,45 @@ export default async function ToponymPage({ params }) {
                         </section>
                     )}
 
+                    {topoformants?.length > 0 && (
+                        <section className={clss.toponymArticle__section}>
+                            <ToponymDetails heading={'Топофарманты'} headingLevel={2}>
+                                {topoformants.map((topoformant, index) => {
+                                    const mainName = getLocalizedValue(topoformant, 'name', locale);
+                                    const description = getLocalizedValue(topoformant, 'description', locale);
+                                    
+                                    const affixes = topoformant?.affixes || [];
+                                    
+                                    return (
+                                        <div key={topoformant.id || index} className={clss.toponymTopoformant}>
+                                            <div className={clss.toponymTopoformant__header}>
+                                                {mainName}
+                                                
+                                                {affixes.length > 0 && (
+                                                    <span className={clss.toponymTopoformant__affixes}>
+                                                        {affixes.map((affix, affixIndex) => {
+                                                            const affixName = getLocalizedValue(affix, 'name', locale);
+                                                            return affixName ? (
+                                                                <span key={affix.id || affixIndex} className={clss.toponymTopoformant__affix}>
+                                                                    {affixIndex > 0 ? ', ' : ', '}{affixName}
+                                                                </span>
+                                                            ) : null;
+                                                        })}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            
+                                            {description && (
+                                                <p className={clss.toponymDesc}>
+                                                    {description}
+                                                </p>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </ToponymDetails>
+                        </section>
+                    )} 
                     {latitude && longitude && (
                         <section className={clss.toponymArticle__section}>
                             <ToponymDetails heading={t('coordinates.heading')} headingLevel={2}>
@@ -343,7 +383,9 @@ export default async function ToponymPage({ params }) {
                         </section>
                     )}
 
-                    {etymologies?.length > 0 && (
+                    {etymologies?.length > 0 && etymologies.some(etymology => 
+                        etymology.dictionaries?.some(dict => dict.sources?.length > 0)
+                    ) && (
                         <section className={clss.toponymArticle__section}>
                             <ToponymDetails heading={t('source.heading')} headingLevel={2}>
                                 {etymologies.map((etymology, index) => {
@@ -362,7 +404,7 @@ export default async function ToponymPage({ params }) {
                                                             <div className={clss.toponymSourseces__dictionariesItem}>
                                                                 {sources.map((source, sourceIndex) => (
                                                                     <div id={`source-${dict.id}`} key={sourceIndex} className={clss.toponymSourseces__source}>
-                                                                        {source?.file && (
+                                                                        {source?.file ? (
                                                                             <Link className={clss.toponymSourseces__sourceLink} href={source?.file} target="_blank" rel="noopener noreferrer">
                                                                                 <div className={clss.toponymSourseces__sourceFile}>
                                                                                     <Image className={clss.toponymSourseces__sourceFileIcon} src={fileIcon} alt="" width={0} height={40} />
@@ -372,6 +414,10 @@ export default async function ToponymPage({ params }) {
                                                                                 </div>
                                                                                 <span>{getLocalizedValue(source, 'name', locale)}</span>
                                                                             </Link>
+                                                                        ) : (
+                                                                            <div className={clss.toponymSourseces__sourceText}>
+                                                                                <span>{getLocalizedValue(source, 'name', locale)}</span>
+                                                                            </div>
                                                                         )}
                                                                     </div>
                                                                 ))}
@@ -395,14 +441,14 @@ export default async function ToponymPage({ params }) {
                 </article>
 
                 <aside className={clss.toponymAside}>
-                    {region?.length > 0 && city?.length > 0 && (
+                    {(region?.length > 0 || city?.length > 0 || district?.length > 0 || aiyl_aimak?.length > 0 || aiyl?.length > 0) && (
                         <section className={clss.toponymAside__section}>
                             <ToponymHierarchy
-                                region={region[0]}
-                                city={city[0]}
-                                district={district[0]}
-                                aiylAimak={aiyl_aimak[0]}
-                                aiyl={aiyl[0]}
+                                region={region?.[0]}
+                                city={city?.[0]}
+                                district={district?.[0]}
+                                aiylAimak={aiyl_aimak?.[0]}
+                                aiyl={aiyl?.[0]}
                                 locale={locale}
                             />
                         </section>
