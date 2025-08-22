@@ -31,6 +31,55 @@ export async function fetchData({ toponym }) {
     }
 }
 
+export async function fetchOSMData(osmId) {
+    if (!osmId) return null;
+    
+    try {
+        const query = `
+            [out:json];
+            way(${osmId});
+            out geom;
+        `;
+
+        const response = await fetch("https://overpass-api.de/api/interpreter", {
+            method: "POST",
+            body: query,
+            headers: {
+                'Content-Type': 'text/plain'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.elements && data.elements.length > 0) {
+            const element = data.elements[0];
+            const coords = element.geometry.map(p => [p.lat, p.lon]);
+            
+            let isClosedWay = false;
+            if (coords.length > 2) {
+                const firstPoint = coords[0];
+                const lastPoint = coords[coords.length - 1];
+                isClosedWay = firstPoint[0] === lastPoint[0] && firstPoint[1] === lastPoint[1];
+            }
+
+            return {
+                coords,
+                elementType: element.type,
+                isClosedWay
+            };
+        }
+        
+        return null;
+    } catch (error) {
+        console.error('Error fetching OSM data:', error);
+        return null;
+    }
+}
+
 export async function generateMetadata({ params }) {
     const { locale, toponym } = params;
 
@@ -82,6 +131,8 @@ export default async function ToponymPage({ params }) {
 
     const data = await fetchData({ toponym });
     if (!data) throw new Error('Toponym data not found');
+
+    const osmData = await fetchOSMData(data.osm_id);
 
     const {
         region,
@@ -162,7 +213,7 @@ export default async function ToponymPage({ params }) {
             <div className={clss.toponymWrapper}>
                 <article className={clss.toponymArticle}>
                     <section className={`${clss.toponymArticle__section} ${clss.toponymMap}`}>
-                        <ClientMapWrapper toponym={data} osmId={osm_id} />
+                        <ClientMapWrapper toponym={data} osmId={osm_id} osmData={osmData} />
                     </section>
 
                     <section className={clss.toponymArticle__section}>
