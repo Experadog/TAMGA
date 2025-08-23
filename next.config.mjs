@@ -4,7 +4,16 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    reactStrictMode: false, 
+    reactStrictMode: false,
+    images: {
+        remotePatterns: [
+            {
+                protocol: "http",
+                hostname: "storage.yandexcloud.net",
+                pathname: "/**",
+            },
+        ],
+    },
 };
 
 export default withNextIntl(nextConfig);

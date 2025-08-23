@@ -35,15 +35,6 @@
 
     &__content {
         padding: 100px 0;
-
-        @include mobile {
-            padding: 64px 24px;
-        }
-
-        @include mobile-s {
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
     }
 
     &__contentHeading {
@@ -86,6 +77,13 @@
         background-color: var(--color-light);
         border-radius: 1rem;
         padding: 1rem 1rem 24px 1rem;
+        position: relative;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+        @include hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
 
         @include tablet {
             flex-direction: row;
@@ -95,6 +93,41 @@
         @include mobile {
             flex-direction: column;
             padding-bottom: 1rem;
+        }
+    }
+
+    &__contentItemMainLink {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        text-decoration: none;
+        color: inherit;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+        }
+
+        @include hover {
+            text-decoration: none;
+
+            & .blog__contentLink {
+                color: var(--color-accent);
+            }
+        }
+
+        @include tablet {
+            flex-direction: row;
+            column-gap: 24px;
+        }
+
+        @include mobile {
+            flex-direction: column;
         }
     }
 
@@ -144,10 +177,13 @@
         line-height: 160%;
         text-transform: capitalize;
         color: #303030;
+        position: relative;
+        z-index: 2;
+        transition: color 0.2s ease;
+        margin-top: auto;
 
         &:hover {
             color: var(--color-accent);
-            text-decoration: none;
         }
     }
 }
