@@ -1,0 +1,1 @@
+export { ToponymEtymology } from './ToponymEtymology';
