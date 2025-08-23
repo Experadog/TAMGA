@@ -52,7 +52,7 @@
   cursor: pointer;
   position: relative;
 
-  &:hover {
+  @include hover {
     color: var(--color-accent-light);
   }
 
@@ -139,7 +139,7 @@
       border-radius: rem(4);
       transition: all 0.2s ease;
 
-      &:hover {
+      @include hover {
         background: #f8f9fa;
       }
 
@@ -166,7 +166,7 @@
         cursor: pointer;
         transition: color 0.2s ease;
 
-        &:hover {
+        @include hover {
           color: var(--color-accent-light);
         }
       }
@@ -217,7 +217,7 @@
 .applyButton {
   background: var(--color-accent-light);
 
-  &:hover {
+  @include hover {
     background: #0063cd;
   }
 }
@@ -225,7 +225,7 @@
 .clearButton {
   color: #9d9d9d;
 
-  &:hover {
+  @include hover {
     color: var(--color-light);
     background: #FF0000;
   }
@@ -266,9 +266,10 @@
   scroll-snap-align: center;
   transition: all 0.2s ease;
 
-  &:hover {
+  @include hover {
     background: var(--color-accent-light);
     color: var(--color-light);
+
   }
 
   &.active {
@@ -276,7 +277,7 @@
     color: var(--color-light);
     font-weight: 600;
 
-    &:hover {
+    @include hover {
       background: #0063cd;
       transform: scale(1.05);
     }
