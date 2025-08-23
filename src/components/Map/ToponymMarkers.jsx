@@ -36,6 +36,10 @@ export default function ToponymMarkers({ toponyms = [], locale }) {
                             <div className={clss.popupRegion}>{getLocalizedValue(toponym.region[0], 'name', locale)}</div>
                         )}
 
+                        {toponym?.terms_topomyns.length > 0 && (
+                            <div className={clss.popupRegion}>{getLocalizedValue(toponym?.terms_topomyns, 'name', locale)}</div>
+                        )}
+
                         <div className={clss.popupDescription}>
                             {stripHtmlTags(getLocalizedValue(toponym, 'description', locale)).length > 100
                                 ? `${stripHtmlTags(getLocalizedValue(toponym, 'description', locale)).substring(0, 100)}...`

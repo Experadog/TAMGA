@@ -1,0 +1,43 @@
+@use '../../../../../assets/styles/helpers/' as *;
+
+.toponymSourseces {
+    &__sourceLink {
+        margin-top: rem(16);
+        padding-left: 7px;
+        display: flex;
+        align-items: center;
+        gap: rem(11);
+        font-weight: 400;
+        font-size: rem(16);
+        color: var(--color-dark-20)
+
+    }
+
+    &__sourceFile {
+        position: relative;
+    }
+
+    &__sourceText {
+        display: flex;
+        gap: rem(11);
+        margin-top: rem(16);
+        display: flex;
+        align-items: center;
+        gap: rem(11);
+        font-weight: 400;
+        font-size: rem(16);
+        color: var(--color-dark-20)
+    }
+
+    &__sourceFileFormat {
+        position: absolute;
+        left: -7px;
+        bottom: 7px;
+        font-weight: 700;
+        font-size: rem(10);
+        text-align: center;
+        color: #fff;
+        padding: 3px 2px;
+        border-radius: 2px;
+    }
+}

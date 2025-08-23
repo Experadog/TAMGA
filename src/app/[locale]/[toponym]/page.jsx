@@ -9,12 +9,13 @@ import { ToponymDetails } from "./_components/ToponymDetails";
 import { ToponymHierarchy } from "./_components/ToponymHierarchy/ToponymHierarchy";
 import { getTranslations } from "next-intl/server";
 import { ToponymAsideItem } from "./_components/ToponymAsideItem";
+import { ToponymEtymology } from "./_components/ToponymEtymology";
+import { ToponymSources } from "./_components/ToponymSources";
 
 import arrowIcon from '@/assets/icons/arrow.svg';
 import coordinatesIcon from '@/assets/icons/coordinates.svg';
 import twoArrowsIcon from '@/assets/icons/two-arrow.svg';
 import chevronIcon from '@/assets/icons/chevron.svg';
-import fileIcon from '@/assets/icons/file.svg';
 import { headers } from "next/headers";
 import { ToponymPernamentLink } from "./_components/ToponymPernamentLink/ToponymPernamentLink";
 import ClientMapWrapper from "./_components/ClientMapWrapper";
@@ -266,42 +267,11 @@ export default async function ToponymPage({ params }) {
                     {etymologies?.length > 0 && (
                         <section className={clss.toponymArticle__section}>
                             <ToponymDetails heading={t('etymology-naming.heading')} headingLevel={2}>
-                                {etymologies.map((etymology, index) => {
-                                    const description = getLocalizedValue(etymology, 'description', locale);
-                                    const name = getLocalizedValue(etymology, 'name', locale);
-
-                                    return (
-                                        <React.Fragment key={index}>
-                                            {name && <span className={clss.toponymEtymology__heading}>{name}</span>}
-                                            {description && <p className={clss.toponymEtymology__desc}>{description}</p>}
-                                            {etymology?.dictionaries?.length > 0 && (
-                                                <ul className={clss.toponymEtymology__dictionaries}>
-                                                    {etymology.dictionaries.map((dict, dictIndex) => (
-                                                        <li className={clss.toponymEtymology__dictionary} key={dictIndex}>
-                                                            <span className={clss.toponym__label}>{getLocalizedValue(dict?.language, 'name', locale)}</span>
-                                                            {dict?.transcription && <span className={clss.toponymEtymology__transcription}>[{dict.transcription}]</span>}
-                                                            {dict?.translations?.length > 0 && (
-                                                                <ul className={clss.toponymEtymology__translations}>
-                                                                    {dict.translations.map((translation, transIndex) => (
-                                                                        <li key={transIndex}>
-                                                                            <span>{getLocalizedValue(translation, 'name', locale)}{transIndex < dict.translations.length - 1 ? ';' : ''}</span>
-                                                                        </li>
-                                                                    ))}
-                                                                </ul>
-                                                            )}
-                                                            {dict?.sources?.some(source => getLocalizedValue(source, 'name', locale)) && (
-                                                                <Link className={clss.toponymEtymology__link} href={`#source-${dict.id}`}>
-                                                                    {l('source')}
-                                                                    <Image className={clss.toponymEtymology__arrow} src={arrowIcon} width='12' height='12' alt='' />
-                                                                </Link>
-                                                            )}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            )}
-                                        </React.Fragment>
-                                    );
-                                })}
+                                <ToponymEtymology 
+                                    etymologies={etymologies}
+                                    locale={locale}
+                                    l={l}
+                                />
                             </ToponymDetails>
                         </section>
                     )}
@@ -439,48 +409,10 @@ export default async function ToponymPage({ params }) {
                     ) && (
                         <section className={clss.toponymArticle__section}>
                             <ToponymDetails heading={t('source.heading')} headingLevel={2}>
-                                {etymologies.map((etymology, index) => {
-                                    const { dictionaries } = etymology;
-
-                                    if (!dictionaries?.length) return null;
-
-                                    return (
-                                        <div key={index} className={clss.toponymSourseces}>
-                                            {dictionaries.map((dict, dictIndex) => {
-                                                const { sources } = dict;
-
-                                                return (
-                                                    <div key={dictIndex} className={clss.toponymSourseces__dictionaries}>
-                                                        {sources?.length > 0 && (
-                                                            <div className={clss.toponymSourseces__dictionariesItem}>
-                                                                {sources.map((source, sourceIndex) => (
-                                                                    <div id={`source-${dict.id}`} key={sourceIndex} className={clss.toponymSourseces__source}>
-                                                                        {source?.file ? (
-                                                                            <Link className={clss.toponymSourseces__sourceLink} href={source?.file} target="_blank" rel="noopener noreferrer">
-                                                                                <div className={clss.toponymSourseces__sourceFile}>
-                                                                                    <Image className={clss.toponymSourseces__sourceFileIcon} src={fileIcon} alt="" width={0} height={40} />
-                                                                                    {source.format_file && (
-                                                                                        <span className={`${clss.toponymSourseces__sourceFileFormat} ${source.format_file}`}>{source.format_file}</span>
-                                                                                    )}
-                                                                                </div>
-                                                                                <span>{getLocalizedValue(source, 'name', locale)}</span>
-                                                                            </Link>
-                                                                        ) : (
-                                                                            <div className={clss.toponymSourseces__sourceText}>
-                                                                                <div style={{maxWidth: '40px', width: '100%'}}></div>
-                                                                                <span>{getLocalizedValue(source, 'name', locale)}</span>
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    );
-                                })}
+                                <ToponymSources 
+                                    etymologies={etymologies}
+                                    locale={locale}
+                                />
                             </ToponymDetails>
                         </section>
                     )}
