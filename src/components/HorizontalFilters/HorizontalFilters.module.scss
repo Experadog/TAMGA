@@ -1,287 +1,313 @@
+@use '../../assets/styles/helpers/' as *;
+
 .horizontalFilters {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-  margin-top: 20px;
-}
+  margin-top: rem(24);
+  padding: rem(24);
+  border: 1px solid #ececec;
+  border-radius: rem(16);
+  background-color: var(--color-light);
 
-// Алфавитная секция
-.alphabetSection {
-  background: #f8f9fa;
-  padding: 15px 20px;
-  border-bottom: 1px solid #e9ecef;
-
-  .alphabetLabel {
-    font-size: 14px;
-    font-weight: 500;
-    color: #495057;
-    margin-bottom: 12px;
-  }
-
-  .alphabetGrid {
-    margin-bottom: 12px;
-  }
-
-  .alphabetRow {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-bottom: 6px;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  .alphabetButton {
-    background: white;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    min-width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #495057;
-
-    &:hover {
-      background: #e9ecef;
-      border-color: #adb5bd;
-    }
-
-    &.active {
-      background: #007bff;
-      border-color: #007bff;
-      color: white;
-
-      &:hover {
-        background: #0056b3;
-        border-color: #0056b3;
-      }
-    }
-  }
-
-  .alphabetActions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    
-    .clearButton {
-      background: #dc3545;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 12px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: background 0.2s ease;
-
-      &:hover {
-        background: #c82333;
-      }
-    }
-
-    .filterCount {
-      font-size: 12px;
-      color: #6c757d;
-      font-weight: 500;
-    }
+  @include mobile {
+    padding: rem(20) rem(16) rem(24);
   }
 }
 
-// Строка фильтров
-.filtersRow {
+.topRow {
   display: flex;
-  gap: 12px;
-  padding: 15px 20px;
+  justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  padding-bottom: rem(24);
+  border-bottom: 1px solid #dbdbdb;
+  ;
+}
 
-  .filterGroup {
-    flex: 1;
-    min-width: 140px;
-    max-width: 200px;
+.topRowLeft {
+  display: flex;
+  align-items: center;
+  gap: rem(6);
+  font-weight: 500;
+  font-size: rem(18);
+}
 
-    &:last-child {
-      flex: 0 0 auto;
-      min-width: auto;
-      max-width: none;
-    }
+.filterCount {
+  opacity: 0.5;
+}
+
+.topRowRight {
+  display: flex;
+}
+
+.toggleButton {
+  border: none;
+  background: none;
+  display: flex;
+  align-items: center;
+  // gap: rem(6);
+  font-weight: 500;
+  font-size: rem(16);
+  line-height: 125%;
+  letter-spacing: -0.01em;
+  color: #3b3c3d;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    color: var(--color-accent-light);
   }
 
-  .searchInput {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    font-size: 14px;
-    background: white;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
 
-    &:focus {
-      outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-    }
+.filterAction {
+  width: auto;
+  padding-right: rem(12);
+  padding-left: rem(6);
+}
 
-    &::placeholder {
-      color: #6c757d;
-    }
+.settingsAction {
+  width: auto;
+  padding-left: rem(12);
+  padding-right: rem(5);
+  border-left: 1px solid #ececec;
+  ;
+}
+
+.settingsButton {
+  position: relative;
+
+  &.active {
+    background: rgba(var(--color-accent-light-rgb), 0.1);
+    border-radius: rem(4);
   }
+}
 
-  .filterSelect {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    font-size: 14px;
-    background: white;
-    cursor: pointer;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-    &:focus {
-      outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-    }
+.filtersDesktop {
+  @include tablet {
+    display: none;
   }
+}
 
-  .customSelect {
-    width: 100%;
-    min-width: 140px;
+.filtersTablet {
+  @include mobile {
+    display: none;
   }
+}
 
-  .resetButton {
-    background: #6c757d;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s ease;
+.settingsDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: rem(8);
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: rem(12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  min-width: rem(377);
+  padding: rem(16);
 
-    &:hover {
-      background: #5a6268;
+  @include mobile {
+    min-width: rem(320);
+  }
+}
+
+.dropdownHeader {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: rem(8);
+
+  & span {
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 133%;
+    color: #71717a;
+  }
+}
+
+.dropdownContent {
+
+  .filtersList {
+    max-height: rem(300);
+    overflow-y: auto;
+
+    & .filterOption {
+      display: flex;
+      align-items: center;
+      gap: rem(12);
+      padding: rem(10) rem(4);
+      cursor: pointer;
+      border-radius: rem(4);
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #f8f9fa;
+      }
+
+      & .filterCheckbox {
+        margin: 0;
+        accent-color: var(--color-accent-light);
+        width: rem(18);
+        height: rem(18);
+        cursor: pointer;
+        transition: transform 0.1s ease;
+
+        &:checked {
+          transform: scale(1.1);
+        }
+      }
+
+      & .filterLabel {
+        font-weight: 400;
+        font-size: rem(14);
+        line-height: 143%;
+        letter-spacing: 0.01em;
+        color: #333;
+        user-select: none;
+        cursor: pointer;
+        transition: color 0.2s ease;
+
+        &:hover {
+          color: var(--color-accent-light);
+        }
+      }
     }
   }
 }
 
-// Выбранные фильтры (чипы)
+.filtersRow {
+  padding: rem(24) 0;
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.filtersGroup {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  row-gap: rem(20);
+  column-gap: rem(24);
+
+  @include tablet {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.leftActions {
+  padding-top: rem(24);
+  display: flex;
+  justify-content: flex-end;
+  gap: rem(8);
+}
+
+.actionButtons {
+  border: none;
+  border-radius: 100px;
+  padding: 8px 12px;
+  min-width: 150px;
+  height: 44px;
+  background: none;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 114%;
+  color: var(--color-light);
+}
+
+.applyButton {
+  background: var(--color-accent-light);
+
+  &:hover {
+    background: #0063cd;
+  }
+}
+
+.clearButton {
+  color: #9d9d9d;
+
+  &:hover {
+    color: var(--color-light);
+    background: #FF0000;
+  }
+}
+
+.alphabetRow {
+  display: flex;
+  justify-content: space-between;
+  padding-top: rem(24);
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  padding-bottom: rem(8);
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  
+  scrollbar-width: none;
+}
+
+.alphabetButton {
+  border: none;
+  background: none;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 80%;
+  text-align: center;
+  color: #333;
+  width: rem(38);
+  height: rem(38);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  scroll-snap-align: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--color-accent-light);
+    color: var(--color-light);
+  }
+
+  &.active {
+    background: var(--color-accent-light);
+    color: var(--color-light);
+    font-weight: 600;
+
+    &:hover {
+      background: #0063cd;
+      transform: scale(1.05);
+    }
+  }
+}
+
 .selectedFilters {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  padding: 20px 20px 15px 20px;
-  border-top: 1px solid #e9ecef;
-  background: #f8f9fa;
-
-
-  .filterChip {
-    display: flex;
-    align-items: center;
-    background: #e3f2fd;
-    border: 1px solid #bbdefb;
-    border-radius: 16px;
-    padding: 4px 8px 4px 12px;
-    font-size: 12px;
-    color: #1976d2;
-    gap: 6px;
-
-    span {
-      font-weight: 500;
-    }
-
-    button {
-      background: none;
-      border: none;
-      color: #1976d2;
-      cursor: pointer;
-      font-size: 14px;
-      line-height: 1;
-      padding: 0;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s ease;
-
-      &:hover {
-        background: rgba(25, 118, 210, 0.1);
-      }
-    }
-  }
+  gap: rem(12);
+  padding: rem(20) 0;
+  border-bottom: 1px solid #dbdbdb;
 }
 
-// Адаптивность
-@media (max-width: 1200px) {
-  .filtersRow {
-    .filterGroup {
-      min-width: 120px;
-    }
-  }
-}
+.filterChip {
+  border: 1px solid var(--color-accent-light);
+  border-radius: 100px;
+  padding: 8px 12px;
+  font-weight: 500;
+  font-size: 16px;
+  color: #333;
+  opacity: 0.78;
+  display: flex;
+  align-items: center;
+  gap: rem(12);
 
-@media (max-width: 768px) {
-  .horizontalFilters {
-    margin-bottom: 15px;
-  }
-
-  .alphabetSection {
-    padding: 12px 15px;
-
-    .alphabetButton {
-      min-width: 28px;
-      height: 28px;
-      padding: 4px 6px;
-      font-size: 11px;
-    }
-
-    .alphabetActions {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 8px;
-      
-      .clearButton {
-        align-self: stretch;
-        text-align: center;
-      }
-      
-      .filterCount {
-        text-align: center;
-      }
-    }
-  }
-
-  .filtersRow {
-    padding: 12px 15px;
-    flex-direction: column;
-    gap: 10px;
-
-    .filterGroup {
-      width: 100%;
-      min-width: auto;
-    }
-
-    .resetButton {
-      align-self: center;
-      margin-top: 5px;
-    }
-  }
-
-  .selectedFilters {
-    padding: 0 15px 12px 15px;
+  & button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    height: rem(24);
   }
 }

@@ -5,6 +5,11 @@
     flex-direction: column;
     gap: rem(16);
     width: 100%;
+    padding-bottom: rem(91);
+
+    @include mobile {
+        padding-bottom: rem(64);
+    }
 }
 
 .mapWrapper {

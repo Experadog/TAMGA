@@ -9,7 +9,6 @@ import { useFetch } from '@/lib/hooks/useFetch';
 import ToponymMarkers from './ToponymMarkers';
 import FullScreenControl from './FullScreenControl';
 import LocationControl from './LocationControl';
-import ResultsInfo from '@/components/ResultsInfo';
 
 import 'leaflet/dist/leaflet.css';
 
@@ -124,13 +123,7 @@ export default function CountryMap({ locale, searchParams }) {
                 <LocationControl />
             </MapContainer>
             
-            <ResultsInfo 
-                count={count}
-                currentPage={currentPage}
-                limit={limit}
-                onPageChange={handlePageChange}
-                loading={loading}
-            />
+            
         </div>
     );
 }
