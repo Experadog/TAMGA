@@ -64,6 +64,9 @@
 
     &__authorImage {
         border-radius: 50%;
+        height: rem(56);
+        width: rem(56);
+        object-fit: cover;
     }
 
     &__authorImagePlaceholder {
@@ -95,6 +98,21 @@
         color: #646a69;
     }
 
+    &__inspector {
+        margin-top: rem(54);
+        padding: rem(24) 0;
+        border-top: 1px solid #d1d1d1;
+        border-bottom: 1px solid #d1d1d1;
+
+        @include tablet {
+            margin-top: rem(32);
+        }
+
+        & .blogPost__autorsList {
+            margin-bottom: 0;
+        }
+    }
+
     &__image {
         height: rem(532);
         object-fit: cover;
@@ -103,13 +121,22 @@
 
     &__content {
         margin-top: rem(64);
+
+        @include tablet {
+            margin-top: rem(32);
+        }
     }
 
     &__sourcesTitle {
+        margin-top: rem(64);
         font-weight: 700;
         font-size: 20px;
         line-height: 142%;
         color: #1c1f25;
+
+        @include tablet {
+            margin-top: rem(32);
+        }
     }
 
     &__sourceLink {

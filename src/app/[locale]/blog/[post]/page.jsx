@@ -1,9 +1,13 @@
 import Link from 'next/link';
-import { cleanHtml, getLocalizedValue } from '@/lib/utils';
+import { cleanHtml, formatDate, getLocalizedValue } from '@/lib/utils';
 import clss from './page.module.scss';
 import './styles.scss'
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { getTranslations } from 'next-intl/server';
+import Image from 'next/image';
+import avaImgFallback from '@/assets/images/ava-img-fallback.png'
+
+
 export async function fetchData({ post }) {
     try {
         const resp = await fetch(`${process.env.API_URL}/blogs/${post}`)
@@ -22,13 +26,14 @@ export default async function Blog({ params }) {
     const data = await fetchData({ post });
     if (!data) throw new Error('Post data not found');
 
-    const { image, autors, sources, published_date } = data;
+    const { image, autors, sources, published_date, inspectors } = data;
 
+    const t = await getTranslations({ locale, namespace: 'blog-details' });
     const b = await getTranslations({ locale, namespace: 'breadcrumbs.blog' });
 
     const title = getLocalizedValue(data, 'title', locale);
     const content = getLocalizedValue(data, 'content', locale);
-    const cleanContent = cleanHtml(content); 
+    const cleanContent = cleanHtml(content);
 
     const breadcrumbsItems = [
         {
@@ -62,13 +67,9 @@ export default async function Blog({ params }) {
             <article className={clss.blogPost}>
                 <section className={clss.blogPost__section}>
                     {title && <h1 className={clss.blogPost__title}>{title}</h1>}
-                    {published_date && 
+                    {published_date &&
                         <p className={clss.blogPost__date}>
-                            {new Intl.DateTimeFormat('ru-RU', {
-                                day: 'numeric',
-                                month: 'long',
-                                year: 'numeric',
-                            }).format(new Date(published_date))}
+                            {formatDate(published_date, locale)}
                         </p>
                     }
                     {autors?.length > 0 && (
@@ -76,14 +77,14 @@ export default async function Blog({ params }) {
                             <ul className={clss.blogPost__autorsList}>
                                 {autors.map((author) => (
                                     <li key={author?.id} className={clss.blogPost__author}>
-                                        {author?.image 
-                                            ? <img className={clss.blogPost__authorImage} src={author?.image} alt={author?.name} width={56} height={56} /> 
-                                            : <div className={clss.blogPost__authorImagePlaceholder}></div>
+                                        {author?.avatar
+                                            ? <Image className={clss.blogPost__authorImage} src={author?.avatar} alt={author?.first_name} width={56} height={56} />
+                                            : <Image className={clss.blogPost__authorImage} src={avaImgFallback} alt="Avatar" width={56} height={56} />
                                         }
 
                                         <div className={clss.blogPost__authorInfo}>
                                             <p className={clss.blogPost__authorName}>{author?.first_name} {author?.last_name}</p>
-                                            <p className={clss.blogPost__authorRole}>Автор</p>
+                                            <p className={clss.blogPost__authorRole}>{t('author.heading')}</p>
                                         </div>
                                     </li>
                                 ))}
@@ -93,21 +94,43 @@ export default async function Blog({ params }) {
                 </section>
 
                 <section className={clss.blogPost__section}>
-                    <img className={clss.blogPost__image} src={image} alt='' width={'100%'} height={532} loading='lazy'/>
+                    <Image className={clss.blogPost__image} src={image} alt='' width={930} height={532} loading='lazy' />
                 </section>
 
                 <section className={clss.blogPost__section}>
-                    <div className={clss.blogPost__content} dangerouslySetInnerHTML={{ __html: cleanContent }} />
+                    {inspectors?.length > 0 && (
+                        <div className={clss.blogPost__inspector}>
+                            <ul className={clss.blogPost__autorsList}>
+                                {inspectors.map((inspector) => (
+                                    <li key={inspector?.id} className={clss.blogPost__author}>
+                                        {inspector?.avatar
+                                            ? <Image className={clss.blogPost__authorImage} src={inspector?.avatar} alt={inspector?.first_name} width={56} height={56} />
+                                            : <Image className={clss.blogPost__authorImage} src={avaImgFallback} alt="Avatar" width={56} height={56} />
+                                        }
+
+                                        <div className={clss.blogPost__authorInfo}>
+                                            <p className={clss.blogPost__authorName}>{inspector?.first_name} {inspector?.last_name}</p>
+                                            <p className={clss.blogPost__authorRole}>{t('inspector.heading')}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </section>
+
+                <section className={clss.blogPost__section}>
+                    <div className={`${clss.blogPost__content} htmlContent`} dangerouslySetInnerHTML={{ __html: cleanContent }} />
                 </section>
 
                 <section className={clss.blogPost__section}>
                     {sources?.length > 0 && (
                         <>
-                            <h4 className={clss.blogPost__sourcesTitle}>Все источники</h4>
+                            <h4 className={clss.blogPost__sourcesTitle}>{t('sources.heading')}</h4>
                             <ul className={clss.blogPost__sourceList}>
                                 {sources.map((source) => (
                                     <li key={source.id}>
-                                        <a className={clss.blogPost__sourceLink} href={source?.file && '#'} target='_blank' rel='noopener noreferrer'>
+                                        <a className={clss.blogPost__sourceLink} href={source?.file} target='_blank' rel='noopener noreferrer'>
                                             {getLocalizedValue(source, 'name', locale)}
                                         </a>
                                     </li>
