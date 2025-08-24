@@ -59,3 +59,15 @@
     }
 
 }
+
+.mapWrapper {
+    margin-top: rem(24);
+    position: relative;
+    width: 100%;
+    height: rem(724);
+    border-radius: rem(16);
+
+    @include mobile {
+        height: rem(488);
+    }
+}

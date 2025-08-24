@@ -109,7 +109,7 @@ export async function generateMetadata({ params }) {
     const name = getLocalizedValue(data, 'name', locale);
     const term = getLocalizedValue(data.terms_topomyns, 'name', locale);
     const rawDescription = getLocalizedValue(data, 'description', locale);
-    const cleanDescription = stripHtmlTags(rawDescription);
+    const cleanDescription = stripHtmlTags(cleanHtml(rawDescription));
 
     return {
         title: `${name} - ${term} ${websiteTitle[locale]}`,
@@ -176,7 +176,7 @@ export default async function ToponymPage({ params }) {
     ];
 
     const description = getLocalizedValue(data, 'description', locale);
-    const cleanDescription = cleanHtml(stripHtmlTags(description));
+    const cleanDescription = cleanHtml(description);
     const term = getLocalizedValue(data?.terms_topomyns, 'name', locale);
     const termClassToponym = getLocalizedValue(data?.terms_topomyns?.class_toponym, 'name', locale);
     const termsClassParent = getLocalizedValue(data?.terms_topomyns?.class_toponym?.parent, 'name', locale);
@@ -226,7 +226,7 @@ export default async function ToponymPage({ params }) {
                             </ul>
 
                             {description && (
-                                <p className={clss.toponymDesc}>{cleanDescription}</p>
+                                <div className={clss.toponymDesc} dangerouslySetInnerHTML={{ __html: cleanDescription }}></div>
                             )}
                         </ToponymDetails>
                     </section>
@@ -235,15 +235,15 @@ export default async function ToponymPage({ params }) {
                         <ToponymDetails heading={t('official-naming.heading')} headingLevel={2}>
                             <div className={clss.toponymOfficialNaming}>
                                 <div className={clss.toponymOfficialNaming__wrapper}>
-                                    <div className={clss.toponym__label}>{officialNaming[locale]['ky']}</div>
+                                    <div className={clss.toponym__label}>{t(`official-naming.${locale}.ky`)}</div>
                                     <span className={clss.toponymOfficialNaming__value}>{kyOfficialName}</span>
                                 </div>
                                 <div className={clss.toponymOfficialNaming__wrapper}>
-                                    <div className={clss.toponym__label}>{officialNaming[locale]['ru']}</div>
+                                    <div className={clss.toponym__label}>{t(`official-naming.${locale}.ru`)}</div>
                                     <span className={clss.toponymOfficialNaming__value}>{ruOfficialName}</span>
                                 </div>
                                 <div className={clss.toponymOfficialNaming__wrapper}>
-                                    <div className={clss.toponym__label}>{officialNaming[locale]['en']}</div>
+                                    <div className={clss.toponym__label}>{t(`official-naming.${locale}.en`)}</div>
                                     <span className={clss.toponymOfficialNaming__value}>{enOfficialName}</span>
                                 </div>
                             </div>
@@ -386,15 +386,21 @@ export default async function ToponymPage({ params }) {
                                         const { day, month, year } = background;
                                         return (
                                             <div key={index} className={clss.toponymHistoricalBackground__info}>
-                                                <span className={clss.toponymHistoricalBackground__date}>{`${day}.${month}.${year}`}</span>
+                                                <span className={clss.toponymHistoricalBackground__date}>
+                                                    {[day, month, year].filter(Boolean).join('.')}
+                                                </span>
                                                 <details open className={clss.toponymHistoricalBackground__details}>
                                                     <summary className={clss.toponymHistoricalBackground__summary}>
-                                                        <Image className={clss.toponymHistoricalBackground__chevron} src={chevronIcon} alt="" width={12} height={7} />
+                                                        {getLocalizedValue(background, 'description', locale) && (
+                                                            <Image className={clss.toponymHistoricalBackground__chevron} src={chevronIcon} alt="" width={12} height={7} />
+                                                        )}
                                                         {getLocalizedValue(background, 'name', locale)}
                                                     </summary>
-                                                    <p className={clss.toponymHistoricalBackground__description}>
-                                                        {getLocalizedValue(background, 'description', locale)}
-                                                    </p>
+                                                    {getLocalizedValue(background, 'description', locale) && (
+                                                        <p className={clss.toponymHistoricalBackground__description}>
+                                                            {getLocalizedValue(background, 'description', locale)}
+                                                        </p>
+                                                    )}
                                                 </details>
                                             </div>
                                         );
