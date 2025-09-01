@@ -34,7 +34,7 @@ export const ToponymSources = ({ etymologies, locale }) => {
                                                     {source?.file ? (
                                                         <Link className={styles.toponymSourseces__sourceLink} href={source?.file} target="_blank" rel="noopener noreferrer">
                                                             <div className={styles.toponymSourseces__sourceFile}>
-                                                                <Image className={styles.toponymSourseces__sourceFileIcon} src={fileIcon} alt="" width={0} height={40} />
+                                                                <Image className={styles.toponymSourseces__sourceFileIcon} src={fileIcon} alt="" width={30} height={40} />
                                                                 {source.format_file && (
                                                                     <span className={`${styles.toponymSourseces__sourceFileFormat} ${source.format_file}`}>{source.format_file}</span>
                                                                 )}
@@ -43,7 +43,9 @@ export const ToponymSources = ({ etymologies, locale }) => {
                                                         </Link>
                                                     ) : (
                                                         <div className={styles.toponymSourseces__sourceText}>
-                                                            <div style={{maxWidth: '40px', width: '100%'}}></div>
+                                                            <div className={styles.toponymSourseces__sourceFileContainer}>
+                                                                <Image className={styles.toponymSourseces__sourceFileIcon} src={fileIcon} alt="" width={30} height={40} />
+                                                            </div>
                                                             <span>{getLocalizedValue(source, 'name', locale)}</span>
                                                         </div>
                                                     )}

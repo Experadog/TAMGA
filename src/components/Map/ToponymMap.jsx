@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from "react";
-import { MapContainer, Polygon, Polyline } from 'react-leaflet';
+import { MapContainer, Polygon, Polyline, CircleMarker } from 'react-leaflet';
 import { BoundaryCanvasTileLayer } from './BoundaryCanvasTileLayer';
 
 import FullScreenControl from './FullScreenControl';
@@ -31,32 +31,38 @@ export default function ToponymMap({ toponym, osmData }) {
     }, []);
 
     useEffect(() => {
-        if (osmData?.coords?.length > 0 && mapRef.current && isMapReady) {
+        if (mapRef.current && isMapReady) {
             const timeoutId = setTimeout(() => {
                 const map = mapRef.current;
                 
                 if (map && map.getContainer()) {
                     try {
-                        const coords = osmData.coords;
-                        const lats = coords.map(coord => coord[0]);
-                        const lngs = coords.map(coord => coord[1]);
-                        
-                        const minLat = Math.min(...lats);
-                        const maxLat = Math.max(...lats);
-                        const minLng = Math.min(...lngs);
-                        const maxLng = Math.max(...lngs);
-                        
-                        const bounds = [[minLat, minLng], [maxLat, maxLng]];
-                        map.fitBounds(bounds, { padding: [20, 20] });
+                        if (osmData?.coords?.length > 0) {
+                            // Фокусировка на OSM геометрии
+                            const coords = osmData.coords;
+                            const lats = coords.map(coord => coord[0]);
+                            const lngs = coords.map(coord => coord[1]);
+                            
+                            const minLat = Math.min(...lats);
+                            const maxLat = Math.max(...lats);
+                            const minLng = Math.min(...lngs);
+                            const maxLng = Math.max(...lngs);
+                            
+                            const bounds = [[minLat, minLng], [maxLat, maxLng]];
+                            map.fitBounds(bounds, { padding: [20, 20] });
+                        } else {
+                            // Фокусировка на точке топонима (для кружочка)
+                            map.setView([toponym.latitude, toponym.longitude], 12);
+                        }
                     } catch (error) {
-                        console.error('Error fitting bounds:', error);
+                        console.error('Error focusing map:', error);
                     }
                 }
             }, 200);
 
             return () => clearTimeout(timeoutId);
         }
-    }, [osmData, isMapReady]);
+    }, [osmData, isMapReady, toponym.latitude, toponym.longitude]);
 
     const handleMapReady = () => {
         setIsMapReady(true);
@@ -130,6 +136,21 @@ export default function ToponymMap({ toponym, osmData }) {
                             />
                         )}
                     </>
+                )}
+
+                {(!osmData?.coords?.length || osmData.elementType !== 'way') && isMapReady && (
+                    <CircleMarker
+                        center={[toponym.latitude, toponym.longitude]}
+                        radius={8}
+                        pathOptions={{
+                            color: "#0094EB",
+                            weight: 2,
+                            fill: true,
+                            fillColor: "#0094EB",
+                            fillOpacity: 0.7,
+                            stroke: true
+                        }}
+                    />
                 )}
             </MapContainer>
         </div>

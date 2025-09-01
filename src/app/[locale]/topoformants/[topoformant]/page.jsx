@@ -1,10 +1,8 @@
-import Image from 'next/image';
 import clss from './page.module.scss';
-import mapTestImg from '@/assets/images/map-test.png';
 import { ToponymDetails } from '../../[toponym]/_components/ToponymDetails';
+import SearchableMapClient from '@/components/Map/SearchableMapClient';
 import { getLocalizedValue, stripHtmlTags } from '@/lib/utils';
 import { getTranslations } from 'next-intl/server';
-import Link from 'next/link';
 
 export async function fetchData({ topoformant }) {
     try {
@@ -41,7 +39,11 @@ export default async function TopoformantPage({ params }) {
             <div className={clss.toponymWrapper}>
                 <article className={clss.toponymArticle}>
                     <section className={clss.toponymArticle__section}>
-                        <Image src={mapTestImg} width='930' height='auto' alt='' priority />
+                        <SearchableMapClient 
+                            searchTerm={getLocalizedValue(data, 'name', locale)}
+                            searchType="topoformant"
+                            locale={locale} 
+                        />
                     </section>
 
                     <section className={clss.toponymArticle__section}>
