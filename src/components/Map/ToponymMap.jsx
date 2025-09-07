@@ -39,14 +39,28 @@ export default function ToponymMap({ toponym, osmData }) {
                     try {
                         if (osmData?.coords?.length > 0) {
                             // Фокусировка на OSM геометрии
-                            const coords = osmData.coords;
-                            const lats = coords.map(coord => coord[0]);
-                            const lngs = coords.map(coord => coord[1]);
+                            let allLats = [];
+                            let allLngs = [];
                             
-                            const minLat = Math.min(...lats);
-                            const maxLat = Math.max(...lats);
-                            const minLng = Math.min(...lngs);
-                            const maxLng = Math.max(...lngs);
+                            if (osmData.isMultiPolygon) {
+                                // Handle multi-polygon (cities)
+                                osmData.coords.forEach(polygon => {
+                                    const lats = polygon.map(coord => coord[0]);
+                                    const lngs = polygon.map(coord => coord[1]);
+                                    allLats.push(...lats);
+                                    allLngs.push(...lngs);
+                                });
+                            } else {
+                                // Handle single polygon/polyline
+                                const coords = osmData.coords;
+                                allLats = coords.map(coord => coord[0]);
+                                allLngs = coords.map(coord => coord[1]);
+                            }
+                            
+                            const minLat = Math.min(...allLats);
+                            const maxLat = Math.max(...allLats);
+                            const minLng = Math.min(...allLngs);
+                            const maxLng = Math.max(...allLngs);
                             
                             const bounds = [[minLat, minLng], [maxLat, maxLng]];
                             map.fitBounds(bounds, { padding: [20, 20] });
@@ -110,6 +124,27 @@ export default function ToponymMap({ toponym, osmData }) {
                 <FullScreenControl />
                 <LocationControl />
 
+                {/* Render multi-polygon for relations (cities) */}
+                {osmData?.coords?.length > 0 && osmData.elementType === 'relation' && osmData.isMultiPolygon && isMapReady && (
+                    <>
+                        {osmData.coords.map((polygon, index) => (
+                            <Polygon
+                                key={index}
+                                positions={polygon}
+                                pathOptions={{
+                                    color: "#0094EB",
+                                    weight: 3,
+                                    fill: true,
+                                    fillColor: "#0094EB",
+                                    fillOpacity: 0.2,
+                                    stroke: true
+                                }}
+                            />
+                        ))}
+                    </>
+                )}
+
+                {/* Render single polygon/polyline for ways */}
                 {osmData?.coords?.length > 0 && osmData.elementType === 'way' && isMapReady && (
                     <>
                         {osmData.isClosedWay ? (
@@ -138,7 +173,8 @@ export default function ToponymMap({ toponym, osmData }) {
                     </>
                 )}
 
-                {(!osmData?.coords?.length || osmData.elementType !== 'way') && isMapReady && (
+                {/* Render circle marker when no OSM data or unsupported type */}
+                {(!osmData?.coords?.length || (osmData.elementType !== 'way' && osmData.elementType !== 'relation')) && isMapReady && (
                     <CircleMarker
                         center={[toponym.latitude, toponym.longitude]}
                         radius={8}

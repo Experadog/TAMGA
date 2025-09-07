@@ -32,11 +32,16 @@ export async function fetchData({ toponym }) {
     }
 }
 
-export async function fetchOSMData(osmId) {
+export async function fetchOSMData(osmId, isCity = false) {
     if (!osmId) return null;
     
     try {
-        const query = `
+        // If it's a city, fetch relation data for boundaries
+        const query = isCity ? `
+            [out:json];
+            relation(${osmId});
+            out geom;
+        ` : `
             [out:json];
             way(${osmId});
             out geom;
@@ -58,20 +63,51 @@ export async function fetchOSMData(osmId) {
         
         if (data.elements && data.elements.length > 0) {
             const element = data.elements[0];
-            const coords = element.geometry.map(p => [p.lat, p.lon]);
             
-            let isClosedWay = false;
-            if (coords.length > 2) {
-                const firstPoint = coords[0];
-                const lastPoint = coords[coords.length - 1];
-                isClosedWay = firstPoint[0] === lastPoint[0] && firstPoint[1] === lastPoint[1];
-            }
+            if (isCity && element.type === 'relation') {
+                // Handle relation data for cities
+                const outerWays = [];
+                
+                if (element.members) {
+                    // Find outer ways in the relation
+                    const outerMembers = element.members.filter(member => 
+                        member.type === 'way' && member.role === 'outer'
+                    );
+                    
+                    // Get geometry for outer ways
+                    for (const member of outerMembers) {
+                        if (member.geometry) {
+                            const coords = member.geometry.map(p => [p.lat, p.lon]);
+                            outerWays.push(coords);
+                        }
+                    }
+                }
+                
+                if (outerWays.length > 0) {
+                    return {
+                        coords: outerWays,
+                        elementType: 'relation',
+                        isMultiPolygon: true,
+                        isClosedWay: true
+                    };
+                }
+            } else if (!isCity && element.type === 'way') {
+                // Handle way data for non-cities (existing logic)
+                const coords = element.geometry.map(p => [p.lat, p.lon]);
+                
+                let isClosedWay = false;
+                if (coords.length > 2) {
+                    const firstPoint = coords[0];
+                    const lastPoint = coords[coords.length - 1];
+                    isClosedWay = firstPoint[0] === lastPoint[0] && firstPoint[1] === lastPoint[1];
+                }
 
-            return {
-                coords,
-                elementType: element.type,
-                isClosedWay
-            };
+                return {
+                    coords,
+                    elementType: element.type,
+                    isClosedWay
+                };
+            }
         }
         
         return null;
@@ -133,7 +169,10 @@ export default async function ToponymPage({ params }) {
     const data = await fetchData({ toponym });
     if (!data) throw new Error('Toponym data not found');
 
-    const osmData = await fetchOSMData(data.osm_id);
+    // Check if the toponym is a city based on terms_topomyns.name_en
+    const isCity = data.terms_topomyns?.name_en?.toLowerCase() === 'city';
+    
+    const osmData = await fetchOSMData(data.osm_id, isCity);
 
     const {
         region,
