@@ -19,8 +19,8 @@ export default function Analytics({ gaId }) {
       ? `${pathname}?${searchParams.toString()}`
       : pathname;
 
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('config', gaId, { page_path });
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('config', gaId, { page_path });
     }
   }, [gaId, pathname, searchParams]);
 

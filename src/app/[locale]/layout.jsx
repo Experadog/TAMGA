@@ -6,6 +6,7 @@ import { setRequestLocale } from "next-intl/server";
 import { Onest } from "next/font/google";
 import { notFound } from "next/navigation";
 import Script from "next/script";
+import { Suspense } from "react";
 import "../../assets/styles/main.scss";
 
 const onest = Onest({
@@ -58,7 +59,11 @@ export default async function RootLayout({ children, params }) {
       </head>
       <body className={onest.variable}>
         <NextIntlClientProvider>
-          {GA_ID ? <Analytics gaId={GA_ID} /> : null}
+          {GA_ID ? (
+            <Suspense fallback={null}>
+              <Analytics gaId={GA_ID} />
+            </Suspense>
+          ) : null}
           <Header locale={locale} />
           <main className="main container">{children}</main>
           {/* <Footer /> */}
