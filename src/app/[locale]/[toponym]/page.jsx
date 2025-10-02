@@ -1,25 +1,22 @@
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import mapTestImg from '@/assets/images/map-test.png';
 import { cleanHtml, getLocalizedValue, stripHtmlTags } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
 
-import clss from './page.module.scss'
-import { ToponymDetails } from "./_components/ToponymDetails";
-import { ToponymHierarchy } from "./_components/ToponymHierarchy/ToponymHierarchy";
 import { getTranslations } from "next-intl/server";
 import { ToponymAsideItem } from "./_components/ToponymAsideItem";
+import { ToponymDetails } from "./_components/ToponymDetails";
 import { ToponymEtymology } from "./_components/ToponymEtymology";
+import { ToponymHierarchy } from "./_components/ToponymHierarchy/ToponymHierarchy";
 import { ToponymSources } from "./_components/ToponymSources";
+import clss from './page.module.scss';
 
-import arrowIcon from '@/assets/icons/arrow.svg';
+import chevronIcon from '@/assets/icons/chevron.svg';
 import coordinatesIcon from '@/assets/icons/coordinates.svg';
 import twoArrowsIcon from '@/assets/icons/two-arrow.svg';
-import chevronIcon from '@/assets/icons/chevron.svg';
-import { headers } from "next/headers";
-import { ToponymPernamentLink } from "./_components/ToponymPernamentLink/ToponymPernamentLink";
-import ClientMapWrapper from "./_components/ClientMapWrapper";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { headers } from "next/headers";
+import ClientMapWrapper from "./_components/ClientMapWrapper";
+import { ToponymPernamentLink } from "./_components/ToponymPernamentLink/ToponymPernamentLink";
 
 export async function fetchData({ toponym }) {
     try {
@@ -34,7 +31,7 @@ export async function fetchData({ toponym }) {
 
 export async function fetchOSMData(osmId, isCity = false) {
     if (!osmId) return null;
-    
+
     try {
         // If it's a city, fetch relation data for boundaries
         const query = isCity ? `
@@ -60,20 +57,20 @@ export async function fetchOSMData(osmId, isCity = false) {
         }
 
         const data = await response.json();
-        
+
         if (data.elements && data.elements.length > 0) {
             const element = data.elements[0];
-            
+
             if (isCity && element.type === 'relation') {
                 // Handle relation data for cities
                 const outerWays = [];
-                
+
                 if (element.members) {
                     // Find outer ways in the relation
-                    const outerMembers = element.members.filter(member => 
+                    const outerMembers = element.members.filter(member =>
                         member.type === 'way' && member.role === 'outer'
                     );
-                    
+
                     // Get geometry for outer ways
                     for (const member of outerMembers) {
                         if (member.geometry) {
@@ -82,7 +79,7 @@ export async function fetchOSMData(osmId, isCity = false) {
                         }
                     }
                 }
-                
+
                 if (outerWays.length > 0) {
                     return {
                         coords: outerWays,
@@ -94,7 +91,7 @@ export async function fetchOSMData(osmId, isCity = false) {
             } else if (!isCity && element.type === 'way') {
                 // Handle way data for non-cities (existing logic)
                 const coords = element.geometry.map(p => [p.lat, p.lon]);
-                
+
                 let isClosedWay = false;
                 if (coords.length > 2) {
                     const firstPoint = coords[0];
@@ -109,7 +106,7 @@ export async function fetchOSMData(osmId, isCity = false) {
                 };
             }
         }
-        
+
         return null;
     } catch (error) {
         console.error('Error fetching OSM data:', error);
@@ -161,7 +158,7 @@ export default async function ToponymPage({ params }) {
     const protocol = headersList.get('x-forwarded-proto') || 'http';
 
     const fullPath = `${protocol}://${host}/${params.locale}/${params.toponym}`;
-    
+
     const t = await getTranslations({ locale, namespace: 'toponym' });
     const l = await getTranslations({ locale, namespace: 'link' });
     const b = await getTranslations({ locale, namespace: 'breadcrumbs.toponym' });
@@ -171,7 +168,7 @@ export default async function ToponymPage({ params }) {
 
     // Check if the toponym is a city based on terms_topomyns.name_en
     const isCity = data.terms_topomyns?.name_en?.toLowerCase() === 'city';
-    
+
     const osmData = await fetchOSMData(data.osm_id, isCity);
 
     const {
@@ -293,11 +290,32 @@ export default async function ToponymPage({ params }) {
                         <section className={clss.toponymArticle__section}>
                             <ToponymDetails heading={t('plast.heading')} headingLevel={2}>
                                 <ul className={clss.toponymPlastList}>
-                                    {plast.map(plastItem => (
-                                        <li key={plastItem.name_ky} className={clss.toponymPlast}>
-                                            <span className={clss.toponym__label}>{getLocalizedValue(plastItem, 'name', locale)}</span>
-                                        </li>
-                                    ))}
+                                    {plast.map((plastItem) => {
+                                        const parentName = plastItem.parent
+                                            ? getLocalizedValue(plastItem.parent, 'name', locale)
+                                            : null;
+
+                                        const childName = getLocalizedValue(plastItem, 'name', locale);
+                                        const isSublayer = Boolean(parentName);
+                                        const sublayerLabel =
+                                            ({ ru: 'подпласт', ky: 'субкатмары', en: 'sublayer' }[locale]) ||
+                                            'sublayer';
+
+                                        return (
+                                            <li key={plastItem.name_ky} className={clss.toponymPlast}>
+                                                {isSublayer && (
+                                                    <span className={clss.toponym__label}>{parentName}</span>
+                                                )}
+
+                                                <span className={clss.toponym__label}>
+                                                    {childName}
+                                                    {isSublayer && (
+                                                        <span className={clss.toponym__labelNote}> — {sublayerLabel}</span>
+                                                    )}
+                                                </span>
+                                            </li>
+                                        );
+                                    })}
                                 </ul>
                             </ToponymDetails>
                         </section>
@@ -306,7 +324,7 @@ export default async function ToponymPage({ params }) {
                     {etymologies?.length > 0 && (
                         <section className={clss.toponymArticle__section}>
                             <ToponymDetails heading={t('etymology-naming.heading')} headingLevel={2}>
-                                <ToponymEtymology 
+                                <ToponymEtymology
                                     etymologies={etymologies}
                                     locale={locale}
                                     l={l}
@@ -321,14 +339,14 @@ export default async function ToponymPage({ params }) {
                                 {topoformants.map((topoformant, index) => {
                                     const mainName = getLocalizedValue(topoformant, 'name', locale);
                                     const description = getLocalizedValue(topoformant, 'description', locale);
-                                    
+
                                     const affixes = topoformant?.affixes || [];
-                                    
+
                                     return (
                                         <div key={topoformant.id || index} className={clss.toponymTopoformant}>
                                             <div className={clss.toponymTopoformant__header}>
                                                 {mainName}
-                                                
+
                                                 {affixes.length > 0 && (
                                                     <span className={clss.toponymTopoformant__affixes}>
                                                         {affixes.map((affix, affixIndex) => {
@@ -342,7 +360,7 @@ export default async function ToponymPage({ params }) {
                                                     </span>
                                                 )}
                                             </div>
-                                            
+
                                             {description && (
                                                 <p className={clss.toponymDesc}>
                                                     {description}
@@ -353,7 +371,7 @@ export default async function ToponymPage({ params }) {
                                 })}
                             </ToponymDetails>
                         </section>
-                    )} 
+                    )}
                     {latitude && longitude && (
                         <section className={clss.toponymArticle__section}>
                             <ToponymDetails heading={t('coordinates.heading')} headingLevel={2}>
@@ -449,22 +467,22 @@ export default async function ToponymPage({ params }) {
                         </section>
                     )}
 
-                    {etymologies?.length > 0 && etymologies.some(etymology => 
+                    {etymologies?.length > 0 && etymologies.some(etymology =>
                         etymology.dictionaries?.some(dict => dict.sources?.length > 0)
                     ) && (
-                        <section className={clss.toponymArticle__section}>
-                            <ToponymDetails heading={t('source.heading')} headingLevel={2}>
-                                <ToponymSources 
-                                    etymologies={etymologies}
-                                    locale={locale}
-                                />
-                            </ToponymDetails>
-                        </section>
-                    )}
+                            <section className={clss.toponymArticle__section}>
+                                <ToponymDetails heading={t('source.heading')} headingLevel={2}>
+                                    <ToponymSources
+                                        etymologies={etymologies}
+                                        locale={locale}
+                                    />
+                                </ToponymDetails>
+                            </section>
+                        )}
 
                     <section className={clss.toponymArticle__section}>
                         <ToponymDetails heading={t('pernament-link.heading')} headingLevel={2}>
-                            <ToponymPernamentLink fullPath={fullPath}/>
+                            <ToponymPernamentLink fullPath={fullPath} />
                         </ToponymDetails>
                     </section>
                 </article>

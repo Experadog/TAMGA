@@ -77,7 +77,8 @@ button {
     text-transform: uppercase;
 }
 
-.jpg, .jpeg {
+.jpg,
+.jpeg {
     background-color: #0094eb;
     text-transform: uppercase;
 }
@@ -85,4 +86,43 @@ button {
 .bmp {
     background-color: #0094eb;
     text-transform: uppercase;
+}
+
+/* не прячем цель под фикс-хедером */
+[id^='source-'] {
+    scroll-margin-top: 96px;
+    outline: none;
+}
+
+/* подсвечиваем только текст внутри цели */
+:target [data-highlight-text] {
+    animation: highlight-pulse 2.2s ease-out;
+    border-radius: 8px;
+    background: rgba(0, 148, 235, 0.18);
+    box-shadow: 0 0 0 2px rgba(0, 148, 235, 0.65);
+}
+
+/* доступность — без анимаций */
+@media (prefers-reduced-motion: reduce) {
+    :target [data-highlight-text] {
+        animation: none;
+    }
+}
+
+/* кейфреймы глобальные, чтобы работали везде */
+@keyframes highlight-pulse {
+    0% {
+        background: rgba(0, 148, 235, 0.35);
+        box-shadow: 0 0 0 2px rgba(0, 148, 235, 0.65);
+    }
+
+    60% {
+        background: rgba(0, 148, 235, 0.18);
+        box-shadow: 0 0 0 1px rgba(0, 148, 235, 0.35);
+    }
+
+    100% {
+        background: transparent;
+        box-shadow: none;
+    }
 }

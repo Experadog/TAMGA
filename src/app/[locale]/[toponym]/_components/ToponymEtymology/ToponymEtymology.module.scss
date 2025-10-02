@@ -11,6 +11,11 @@
     margin-right: rem(16);
 }
 
+.toponym__labelDialect {
+    font-style: italic;
+    font-synthesis: style;
+}
+
 .toponymEtymology {
     &__heading {
         display: inline-block;
@@ -20,7 +25,7 @@
         padding: rem(8) rem(32);
         background: var(--color-blue-20);
         color: var(--color-dark);
-        opacity: 0.78;
+        opacity: var(--color-gray-90);
         margin-top: rem(16);
 
         @include mobile {
@@ -50,7 +55,7 @@
         font-weight: 500;
         font-size: 16px;
         color: #000;
-        opacity: 0.78;
+        opacity: var(--color-gray-90);
 
         @include tablet {
             // flex-direction: column;
@@ -107,5 +112,75 @@
 
     &__arrow {
         height: rem(12);
+    }
+}
+
+.sourceTextOnly {
+    display: inline-block;
+    line-height: 1.25;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+/* Обёртка одного бейджа языка + его тултип */
+.langBadge {
+    position: relative;
+    display: inline-block;
+
+    /* показать тултип по hover и по фокусу внутри */
+    &:hover .langBadge__tooltip,
+    &:focus-within .langBadge__tooltip {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(rem(2));
+        transition: opacity .18s ease, transform .18s ease;
+    }
+}
+
+/* Сам тултип */
+.langBadge__tooltip {
+    position: absolute;
+    left: 0;
+    top: rem(48);
+    transform: translateY(rem(6));
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .18s ease, transform .18s ease, visibility 0s linear .18s;
+    z-index: 20;
+
+    max-width: min(44ch, 80vw);
+    padding: rem(10) rem(12);
+    border-radius: rem(8);
+    background: var(--color-dark);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .22);
+    line-height: 1.4;
+    font-size: rem(14);
+    white-space: normal;
+
+    /* маленькая стрелочка */
+    &::before {
+        content: '';
+        position: absolute;
+        left: rem(14);
+        top: 0;
+        transform: translateY(-50%) rotate(45deg);
+        width: rem(10);
+        height: rem(10);
+        background: var(--color-dark);
+        border-radius: 2px;
+    }
+}
+
+/* если бейджи идут в одну линию внутри flex-родителя,
+   можно позволить им переноситься */
+.toponymEtymology__dictionary {
+    flex-wrap: wrap;
+}
+
+/* анимации по доступности */
+@media (prefers-reduced-motion: reduce) {
+    .langBadge__tooltip {
+        transition: none;
     }
 }

@@ -17,7 +17,7 @@
 
     &__logo {
         display: flex;
-        align-items: flex-end;
+        align-items: center;
         column-gap: rem(9);
 
         &:hover {
@@ -31,16 +31,17 @@
     }
 
     &__img {
-        width: auto;
+        width: rem(122);
+        height: rem(26);
 
         @include tablet {
-            height: rem(27);
-            width: rem(32);
+            width: rem(112);
+            height: rem(24);
         }
 
         @include mobile {
-            height: rem(22);
-            width: rem(37);
+            width: rem(112);
+            height: rem(24);
         }
     }
 

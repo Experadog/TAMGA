@@ -3,11 +3,11 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
-import styles from './index.module.scss';
+import burgerIcon from '@/assets/icons/burger.svg';
 import cancelIcon from '@/assets/icons/cancel.svg';
-import burgerIcon from '@/assets/icons/burger.svg'
-import useMediaQuery from '@/lib/hooks/useMediaQuery';
 import { Link } from '@/i18n/navigation';
+import useMediaQuery from '@/lib/hooks/useMediaQuery';
+import styles from './index.module.scss';
 
 function BurgerMenu({ items }) {
     const [isMounted, setIsMounted] = useState(false);
@@ -54,20 +54,25 @@ function BurgerMenu({ items }) {
                             >
                                 <Image src={cancelIcon} width={14} height={14} alt='' />
                             </button>
-                            <Link 
-                                href='/' 
+                            <Link
+                                href='/'
                                 onClick={() => setOpen(false)}
                                 className={styles.burger__logo}
                             >
-                                <Image src='/logo.svg' width={35} height={30} alt='KG Map Logo' />
-                                <span className={styles.burger__title}>KG Map</span>
+                                <Image
+                                    src='/logo.svg'
+                                    width={112}
+                                    height={24}
+                                    alt='Logo'
+                                    sizes="112px"
+                                />
                             </Link>
                         </div>
                         <ul className={styles.burger__menu}>
                             {items.length > 1 &&
                                 items.map((item, idx) => (
                                     <li key={idx} className={styles.burger__menuItem}>
-                                        <Link 
+                                        <Link
                                             className={styles.burger__menuLink}
                                             href={item.path}
                                             onClick={(e) => {

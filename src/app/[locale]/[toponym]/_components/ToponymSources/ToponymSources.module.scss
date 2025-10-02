@@ -10,7 +10,6 @@
         font-weight: 400;
         font-size: rem(16);
         color: var(--color-dark-20)
-
     }
 
     &__sourceFile {
@@ -60,4 +59,11 @@
         padding: 3px 2px;
         border-radius: 2px;
     }
+}
+
+.sourceTextOnly {
+    display: inline-block;
+    line-height: 1.25;
+    padding: 4px 8px;
+    border-radius: 8px;
 }
