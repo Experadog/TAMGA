@@ -1,6 +1,6 @@
+import chevron from '@/assets/icons/chevron.svg';
+import Image from "next/image";
 import { ToponymHeading } from "../ToponymHeading.jsx";
-import chevron from '@/assets/icons/chevron.svg'
-import Image from "next/image.js";
 
 import clss from './index.module.scss';
 
