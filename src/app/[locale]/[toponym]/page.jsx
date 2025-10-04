@@ -297,21 +297,15 @@ export default async function ToponymPage({ params }) {
 
                                         const childName = getLocalizedValue(plastItem, 'name', locale);
                                         const isSublayer = Boolean(parentName);
-                                        const sublayerLabel =
-                                            ({ ru: 'подпласт', ky: 'субкатмары', en: 'sublayer' }[locale]) ||
-                                            'sublayer';
 
                                         return (
                                             <li key={plastItem.name_ky} className={clss.toponymPlast}>
                                                 {isSublayer && (
                                                     <span className={clss.toponym__label}>{parentName}</span>
                                                 )}
-
-                                                <span className={clss.toponym__label}>
+                                                <span className={`${clss.toponym__label} ${isSublayer ? clss.toponym__labelChild : ''}`}>
                                                     {childName}
-                                                    {isSublayer && (
-                                                        <span className={clss.toponym__labelNote}> — {sublayerLabel}</span>
-                                                    )}
+
                                                 </span>
                                             </li>
                                         );

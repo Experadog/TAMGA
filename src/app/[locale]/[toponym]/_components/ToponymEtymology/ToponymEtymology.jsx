@@ -1,6 +1,6 @@
-import arrowIcon from '@/assets/icons/arrow.svg';
+// import linkIcon from '@/assets/icons/link-icon.svg';
+// import Image from 'next/image';
 import { cleanHtml, getLocalizedValue } from '@/lib/utils';
-import Image from 'next/image';
 import React from 'react';
 import styles from './ToponymEtymology.module.scss';
 
@@ -20,69 +20,80 @@ export const ToponymEtymology = ({ etymologies, locale, l }) => {
                         {description && <div className={styles.toponymEtymology__desc} dangerouslySetInnerHTML={{ __html: cleanDescription }}></div>}
                         {etymology?.dictionaries?.length > 0 && (
                             <ul className={styles.toponymEtymology__dictionaries}>
-                                {etymology.dictionaries.map((dict, dictIndex) => {
-                                    const targetId = `source-${dict.id}-${dictIndex}`;
-                                    return (
-                                        <li className={styles.toponymEtymology__dictionary} key={dictIndex}>
-
-                                            {/* <span className={styles.toponym__label}>{getLocalizedValue(dict?.language, 'name', locale)}</span> */}
-
-                                            {dict?.dialects_speech?.map((dial, dialIndex) => (
-                                                <span key={dialIndex} className={`${styles.toponym__label} ${styles.toponym__labelDialect}`}>{getLocalizedValue(dial, 'name', locale)}</span>
-                                            ))}
-                                            {[...(dict?.languages ?? [])]
-                                                .sort((a, b) => {
-                                                    const va = Number(a?.order_by);
-                                                    const vb = Number(b?.order_by);
-                                                    const aa = Number.isFinite(va) ? va : Infinity;
-                                                    const bb = Number.isFinite(vb) ? vb : Infinity;
-                                                    return aa - bb;
+                                {[...(etymology.dictionaries ?? [])]
+                                    .sort((d1, d2) => {
+                                        const minOrder = (d) => {
+                                            const list = d?.languages ?? [];
+                                            if (!list.length) return Number.POSITIVE_INFINITY;
+                                            return Math.min(
+                                                ...list.map((l) => {
+                                                    const n = Number(l?.order_by);
+                                                    return Number.isFinite(n) ? n : Number.POSITIVE_INFINITY;
                                                 })
-                                                .map((lang, langIndex) => {
-                                                    const langName = getLocalizedValue(lang, 'name', locale);
-                                                    const langDesc = getLocalizedValue(lang, 'description', locale);
-                                                    const descId = `lang-desc-${dictIndex}-${langIndex}`;
+                                            );
+                                        };
+                                        return minOrder(d1) - minOrder(d2);
+                                    }).map((dict, dictIndex) => {
+                                        const targetId = `source-${dict.id}`;
+                                        return (
+                                            <li className={styles.toponymEtymology__dictionary} key={dictIndex}>
+                                                <div className={styles.toponymEtymology__dictionary__elements}>
+                                                    {[...(dict?.languages ?? [])]
+                                                        .sort((a, b) => {
+                                                            const va = Number(a?.order_by);
+                                                            const vb = Number(b?.order_by);
+                                                            const aa = Number.isFinite(va) ? va : Infinity;
+                                                            const bb = Number.isFinite(vb) ? vb : Infinity;
+                                                            return aa - bb;
+                                                        })
+                                                        .map((lang, langIndex) => {
+                                                            const langName = getLocalizedValue(lang, 'name', locale);
+                                                            const langDesc = getLocalizedValue(lang, 'description', locale);
+                                                            const descId = `lang-desc-${dictIndex}-${langIndex}`;
 
-                                                    return (
-                                                        <div
-                                                            key={lang?.id ?? `${langIndex}-${lang?.order_by ?? 'x'}`}
-                                                            className={styles.langBadge}
-                                                            {...(langDesc ? { 'aria-describedby': descId } : {})}
-                                                        >
-                                                            <span className={styles.toponym__label} tabIndex={langDesc ? 0 : -1}>
-                                                                {langName}
-                                                            </span>
+                                                            return (
+                                                                <div
+                                                                    key={lang?.id ?? `${langIndex}-${lang?.order_by ?? 'x'}`}
+                                                                    className={styles.langBadge}
+                                                                    {...(langDesc ? { 'aria-describedby': descId } : {})}
+                                                                >
+                                                                    <span className={styles.toponym__label} tabIndex={langDesc ? 0 : -1}>
+                                                                        {langName}
+                                                                    </span>
 
-                                                            {langDesc && (
-                                                                <span id={descId} role="tooltip" className={styles.langBadge__tooltip}>
-                                                                    {langDesc}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })}
-                                            {dict?.transcription && <span className={styles.toponymEtymology__transcription}>[{dict.transcription}]</span>}
-                                            {dict?.translations?.length > 0 && (
-                                                <ul className={styles.toponymEtymology__translations}>
-                                                    {dict.translations.map((translation, transIndex) => (
-                                                        <li key={transIndex}>
-                                                            <span>{getLocalizedValue(translation, 'name', locale)}{transIndex < dict.translations.length - 1 ? ';' : ''}</span>
-                                                        </li>
+                                                                    {langDesc && (
+                                                                        <span id={descId} role="tooltip" className={styles.langBadge__tooltip}>
+                                                                            {langDesc}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    {dict?.dialects_speech?.map((dial, dialIndex) => (
+                                                        <span key={dialIndex} className={`${styles.toponym__label} ${styles.toponym__labelDialect}`}>{getLocalizedValue(dial, 'name', locale)}</span>
                                                     ))}
-                                                </ul>
-                                            )}
-                                            {dict?.sources?.some(source => getLocalizedValue(source, 'name', locale)) && (
-                                                <a
-                                                    className={styles.toponymEtymology__link}
-                                                    href={`#${targetId}`}
-                                                >
-                                                    {l('source')}
-                                                    <Image className={styles.toponymEtymology__arrow} src={arrowIcon} width='12' height='12' alt='' />
-                                                </a>
-                                            )}
-                                        </li>
-                                    )
-                                })}
+                                                    {dict?.transcription && <span className={styles.toponymEtymology__transcription}>[{dict.transcription}]</span>}
+                                                </div>
+                                                <div className={styles.toponymEtymology__parent}>
+                                                    {dict?.translations?.length > 0 && (
+                                                        <ul className={styles.toponymEtymology__translations}>
+                                                            {dict.translations.map((translation, transIndex) => (
+                                                                <li key={transIndex}>
+                                                                    <span className={styles.toponymEtymology__translations__el}>{getLocalizedValue(translation, 'name', locale)}{transIndex < dict.translations.length - 1 ? ';' : ''}</span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    )}
+                                                    {Array.isArray(dict?.sources) &&
+                                                        dict.sources.some(s => typeof s?.source?.name === 'string' && s.source.name.trim() !== '') && (
+                                                            <a className={styles.toponymEtymology__link} href={`#${targetId}`}>
+                                                                <span className={styles.toponymEtymology__arrowMask} />
+                                                            </a>
+                                                        )}
+                                                </div>
+                                            </li>
+                                        )
+                                    })}
                             </ul>
                         )}
                     </React.Fragment>

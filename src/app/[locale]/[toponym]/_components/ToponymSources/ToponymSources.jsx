@@ -24,7 +24,7 @@ export const ToponymSources = ({ etymologies, locale }) => {
                         {dictionaries.map((dict, dictIndex) => {
                             const { sources } = dict;
                             if (!sources?.length) return null;
-                            const groupId = `source-${dict.id}-${dictIndex}`;
+                            const groupId = `source-${dict.id}`;
 
                             return (
                                 <div
@@ -37,6 +37,10 @@ export const ToponymSources = ({ etymologies, locale }) => {
                                         <div className={styles.toponymSourseces__dictionariesItem}>
                                             {sources.map((source, sourceIndex) => {
                                                 const itemId = `source-${dict.id}-${dictIndex}-${sourceIndex}`;
+
+                                                const page = getLocalizedValue(source, 'name', locale) || '';
+                                                const sourceName = source?.source?.name || '';
+                                                const label = page ? `${sourceName}${sourceName ? ', ' : ''}${page}` : sourceName;
                                                 return (
                                                     <div id={itemId} key={sourceIndex} className={styles.toponymSourseces__source}>
                                                         {source?.file ? (
@@ -48,9 +52,7 @@ export const ToponymSources = ({ etymologies, locale }) => {
                                                                     )}
                                                                 </div>
                                                                 <span data-highlight-text className={styles.sourceTextOnly}>
-                                                                    {source.source?.name &&
-                                                                        `${source.source?.name}, ${getLocalizedValue(source, 'name', locale)}`
-                                                                    }
+                                                                    {label}
                                                                 </span>
                                                             </Link>
                                                         ) : (
@@ -59,7 +61,7 @@ export const ToponymSources = ({ etymologies, locale }) => {
                                                                     <Image className={styles.toponymSourseces__sourceFileIcon} src={fileIcon} alt="" width={30} height={40} />
                                                                 </div>
                                                                 <span data-highlight-text className={styles.sourceTextOnly}>
-                                                                    {getLocalizedValue(source, 'name', locale)}
+                                                                    {label}
                                                                 </span>
                                                             </div>
                                                         )}

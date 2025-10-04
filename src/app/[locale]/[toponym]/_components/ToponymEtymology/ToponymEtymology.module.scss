@@ -57,6 +57,13 @@
         color: #000;
         opacity: var(--color-gray-90);
 
+        &__elements {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: rem(16) 0;
+        }
+
         @include tablet {
             // flex-direction: column;
             // align-items: flex-start;
@@ -64,11 +71,11 @@
         }
 
         @include mobile {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: rem(8);
-            padding-bottom: rem(8);
-            border-bottom: 1px solid var(--color-text-border);
+            // flex-direction: column;
+            // align-items: flex-start;
+            // gap: rem(8);
+            // padding-bottom: rem(8);
+            // border-bottom: 1px solid var(--color-text-border);
         }
     }
 
@@ -76,24 +83,33 @@
         font-weight: 700;
         margin-right: rem(16);
         opacity: 1;
+        white-space: nowrap;
 
-        @include mobile {
-            padding-left: rem(16);
-        }
+        // @include mobile {
+        //     padding-left: rem(16);
+        // }
+    }
+
+    &__parent {
+        display: flex;
+        align-items: flex-end;
     }
 
     &__translations {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         gap: rem(16);
         margin-right: rem(16);
 
         @include mobile {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: rem(8);
-            padding-left: rem(16);
+            // flex-direction: column;
+            // align-items: flex-start;
+            // gap: rem(8);
+            // padding-left: rem(16);
         }
+
+
     }
 
     &__link {
@@ -104,14 +120,28 @@
         font-size: rem(16);
         color: var(--color-accent-light);
         opacity: 0.78;
+        padding-bottom: rem(5);
 
-        @include mobile {
-            padding-left: rem(16);
-        }
+        // @include mobile {
+        //     padding-left: rem(16);
+        // }
     }
 
-    &__arrow {
-        height: rem(12);
+    // &__arrow {
+    //     height: rem(12);
+    //     color: #0094EB;
+    //     fill: #0094EB;
+    // }
+
+    &__arrowMask {
+        width: rem(14);
+        height: rem(14);
+        display: inline-block;
+        background-color: #0094EB;
+
+        /* путь до твоего svg */
+        -webkit-mask: url('/icons/link-icon.svg') no-repeat center / contain;
+        mask: url('/icons/link-icon.svg') no-repeat center / contain;
     }
 }
 
@@ -125,7 +155,9 @@
 /* Обёртка одного бейджа языка + его тултип */
 .langBadge {
     position: relative;
-    display: inline-block;
+    display: flex;
+    flex-wrap: wrap;
+    gap: rem(16) 0;
 
     /* показать тултип по hover и по фокусу внутри */
     &:hover .langBadge__tooltip,
@@ -176,6 +208,7 @@
    можно позволить им переноситься */
 .toponymEtymology__dictionary {
     flex-wrap: wrap;
+    gap: rem(15) 0
 }
 
 /* анимации по доступности */
