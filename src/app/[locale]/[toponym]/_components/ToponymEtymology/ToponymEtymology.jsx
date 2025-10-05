@@ -17,7 +17,12 @@ export const ToponymEtymology = ({ etymologies, locale, l }) => {
                 return (
                     <React.Fragment key={index}>
                         {name && <span className={styles.toponymEtymology__heading}>{name}</span>}
-                        {description && <div className={styles.toponymEtymology__desc} dangerouslySetInnerHTML={{ __html: cleanDescription }}></div>}
+                        {description && (
+                            <div
+                                className={styles.toponymEtymology__desc}
+                                dangerouslySetInnerHTML={{ __html: cleanDescription }}
+                            ></div>
+                        )}
                         {etymology?.dictionaries?.length > 0 && (
                             <ul className={styles.toponymEtymology__dictionaries}>
                                 {[...(etymology.dictionaries ?? [])]

@@ -1,12 +1,12 @@
-import clss from './page.module.scss';
-import { ToponymDetails } from '../../[toponym]/_components/ToponymDetails';
-import { ToponymEtymology } from '../../[toponym]/_components/ToponymEtymology';
-import { ToponymSources } from '../../[toponym]/_components/ToponymSources';
-import { ToponymPernamentLink } from '../../[toponym]/_components/ToponymPernamentLink/ToponymPernamentLink';
 import SearchableMapClient from '@/components/Map/SearchableMapClient';
 import { getLocalizedValue, stripHtmlTags } from '@/lib/utils';
 import { getTranslations } from 'next-intl/server';
 import { headers } from "next/headers";
+import { ToponymDetails } from '../../[toponym]/_components/ToponymDetails';
+import { ToponymEtymology } from '../../[toponym]/_components/ToponymEtymology';
+import { ToponymPernamentLink } from '../../[toponym]/_components/ToponymPernamentLink/ToponymPernamentLink';
+import { ToponymSources } from '../../[toponym]/_components/ToponymSources';
+import clss from './page.module.scss';
 
 export async function fetchData({ etymology }) {
     try {
@@ -49,17 +49,20 @@ export default async function EtymologyPage({ params }) {
             <div className={clss.toponymWrapper}>
                 <article className={clss.toponymArticle}>
                     <section className={clss.toponymArticle__section}>
-                        <SearchableMapClient 
+                        <SearchableMapClient
                             searchTerm={getLocalizedValue(data, 'name', locale)}
                             searchType="etymology"
-                            locale={locale} 
+                            locale={locale}
                         />
                     </section>
 
                     <section className={clss.toponymArticle__section}>
                         <ToponymDetails heading={headings.join(', ')} headingLevel={1}>
                             {description && (
-                                <p className={clss.toponymDesc}>{cleanDescription}</p>
+                                <div
+                                    className={clss.toponymDesc}
+                                    dangerouslySetInnerHTML={{ __html: cleanDescription }}
+                                ></div>
                             )}
                         </ToponymDetails>
                     </section>
@@ -86,7 +89,7 @@ export default async function EtymologyPage({ params }) {
                     )}
 
                     <ToponymDetails heading={t('pernament-link.heading')} headingLevel={2}>
-                        <ToponymPernamentLink fullPath={fullPath}/>
+                        <ToponymPernamentLink fullPath={fullPath} />
                     </ToponymDetails>
                 </article>
             </div>
