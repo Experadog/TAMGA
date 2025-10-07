@@ -3,7 +3,7 @@ import { Header } from "@/components/Header";
 import { routing } from "@/i18n/routing";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
-import { Onest } from "next/font/google";
+// import { Onest } from "next/font/google";
 import { notFound } from "next/navigation";
 import Script from "next/script";
 import { Suspense } from "react";
@@ -27,10 +27,7 @@ export const metadata = {
   },
 };
 
-const onest = Onest({
-  variable: "--font-onest",
-  subsets: ["latin"],
-});
+// const onest = Onest({ variable: "--font-onest", subsets: ["latin"] });
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID
 
@@ -75,7 +72,8 @@ export default async function RootLayout({ children, params }) {
           </>
         ) : null}
       </head>
-      <body className={onest.variable}>
+      {/* <body className={onest.variable}> */}
+      <body className="font-onest">
         <NextIntlClientProvider>
           {GA_ID ? (
             <Suspense fallback={null}>

@@ -1,3 +1,4 @@
+import { routing } from "@/i18n/routing";
 import { cleanHtml, getLocalizedValue, stripHtmlTags } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,6 +18,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { headers } from "next/headers";
 import ClientMapWrapper from "./_components/ClientMapWrapper";
 import { ToponymPernamentLink } from "./_components/ToponymPernamentLink/ToponymPernamentLink";
+
 
 export async function fetchData({ toponym }) {
     try {
@@ -120,35 +122,75 @@ export async function generateMetadata({ params }) {
     const data = await fetchData({ toponym });
     if (!data) { throw new Error('Toponym data not found') }
 
-    const websiteTitle = {
+    const siteUrl =
+        process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
+    const pathname = `/${locale}/${toponym}`;
+    const absoluteUrl = `${siteUrl}${pathname}`;
+
+    const defaultTitle = {
         ky: 'Тамга - Кыргызстандагы: географиялык объекттердин аталыштарынын тарыхы | tamga.kg',
         ru: 'Тамга - в Кыргызстане: происхождение, легенды, исторические записи | tamga.kg',
         en: 'Tamga - History of geographical object names in Kyrgyzstan | tamga.kg'
     };
 
-    const webSiteDescription = {
-        historyNaming: {
-            ky: 'Аталышынын тарыхы',
-            ru: 'история названия',
-            en: 'History of naming'
-        },
-        legendsAndScientific: {
-            ky: 'Легендалар жана илимий версиялар',
-            ru: 'Легенды и научные версии',
-            en: 'Legends and scientific versions'
-        }
-    }
-
+    const localizedTitle = await getTranslations({ locale, namespace: 'toponym.metadata.title' })
+    const localizedDescription = await getTranslations({ locale, namespace: 'toponym.metadata.description' })
     const name = getLocalizedValue(data, 'name', locale);
     const term = getLocalizedValue(data.terms_topomyns, 'name', locale);
     const rawDescription = getLocalizedValue(data, 'description', locale);
     const cleanDescription = stripHtmlTags(cleanHtml(rawDescription));
 
+    const title =
+        `${name} - ${term} ${localizedTitle ?? defaultTitle[locale]}`;
+    const description =
+        `${term} ${name}. ${cleanDescription ?? localizedDescription}`;
+
+    const shareImage = '/og.png';
+
     return {
-        title: `${name} - ${term} ${websiteTitle[locale]}`,
-        description: `${term} ${name}: ${webSiteDescription.historyNaming[locale]}, ${cleanDescription}. Географические данные. ${webSiteDescription.legendsAndScientific[locale]}`,
+        title,
+        description,
+        metadataBase: new URL(siteUrl),
+        alternates: {
+            canonical: pathname,
+            languages: routing.locales.reduce((acc, loc) => {
+                acc[loc] = `/${loc}/${toponym}`;
+                return acc;
+            }, {})
+        },
+        openGraph: {
+            type: 'article',
+            locale,
+            siteName: 'Tamga.kg',
+            url: absoluteUrl,
+            title,
+            description,
+            images: [
+                {
+                    url: shareImage,
+                    width: 1200,
+                    height: 630,
+                    alt: title
+                }
+            ]
+        },
+
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [shareImage]
+        },
+
+        robots: {
+            index: true,
+            follow: true,
+            'max-snippet': -1,
+            'max-image-preview': 'large',
+            'max-video-preview': -1
+        }
     };
-}
+};
 
 export default async function ToponymPage({ params }) {
     const { locale, toponym } = params;
@@ -333,6 +375,7 @@ export default async function ToponymPage({ params }) {
                                 {topoformants.map((topoformant, index) => {
                                     const mainName = getLocalizedValue(topoformant, 'name', locale);
                                     const description = getLocalizedValue(topoformant, 'description', locale);
+                                    const cleanTopoformantDescription = stripHtmlTags(description);
 
                                     const affixes = topoformant?.affixes || [];
 
@@ -357,7 +400,7 @@ export default async function ToponymPage({ params }) {
 
                                             {description && (
                                                 <p className={clss.toponymDesc}>
-                                                    {description}
+                                                    {cleanTopoformantDescription}
                                                 </p>
                                             )}
                                         </div>

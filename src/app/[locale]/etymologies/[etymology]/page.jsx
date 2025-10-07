@@ -1,5 +1,6 @@
 import SearchableMapClient from '@/components/Map/SearchableMapClient';
-import { getLocalizedValue, stripHtmlTags } from '@/lib/utils';
+import { routing } from "@/i18n/routing";
+import { cleanHtml, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
 import { getTranslations } from 'next-intl/server';
 import { headers } from "next/headers";
 import { ToponymDetails } from '../../[toponym]/_components/ToponymDetails';
@@ -17,6 +18,92 @@ export async function fetchData({ etymology }) {
         console.error('Error fetching etymology data:', error);
         return null;
     }
+}
+
+export async function generateMetadata({ params }) {
+    const { locale, etymology } = params;
+
+    const data = await fetchData({ etymology });
+    if (!data) { throw new Error('Toponym data not found') }
+
+    const countEtymologies = data?.count_etymologies
+    const synonyms = data?.synonyms?.length
+
+    const siteUrl =
+        process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
+    const pathname = `/${locale}/etymologies/${etymology}`;
+    const absoluteUrl = `${siteUrl}${pathname}`;
+
+    const defaultTitle = {
+        ky: 'Этимология: тарых жана келип чыгышы | Tamga.kg',
+        ru: 'Этимология: происхождение и значение | Tamga.kg',
+        en: 'Etymology: origins and meanings | Tamga.kg'
+    };
+    const defaultDescription = {
+        ky: 'Каталог этимологиялык түшүндүрмөлөр жана тарыхый маалыматтар.',
+        ru: 'Каталог этимологических объяснений и исторических сведений.',
+        en: 'Catalog of etymological explanations and historical data.'
+    };
+
+    const t = await getTranslations({ locale, namespace: 'etymologies.metadata.title' }, { count: countEtymologies });
+    const localizedTitle = t({ count: countEtymologies });
+    const localizedDescription = await getTranslations({ locale, namespace: 'etymologies.metadata.description' });
+    const name = getLocalizedValue(data, 'name', locale);
+    const rawDescription = getLocalizedValue(data, 'description', locale);
+    const cleanDescription = stripHtmlTags(cleanHtml(rawDescription));
+
+    const title = `${name} ${`(${synonyms})`} — ${localizedTitle ?? defaultTitle[locale]}`;
+
+    const description = `${cleanDescription}. ${localizedDescription}` ?? defaultDescription[locale];
+
+    const shareImage = '/og.png';
+
+    return {
+        title,
+        description,
+
+        metadataBase: new URL(siteUrl),
+
+        alternates: {
+            canonical: pathname,
+            languages: routing.locales.reduce((acc, loc) => {
+                acc[loc] = `/${loc}/etymologies/${etymology}`;
+                return acc;
+            }, {})
+        },
+
+        openGraph: {
+            type: 'article',
+            locale,
+            siteName: 'Tamga.kg',
+            url: absoluteUrl,
+            title,
+            description,
+            images: [
+                {
+                    url: shareImage,
+                    width: 1200,
+                    height: 630,
+                    alt: title
+                }
+            ]
+        },
+
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [shareImage]
+        },
+
+        robots: {
+            index: true,
+            follow: true,
+            'max-snippet': -1,
+            'max-image-preview': 'large',
+            'max-video-preview': -1
+        }
+    };
 }
 
 export default async function EtymologyPage({ params }) {
