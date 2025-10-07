@@ -127,26 +127,30 @@ export async function generateMetadata({ params }) {
     const pathname = `/${locale}/${toponym}`;
     const absoluteUrl = `${siteUrl}${pathname}`;
 
-    const defaultTitle = {
-        ky: 'Тамга - Кыргызстандагы: географиялык объекттердин аталыштарынын тарыхы | tamga.kg',
-        ru: 'Тамга - в Кыргызстане: происхождение, легенды, исторические записи | tamga.kg',
-        en: 'Tamga - History of geographical object names in Kyrgyzstan | tamga.kg'
-    };
+    // helpers
+    const collapse = (s = '') => String(s || '').replace(/\s+/g, ' ').trim();
+    const pick = (...vals) => vals.find(v => typeof v === 'string' && v.trim().length > 0) ?? '';
 
     const tMeta = await getTranslations({ locale, namespace: 'toponym.metadata' });
-    const localizedTitle = tMeta('title');
-    const localizedDescription = tMeta('description');
-    const name = getLocalizedValue(data, 'name', locale);
-    const term = getLocalizedValue(data?.terms_topomyns, 'name', locale);
-    const rawDescription = getLocalizedValue(data, 'description', locale);
-    const cleanDescription = stripHtmlTags(cleanHtml(rawDescription));
+    const locTitleTail = tMeta('title');
+    const locDescTail = tMeta('description');
 
-    const title =
-        `${name} - ${term} ${localizedTitle ?? defaultTitle[locale]}`;
-    const description =
-        `${term} ${name}. ${cleanDescription ?? localizedDescription}`;
+    const name = getLocalizedValue(data, 'name', locale) || '';
+    const term = getLocalizedValue(data?.terms_topomyns, 'name', locale) || '';
 
-    const shareImage = '/og.png';
+    const rawDescription = getLocalizedValue(data, 'description', locale) || '';
+    const clean = stripHtmlTags(cleanHtml(rawDescription));
+    const normalizedClean = collapse(clean);
+
+    const titleLeft = collapse([name, term].filter(Boolean).join(' - '));
+    const titleTail = pick(locTitleTail || '');
+    const title = collapse(`${titleLeft} — ${titleTail}`);
+
+    const subjectPart = collapse([term, name].filter(Boolean).join(' '));
+    const mainDesc = pick(normalizedClean, locDescTail || '');
+    const description = collapse(`${subjectPart}${subjectPart ? '. ' : ''}${mainDesc}`);
+
+    const shareImage = '/openGraph.png';
 
     return {
         title,

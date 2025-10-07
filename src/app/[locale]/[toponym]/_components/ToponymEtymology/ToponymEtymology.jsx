@@ -1,5 +1,3 @@
-// import linkIcon from '@/assets/icons/link-icon.svg';
-// import Image from 'next/image';
 import { cleanHtml, getLocalizedValue } from '@/lib/utils';
 import React from 'react';
 import styles from './ToponymEtymology.module.scss';

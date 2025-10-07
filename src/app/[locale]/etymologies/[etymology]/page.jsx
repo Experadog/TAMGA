@@ -26,46 +26,42 @@ export async function generateMetadata({ params }) {
     const data = await fetchData({ etymology });
     if (!data) { throw new Error('Toponym data not found') }
 
-    const countEtymologies = data?.count_etymologies
-    const synonyms = data?.synonyms?.length
-
     const siteUrl =
         process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
     const pathname = `/${locale}/etymologies/${etymology}`;
     const absoluteUrl = `${siteUrl}${pathname}`;
 
-    const defaultTitle = {
-        ky: 'Этимология: тарых жана келип чыгышы | Tamga.kg',
-        ru: 'Этимология: происхождение и значение | Tamga.kg',
-        en: 'Etymology: origins and meanings | Tamga.kg'
-    };
-    const defaultDescription = {
-        ky: 'Каталог этимологиялык түшүндүрмөлөр жана тарыхый маалыматтар.',
-        ru: 'Каталог этимологических объяснений и исторических сведений.',
-        en: 'Catalog of etymological explanations and historical data.'
-    };
+    // helpers
+    const collapse = (s = '') => String(s || '').replace(/\s+/g, ' ').trim();
+    const pick = (...vals) => vals.find(v => typeof v === 'string' && v.trim().length > 0) ?? '';
 
     const tMeta = await getTranslations({ locale, namespace: 'etymologies.metadata' });
-    const localizedTitle = tMeta('title', { count: countEtymologies })
-    const localizedDescription = tMeta('description');
+    const localizedTitleTail = tMeta('title', { count: Number(data?.count_etymologies) || 0 });
+    const localizedDescTail = tMeta('description');
+
     const name = getLocalizedValue(data, 'name', locale);
-    const rawDescription = getLocalizedValue(data, 'description', locale);
-    const cleanDescription = stripHtmlTags(cleanHtml(rawDescription));
 
-    const title = `${name} (${synonyms}) — ${localizedTitle ?? defaultTitle[locale]}`;
+    const synonymList = (data?.synonyms ?? [])
+        .map(s => getLocalizedValue(s, 'name', locale))
+        .filter(Boolean);
+    const synonymsPart = synonymList.length ? ` (${synonymList.join(', ')})` : '';
 
-    const description = cleanDescription
-        ? `${cleanDescription}. ${localizedDescription}`
-        : defaultDescription[locale];
+    const rawDescription = getLocalizedValue(data, 'description', locale) || '';
+    const clean = stripHtmlTags(cleanHtml(rawDescription));
+    const normalizedClean = collapse(clean);
 
-    const shareImage = '/og.png';
+    const titleLeft = collapse([name, synonymsPart].join('')).trim();
+    const titleTail = pick(localizedTitleTail || '');
+    const title = collapse(`${titleLeft} — ${titleTail}`);
+
+    const description = collapse(pick(normalizedClean, localizedDescTail || ''));
+
+    const shareImage = '/openGraph.png';
 
     return {
         title,
         description,
-
         metadataBase: new URL(siteUrl),
-
         alternates: {
             canonical: pathname,
             languages: routing.locales.reduce((acc, loc) => {
@@ -73,7 +69,6 @@ export async function generateMetadata({ params }) {
                 return acc;
             }, {})
         },
-
         openGraph: {
             type: 'article',
             locale,
