@@ -133,10 +133,11 @@ export async function generateMetadata({ params }) {
         en: 'Tamga - History of geographical object names in Kyrgyzstan | tamga.kg'
     };
 
-    const localizedTitle = await getTranslations({ locale, namespace: 'toponym.metadata.title' })
-    const localizedDescription = await getTranslations({ locale, namespace: 'toponym.metadata.description' })
+    const tMeta = await getTranslations({ locale, namespace: 'toponym.metadata' });
+    const localizedTitle = tMeta('title');
+    const localizedDescription = tMeta('description');
     const name = getLocalizedValue(data, 'name', locale);
-    const term = getLocalizedValue(data.terms_topomyns, 'name', locale);
+    const term = getLocalizedValue(data?.terms_topomyns, 'name', locale);
     const rawDescription = getLocalizedValue(data, 'description', locale);
     const cleanDescription = stripHtmlTags(cleanHtml(rawDescription));
 
@@ -190,7 +191,7 @@ export async function generateMetadata({ params }) {
             'max-video-preview': -1
         }
     };
-};
+}
 
 export default async function ToponymPage({ params }) {
     const { locale, toponym } = params;

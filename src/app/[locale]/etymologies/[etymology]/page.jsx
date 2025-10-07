@@ -45,16 +45,18 @@ export async function generateMetadata({ params }) {
         en: 'Catalog of etymological explanations and historical data.'
     };
 
-    const t = await getTranslations({ locale, namespace: 'etymologies.metadata.title' }, { count: countEtymologies });
-    const localizedTitle = t({ count: countEtymologies });
-    const localizedDescription = await getTranslations({ locale, namespace: 'etymologies.metadata.description' });
+    const tMeta = await getTranslations({ locale, namespace: 'etymologies.metadata' });
+    const localizedTitle = tMeta('title', { count: countEtymologies })
+    const localizedDescription = tMeta('description');
     const name = getLocalizedValue(data, 'name', locale);
     const rawDescription = getLocalizedValue(data, 'description', locale);
     const cleanDescription = stripHtmlTags(cleanHtml(rawDescription));
 
-    const title = `${name} ${`(${synonyms})`} — ${localizedTitle ?? defaultTitle[locale]}`;
+    const title = `${name} (${synonyms}) — ${localizedTitle ?? defaultTitle[locale]}`;
 
-    const description = `${cleanDescription}. ${localizedDescription}` ?? defaultDescription[locale];
+    const description = cleanDescription
+        ? `${cleanDescription}. ${localizedDescription}`
+        : defaultDescription[locale];
 
     const shareImage = '/og.png';
 
