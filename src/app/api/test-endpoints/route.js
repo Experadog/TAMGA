@@ -2,18 +2,22 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
     const endpoints = [
-        '/api/directories/languages',
         '/api/directories/plast',
+        '/api/directories/languages',
         '/api/directories/dialects-speech',
-        '/api/directories/directions',
+        '/api/directories/topoformants',
+        '/api/directories/class-topomyns',
         '/api/directories/terms-topomyns',
         '/api/directories/toponyms-typs',
+        '/api/directories/terms',
+        '/api/directories/thematic-groups',
         '/api/territories/regions',
-        '/api/territories/districts',
-        '/api/territories/cities',
         '/api/territories/aiyl-aimaks',
+        '/api/territories/cities',
+        '/api/territories/districts',
         '/api/territories/aiyls',
-        '/api/territories/special-territories'
+        '/api/territories/special-territories',
+        'urban-settlements'
     ];
 
     const results = {};

@@ -10,5 +10,5 @@ export default function MapClient({ searchParams, locale }) {
   // Проверяем, что searchParams является объектом
   const safeSearchParams = searchParams && typeof searchParams === 'object' ? searchParams : {};
   
-  return <CountryMap searchParams={safeSearchParams} locale={locale} />;
+  return <CountryMap locale={locale} />;
 }

@@ -51,13 +51,13 @@
   - Возвращает стандартную пагинированную структуру
 
 #### Справочники
-- `GET /api/directories/languages` - языки
 - `GET /api/directories/plast` - пласты  
+- `GET /api/directories/languages` - языки
 - `GET /api/territories/regions` - регионы
-- `GET /api/territories/districts` - районы
-- `GET /api/territories/cities` - города
-- `GET /api/territories/aiyls` - айылы
 - `GET /api/territories/aiyl-aimaks` - айыл айымаки
+- `GET /api/territories/cities` - города
+- `GET /api/territories/districts` - районы
+- `GET /api/territories/aiyls` - айылы
 - `GET /api/territories/special-territories` - спец. территории
 
 ### Технические особенности

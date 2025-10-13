@@ -1,53 +1,65 @@
 'use client';
 
-import { useRef } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { MapContainer, AttributionControl } from 'react-leaflet';
-import { BoundaryCanvasTileLayer } from './BoundaryCanvasTileLayer';
 import { useFetch } from '@/lib/hooks/useFetch';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useMemo, useRef } from 'react';
+import { MapContainer } from 'react-leaflet';
+import { BoundaryCanvasTileLayer } from './BoundaryCanvasTileLayer';
 
-import ToponymMarkers from './ToponymMarkers';
 import FullScreenControl from './FullScreenControl';
 import LocationControl from './LocationControl';
+import ToponymMarkers from './ToponymMarkers';
 
 import 'leaflet/dist/leaflet.css';
 
-export default function CountryMap({ locale, searchParams }) {
+export default function CountryMap({ locale }) {
     const mapRef = useRef();
     const router = useRouter();
-    const currentSearchParams = useSearchParams();
-    
+    // const currentSearchParams = useSearchParams();
+
     // Строим URL с query параметрами
-    const params = new URLSearchParams();
-    if (searchParams && typeof searchParams === 'object') {
-        Object.entries(searchParams).forEach(([key, value]) => {
-            if (Array.isArray(value)) {
-                // Для массивов добавляем каждое значение отдельно
-                value.forEach(item => {
-                    if (item && String(item).trim() !== '') {
-                        params.append(key, String(item));
-                    }
-                });
-            } else if (value && String(value).trim() !== '') {
-                params.set(key, String(value));
-            }
-        });
-    }
-    
-    const apiUrl = `/api/toponyms${params.toString() ? `?${params.toString()}` : ''}`;
+    // const params = new URLSearchParams();
+    // if (searchParams && typeof searchParams === 'object') {
+    //     Object.entries(searchParams).forEach(([key, value]) => {
+    //         if (Array.isArray(value)) {
+    //             // Для массивов добавляем каждое значение отдельно
+    //             value.forEach(item => {
+    //                 if (item && String(item).trim() !== '') {
+    //                     params.append(key, String(item));
+    //                 }
+    //             });
+    //         } else if (value && String(value).trim() !== '') {
+    //             params.set(key, String(value));
+    //         }
+    //     });
+    // }
+
+    // const apiUrl = `/api/toponyms${params.toString() ? `?${params.toString()}` : ''}`;
+    const sp = useSearchParams();
+    // Строим URL из ФАКТИЧЕСКИХ query-параметров
+    const apiUrl = useMemo(() => {
+        const params = new URLSearchParams();
+        // копируем всё как есть (повторяющиеся ключи сохраняются)
+        for (const [k, v] of sp.entries()) {
+            if (v && String(v).trim() !== '') params.append(k, v);
+        }
+        const qs = params.toString();
+        return `/api/toponyms${qs ? `?${qs}` : ''}`;
+    }, [sp]);
     const { data = {}, isLoading: loading, isError: error } = useFetch(apiUrl);
-    
+
     // Извлекаем топонимы и пагинацию из ответа
     let toponymsArray = [];
     let count = 0;
     let currentPage = 1;
-    let limit = parseInt(searchParams?.limit || '50', 10);
-    
+    // let limit = parseInt(searchParams?.limit || '50', 10);
+    let limit = parseInt(sp.get('limit') || '50', 10);
+
     if (data.results && Array.isArray(data.results)) {
         toponymsArray = data.results;
         count = data.count || 0;
         // Вычисляем текущую страницу на основе offset
-        const offset = parseInt(searchParams?.offset || '0', 10);
+        const offset = parseInt(sp.get('offset') || '0', 10);
         currentPage = Math.floor(offset / limit) + 1;
     } else if (Array.isArray(data)) {
         toponymsArray = data;
@@ -57,14 +69,14 @@ export default function CountryMap({ locale, searchParams }) {
     // Обработка смены страницы
     const handlePageChange = (page) => {
         const newOffset = (page - 1) * limit;
-        const newParams = new URLSearchParams(currentSearchParams);
+        const newParams = new URLSearchParams(sp);
         newParams.set('offset', newOffset.toString());
-        
+
         const queryString = newParams.toString();
         const newUrl = queryString ? `/${locale}/map?${queryString}` : `/${locale}/map`;
         router.push(newUrl);
     };
-    
+
     return (
         <div style={{ position: 'relative', height: '100%', width: '100%' }}>
             <MapContainer
@@ -73,12 +85,12 @@ export default function CountryMap({ locale, searchParams }) {
                 minZoom={5}
                 maxZoom={18}
                 maxBounds={[
-                    [39.0, 69.0], 
-                    [43.5, 81.0] 
+                    [39.0, 69.0],
+                    [43.5, 81.0]
                 ]}
                 maxBoundsViscosity={1.0}
                 attributionControl={false}
-                style={{ height: '100%', width: '100%', backgroundColor: '#d3ecfd', borderRadius: '16px'}}
+                style={{ height: '100%', width: '100%', backgroundColor: '#d3ecfd', borderRadius: '16px' }}
                 whenCreated={(mapInstance) => {
                     mapRef.current = mapInstance;
                 }}
@@ -122,8 +134,8 @@ export default function CountryMap({ locale, searchParams }) {
                 <FullScreenControl />
                 <LocationControl />
             </MapContainer>
-            
-            
+
+
         </div>
     );
 }

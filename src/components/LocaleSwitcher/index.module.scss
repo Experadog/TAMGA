@@ -1,24 +1,83 @@
 @use '../../assets/styles/helpers/' as *;
 
-.label {
+/* Контейнер нужен для абсолютного позиционирования дропдауна */
+.wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* Кнопка-триггер */
+.labelBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: rem(8);
+    padding: rem(6) rem(10);
+    border-radius: rem(10);
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+}
+
+.labelImg {
+    border-radius: 999px;
+
+    @include mobile {
+        height: 1rem;
+        width: 1rem;
+    }
+}
+
+.labelText {
+    font-size: rem(12);
+    line-height: 200%;
+    letter-spacing: 0.04em;
+    color: #486284;
+    text-transform: lowercase; // если надо "ru/ky/en" малым регистром
+}
+
+.labelChevron {
+    opacity: 0.6;
+}
+
+/* Выпадающее меню прямо под кнопкой */
+.dropdown {
+    position: absolute;
+    top: calc(100% + rem(8));
+    right: 0;
+    width: rem(170);
+    background: #fff;
+    border-radius: rem(14);
+    box-shadow: 0 rem(8) rem(28) rgba(0, 0, 0, 0.12);
+    padding: rem(8);
+    z-index: 1001;
+}
+
+/* Список языков */
+.langList {
+    list-style: none;
+    margin: 0;
+    padding: rem(4);
+    display: grid;
+    gap: rem(4);
+}
+
+.langItem {
+    width: 100%;
     display: flex;
     align-items: center;
-    column-gap: rem(4);
+    gap: rem(10);
+    padding: rem(10) rem(12);
+    border-radius: rem(10);
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+}
 
-    &__img {
-        @include mobile {
-            height: 1rem;
-            width: 1rem;
-        }
-    }
+.langItem:hover {
+    background: #f5f5f7;
+}
 
-    &__select {
-        border: none;
-        appearance: none;
-        font-size: rem(12);
-        line-height: 200%;
-        letter-spacing: 0.04em;
-        color: #486284;
-        outline: none;
-    }
+.langItemActive {
+    background: #f1f3f5; // как в твоём примере
 }
