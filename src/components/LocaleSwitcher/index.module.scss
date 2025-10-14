@@ -1,12 +1,11 @@
 @use '../../assets/styles/helpers/' as *;
 
-/* Контейнер нужен для абсолютного позиционирования дропдауна */
 .wrapper {
     position: relative;
     display: inline-block;
 }
 
-/* Кнопка-триггер */
+/* Кнопка выбора языка */
 .labelBtn {
     display: inline-flex;
     align-items: center;
@@ -14,17 +13,16 @@
     padding: rem(6) rem(10);
     border-radius: rem(10);
     background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: none;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
 }
 
-.labelImg {
-    border-radius: 999px;
-
-    @include mobile {
-        height: 1rem;
-        width: 1rem;
-    }
+.labelBtn:focus,
+.labelBtn:focus-visible,
+.labelBtn:focus:not(:focus-visible) {
+    outline: none;
 }
 
 .labelText {
@@ -32,19 +30,19 @@
     line-height: 200%;
     letter-spacing: 0.04em;
     color: #486284;
-    text-transform: lowercase; // если надо "ru/ky/en" малым регистром
+    text-transform: uppercase;
 }
 
 .labelChevron {
     opacity: 0.6;
 }
 
-/* Выпадающее меню прямо под кнопкой */
+/* Выпадающее меню */
 .dropdown {
     position: absolute;
     top: calc(100% + rem(8));
     right: 0;
-    width: rem(170);
+    width: auto;
     background: #fff;
     border-radius: rem(14);
     box-shadow: 0 rem(8) rem(28) rgba(0, 0, 0, 0.12);
@@ -71,7 +69,9 @@
     background: transparent;
     border: none;
     text-align: left;
+    color: #486284;
     cursor: pointer;
+    outline: none;
 }
 
 .langItem:hover {
@@ -79,5 +79,5 @@
 }
 
 .langItemActive {
-    background: #f1f3f5; // как в твоём примере
+    background: #f1f3f5;
 }

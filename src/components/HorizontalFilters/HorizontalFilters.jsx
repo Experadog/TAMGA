@@ -399,29 +399,30 @@ export default function HorizontalFilters({ locale, directories: initialDirector
     const updateURL = (newFilters) => {
         const params = new URLSearchParams();
         const keyMap = {
-            // внутренний ключ -> ключ в query
             toponyms_typs: 'toponyms_types',
         };
 
+        // ключи, которые НЕ надо отправлять в URL
+        const SKIP_KEYS = new Set(['class_topomyns']);
+
         Object.entries(newFilters).forEach(([key, value]) => {
+            if (SKIP_KEYS.has(key)) return; // пропускаем
+
             const outKey = keyMap[key] || key;
+
             if (Array.isArray(value)) {
-                // Для массивов добавляем каждое значение отдельно
                 value.forEach(item => {
                     if (item && String(item).trim() !== '') {
-                        // params.append(key, String(item));
                         params.append(outKey, String(item));
                     }
                 });
             } else if (value && String(value).trim() !== '') {
-                // params.set(key, String(value));
                 params.set(outKey, String(value));
             }
         });
 
         const queryString = params.toString();
         const newUrl = queryString ? `/${locale}/map?${queryString}` : `/${locale}/map`;
-
         router.push(newUrl);
     };
 
@@ -463,8 +464,19 @@ export default function HorizontalFilters({ locale, directories: initialDirector
 
     // Функция применения фильтров
     const applyFilters = () => {
-        setFilters(tempFilters);
-        updateURL(tempFilters);
+        // копируем временные фильтры
+        const next = { ...tempFilters };
+
+        const hasClass = Array.isArray(next.class_topomyns) && next.class_topomyns.length > 0;
+        const hasTerms = Array.isArray(next.terms_topomyns) && next.terms_topomyns.length > 0;
+
+        // если выбраны классы, но ни одного термина не выбрано — подставляем все отфильтрованные термины
+        if (hasClass && !hasTerms) {
+            next.terms_topomyns = (termsTopomynsOptions || []).map(t => Number(t.id)).filter(Boolean);
+        }
+
+        setFilters(next);
+        updateURL(next);
     };
 
     // Функция для удаления фильтра из чипа (применяется сразу)
@@ -821,8 +833,7 @@ export default function HorizontalFilters({ locale, directories: initialDirector
                                     onChange={(values) => handleCustomMultiSelectChange('thematic_groups', values)}
                                     placeholder={t('group.thematic-groups')}
                                     className={styles.customSelect}
-                                    getOptionLabel={(option) => option.name || option.title}
-                                    // после создания запроса создать и перевод тоже
+                                    getOptionLabel={(option) => getLocalizedValue(option, 'name', locale)}
                                     multiSelect={true}
                                 />
                             </div>
@@ -849,14 +860,20 @@ export default function HorizontalFilters({ locale, directories: initialDirector
                             </div>
                         )}
 
-                        {/* Айыл-Айымаки */}
-                        {filterVisibility.aiyl_aimaks && directories.aiyl_aimaks.length > 0 && (
+                        {/* Районы */}
+                        {filterVisibility.districts && directories.districts.length > 0 && (
                             <div className={styles.filterGroup}>
                                 <SimpleCustomSelect
-                                    options={directories.aiyl_aimaks}
-                                    selectedValues={tempFilters.aiyl_aimak}
-                                    onChange={(values) => handleCustomMultiSelectChange('aiyl_aimak', values)}
-                                    placeholder={t('group.ayil-aimak')}
+                                    options={directories.districts}
+                                    selectedValues={tempFilters.district}
+                                    onChange={(values) => {
+                                        handleCustomMultiSelectChange('district', values);
+                                        // Загружаем города для выбранных районов
+                                        if (values.length > 0) {
+                                            values.forEach(districtId => loadDirectories('cities', districtId));
+                                        }
+                                    }}
+                                    placeholder={t('group.districts')}
                                     className={styles.customSelect}
                                     getOptionLabel={(option) => getLocalizedValue(option, 'name', locale)}
                                     multiSelect={true}
@@ -879,20 +896,14 @@ export default function HorizontalFilters({ locale, directories: initialDirector
                             </div>
                         )}
 
-                        {/* Районы */}
-                        {filterVisibility.districts && directories.districts.length > 0 && (
+                        {/* Айыл-Айымаки */}
+                        {filterVisibility.aiyl_aimaks && directories.aiyl_aimaks.length > 0 && (
                             <div className={styles.filterGroup}>
                                 <SimpleCustomSelect
-                                    options={directories.districts}
-                                    selectedValues={tempFilters.district}
-                                    onChange={(values) => {
-                                        handleCustomMultiSelectChange('district', values);
-                                        // Загружаем города для выбранных районов
-                                        if (values.length > 0) {
-                                            values.forEach(districtId => loadDirectories('cities', districtId));
-                                        }
-                                    }}
-                                    placeholder={t('group.districts')}
+                                    options={directories.aiyl_aimaks}
+                                    selectedValues={tempFilters.aiyl_aimak}
+                                    onChange={(values) => handleCustomMultiSelectChange('aiyl_aimak', values)}
+                                    placeholder={t('group.ayil-aimak')}
                                     className={styles.customSelect}
                                     getOptionLabel={(option) => getLocalizedValue(option, 'name', locale)}
                                     multiSelect={true}
@@ -1090,13 +1101,13 @@ export default function HorizontalFilters({ locale, directories: initialDirector
                         ) : null;
                     })}
 
-                    {/* Айыл-Айымаки */}
-                    {filters.aiyl_aimak.map(id => {
-                        const aiylAimak = directories.aiyl_aimaks.find(a => a.id === id);
-                        return aiylAimak ? (
-                            <div key={`aiyl_aimak-${id}`} className={styles.filterChip}>
-                                <span>{getLocalizedValue(aiylAimak, 'name', locale)}</span>
-                                <button onClick={() => removeFilter('aiyl_aimak', filters.aiyl_aimak.filter(v => v !== id))}>
+                    {/* Районы */}
+                    {filters.district.map(id => {
+                        const district = directories.districts.find(d => d.id === id);
+                        return district ? (
+                            <div key={`district-${id}`} className={styles.filterChip}>
+                                <span>{getLocalizedValue(district, 'name', locale)}</span>
+                                <button onClick={() => removeFilter('district', filters.district.filter(v => v !== id))}>
                                     <Image src={buttonCancelIcon} alt='' />
                                 </button>
                             </div>
@@ -1116,13 +1127,13 @@ export default function HorizontalFilters({ locale, directories: initialDirector
                         ) : null;
                     })}
 
-                    {/* Районы */}
-                    {filters.district.map(id => {
-                        const district = directories.districts.find(d => d.id === id);
-                        return district ? (
-                            <div key={`district-${id}`} className={styles.filterChip}>
-                                <span>{getLocalizedValue(district, 'name', locale)}</span>
-                                <button onClick={() => removeFilter('district', filters.district.filter(v => v !== id))}>
+                    {/* Айыл-Айымаки */}
+                    {filters.aiyl_aimak.map(id => {
+                        const aiylAimak = directories.aiyl_aimaks.find(a => a.id === id);
+                        return aiylAimak ? (
+                            <div key={`aiyl_aimak-${id}`} className={styles.filterChip}>
+                                <span>{getLocalizedValue(aiylAimak, 'name', locale)}</span>
+                                <button onClick={() => removeFilter('aiyl_aimak', filters.aiyl_aimak.filter(v => v !== id))}>
                                     <Image src={buttonCancelIcon} alt='' />
                                 </button>
                             </div>

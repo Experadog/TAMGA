@@ -6,10 +6,6 @@ import { useParams } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 
 import chevron from '@/assets/icons/chevron.svg';
-import langEN from '@/assets/icons/lang-en.svg';
-import langKY from '@/assets/icons/lang-ky.svg';
-import langRU from '@/assets/icons/lang-ru.svg';
-
 import styles from './index.module.scss';
 
 function LocaleSelect({ children, defaultValue }) {
@@ -21,29 +17,26 @@ function LocaleSelect({ children, defaultValue }) {
     const [isPending, startTransition] = useTransition();
     const containerRef = useRef(null);
 
-    const currentLocale = (params && params.locale) || defaultValue || 'ru';
+    const currentLocale = (params && params.locale) || defaultValue || 'ky';
 
-    // парсим <option> → {value,label,icon}
+    // соответствие: короткое → длинное название
+    const shortNames = { ru: 'Рус', ky: 'Кыр', en: 'Eng' };
+    const fullNames = { ru: 'Русский', ky: 'Кыргызча', en: 'English' };
+
+    // парсим <option>
     const options = useMemo(() => {
-        const iconByLocale = { ru: langRU, ky: langKY, en: langEN };
         return React.Children.toArray(children)
             .filter(Boolean)
             .map((child) => {
                 if (!React.isValidElement(child)) return null;
                 const value = child.props?.value;
-                const label = child.props?.children;
-                if (!value) return null;
-                return { value, label, icon: iconByLocale[value] || langRU };
+                const label = fullNames[value] || child.props?.children;
+                return { value, label };
             })
             .filter(Boolean);
     }, [children]);
 
-    const currentIcon = useMemo(() => {
-        const f = options.find((o) => o.value === currentLocale);
-        return (f && f.icon) || langRU;
-    }, [options, currentLocale]);
-
-    // esc и клик вне компонента — закрыть
+    // закрытие по клику вне и по Esc
     useEffect(() => {
         if (!open) return;
         const onKey = (e) => e.key === 'Escape' && setOpen(false);
@@ -80,8 +73,7 @@ function LocaleSelect({ children, defaultValue }) {
                 aria-expanded={open ? 'true' : 'false'}
                 disabled={isPending}
             >
-                <Image className={styles.labelImg} src={currentIcon} width={24} height={24} alt="" />
-                <span className={styles.labelText}>{currentLocale}</span>
+                <span className={styles.labelText}>{shortNames[currentLocale] || currentLocale}</span>
                 <Image className={styles.labelChevron} src={chevron} width={8} height={5} alt="" />
             </button>
 
@@ -100,7 +92,6 @@ function LocaleSelect({ children, defaultValue }) {
                                         role="option"
                                         aria-selected={active ? 'true' : 'false'}
                                     >
-                                        <Image src={opt.icon} width={20} height={20} alt="" />
                                         <span>{opt.label}</span>
                                     </button>
                                 </li>
