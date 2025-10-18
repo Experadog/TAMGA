@@ -1,0 +1,307 @@
+@use '../../assets/styles/helpers' as *;
+
+.toponymDay {
+  width: 100%;
+  display: flex;
+  gap: rem(24);
+
+  @include tablet {
+    flex-direction: column;
+  }
+
+  @include mobile {
+    // 
+  }
+}
+
+.toponymDayLeft {
+  max-width: rem(867);
+  width: 100%;
+  border-radius: rem(24);
+  padding: rem(32);
+  background: #ffffff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  display: flex;
+  flex-direction: column;
+  gap: rem(20);
+
+  @include tablet {
+    padding: rem(24);
+    border-radius: rem(24);
+  }
+
+  @include mobile {
+    padding: rem(20);
+    max-height: rem(452);
+    border-radius: rem(15);
+  }
+}
+
+.title {
+  font-weight: 700;
+  color: var(--color-dark);
+  font-size: rem(24);
+  line-height: 100%;
+  letter-spacing: rem(0.5);
+
+  @include mobile {
+    font-weight: 600;
+    font-size: 20;
+  }
+}
+
+.dateBlock {
+  display: flex;
+  align-items: center;
+  gap: rem(11);
+}
+
+.arrowBtn {
+  width: rem(32);
+  height: rem(32);
+  border-radius: 50%;
+  border: none;
+  background: #efefef;
+  font-size: rem(18);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: #e1e1e1;
+  }
+}
+
+.chevronLeft {
+  width: rem(10);
+  height: rem(10);
+  transform: rotate(90deg);
+}
+
+.chevronRight {
+  width: rem(10);
+  height: rem(10);
+  transform: rotate(-90deg);
+}
+
+.date {
+  font-size: rem(16);
+  font-weight: 600;
+  color: #000000;
+
+  @include mobile {
+    font-size: rem(12);
+  }
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardBottom {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: rem(24);
+
+  @include mobile {
+    flex-direction: column;
+    gap: rem(16);
+  }
+}
+
+.imagePlaceholder {
+  min-width: rem(322);
+  min-height: rem(255);
+  border-radius: rem(16);
+
+  @include mobile {
+    min-width: rem(303);
+    min-height: rem(200);
+    height: rem(200);
+  }
+}
+
+.imagePlaceholderImage {
+  width: rem(322);
+  height: rem(255);
+
+  @include mobile {
+    min-width: rem(303);
+    max-height: rem(200);
+    height: rem(200);
+  }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: rem(255);
+  padding-top: rem(19);
+
+  @include mobile {
+    padding-top: 0;
+    height: auto;
+  }
+}
+
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  gap: rem(6);
+}
+
+.name {
+  font-weight: 600;
+  font-size: rem(18);
+  color: var(--color-dark);
+}
+
+.meta {
+  font-size: rem(15);
+  color: #555;
+}
+
+.moreBlock {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.moreBtn {
+  border: none;
+  background: #F5F5F5;
+  color: #383838;
+  border-radius: rem(50);
+  padding: rem(8) rem(18);
+  font-size: rem(16);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  width: rem(165);
+  height: rem(48);
+
+  &:hover {
+    background: #dcdcdc;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  @include mobile {
+    background: none;
+    padding: 0;
+    color: #0094EB;
+    width: auto;
+    height: auto;
+    display: flex;
+    align-items: center;
+    gap: rem(4);
+
+    &:hover {
+      background: none;
+    }
+  }
+}
+
+.moreArrow {
+  width: rem(24);
+  height: rem(24);
+  display: none;
+
+  @include mobile {
+    display: inline-block;
+  }
+}
+
+.toponymDayRight {
+  max-width: rem(421);
+  background: #007BFF;
+  padding: rem(32);
+  border-radius: rem(24);
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: rem(16);
+
+  @include tablet {
+    max-width: 100%;
+    height: rem(255);
+  }
+
+  @include mobile {
+    height: auto;
+  }
+
+}
+
+.topBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: rem(16);
+
+  p {
+    text-align: start;
+  }
+
+  @include mobile {
+    height: auto;
+  }
+}
+
+.topBlockTitle {
+  font-weight: 800;
+  font-size: rem(24);
+  line-height: 100%;
+  letter-spacing: rem(0.5);
+  color: #FFFFFF;
+}
+
+.topBlockDescription {
+  font-weight: 400;
+  font-size: rem(16);
+  line-height: rem(32);
+  letter-spacing: rem(-0.32);
+  color: #FFFFFF;
+}
+
+.bottomBlock {
+  display: flex;
+  justify-content: flex-end;
+
+  @include mobile {
+    justify-content: flex-start;
+  }
+}
+
+.bottomBlockButton {
+  color: #383838;
+  background-color: #F5F5F5;
+  border-radius: rem(50);
+  padding: rem(12) rem(37);
+  width: rem(165);
+  height: rem(48);
+  border: none;
+  font-size: rem(16);
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+
+  &:hover {
+    background: #dcdcdc;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}

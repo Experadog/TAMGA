@@ -4,6 +4,7 @@ import { routing } from "@/i18n/routing";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 // import { Onest } from "next/font/google";
+import { Footer } from "@/components/Footer";
 import { notFound } from "next/navigation";
 import Script from "next/script";
 import { Suspense } from "react";
@@ -27,14 +28,7 @@ export const metadata = {
   },
 };
 
-// const onest = Onest({ variable: "--font-onest", subsets: ["latin"] });
-
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID
-
-// export async function generateMetadata({ params }) {
-//   const { locale } = await params;
-//   return { title: 'KG MAP' };
-// }
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -82,7 +76,7 @@ export default async function RootLayout({ children, params }) {
           ) : null}
           <Header locale={locale} />
           <main className="main container">{children}</main>
-          {/* <Footer /> */}
+          <Footer />
         </NextIntlClientProvider>
       </body>
     </html>

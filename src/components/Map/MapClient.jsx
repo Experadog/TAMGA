@@ -6,9 +6,7 @@ const CountryMap = dynamic(() => import('./CountryMap'), {
   ssr: false, 
 });
 
-export default function MapClient({ searchParams, locale }) {
-  // Проверяем, что searchParams является объектом
-  const safeSearchParams = searchParams && typeof searchParams === 'object' ? searchParams : {};
+export default function MapClient({ locale }) {
   
   return <CountryMap locale={locale} />;
 }

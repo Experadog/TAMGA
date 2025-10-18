@@ -34,7 +34,6 @@ export default function CountryMap({ locale }) {
     //     });
     // }
 
-    // const apiUrl = `/api/toponyms${params.toString() ? `?${params.toString()}` : ''}`;
     const sp = useSearchParams();
     // Строим URL из ФАКТИЧЕСКИХ query-параметров
     const apiUrl = useMemo(() => {
@@ -43,6 +42,11 @@ export default function CountryMap({ locale }) {
         for (const [k, v] of sp.entries()) {
             if (v && String(v).trim() !== '') params.append(k, v);
         }
+
+        if (!params.has('limit')) {
+            params.set('limit', '1000'); // 1000 топонимов
+        }
+
         const qs = params.toString();
         return `/api/toponyms${qs ? `?${qs}` : ''}`;
     }, [sp]);
@@ -52,7 +56,6 @@ export default function CountryMap({ locale }) {
     let toponymsArray = [];
     let count = 0;
     let currentPage = 1;
-    // let limit = parseInt(searchParams?.limit || '50', 10);
     let limit = parseInt(sp.get('limit') || '50', 10);
 
     if (data.results && Array.isArray(data.results)) {

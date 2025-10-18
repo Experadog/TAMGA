@@ -21,7 +21,7 @@ function LocaleSelect({ children, defaultValue }) {
 
     // соответствие: короткое → длинное название
     const shortNames = { ru: 'Рус', ky: 'Кыр', en: 'Eng' };
-    const fullNames = { ru: 'Русский', ky: 'Кыргызча', en: 'English' };
+    const fullNames = { ky: 'Кыргызча', ru: 'Русский', en: 'English' };
 
     // парсим <option>
     const options = useMemo(() => {

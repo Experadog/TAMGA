@@ -1,0 +1,136 @@
+@use '../../assets/styles/helpers/' as *;
+
+/* Внешний «голубой» контейнер с большой тенью */
+.mainSearch {
+  width: 100%;
+  border-radius: rem(24);
+  background: #DAEEFB;
+  padding: rem(36);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.25),
+    0 6px 12px rgba(0, 0, 0, 0.08);
+
+  @include tablet {
+    padding: rem(24);
+  }
+
+  @include mobile {
+    background: none;
+    box-shadow: none;
+    padding: 0
+    ;
+  }
+}
+
+/* Белая карточка внутри */
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: rem(16);
+  background: #ffffff;
+  border-radius: rem(16);
+  padding: rem(24);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.04),
+    inset 0 0 0 0 rgba(0, 0, 0, 0);
+
+
+  @include tablet {
+    padding: rem(24);
+    gap: rem(8);
+  }
+
+  @include mobile {
+    gap: rem(12);
+    padding: rem(12);
+    flex-direction: column;
+    align-items: flex-end;
+  }
+}
+
+/* Поле поиска (серое, с лупой) */
+.field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  border-radius: 12px;
+  background: #F4F4F4;
+  padding-left: 44px;
+  width: 90%;
+
+  @include tablet {
+    width: 80%;
+  }
+
+  @include mobile {
+    width: 100%;
+  }
+}
+
+/* Лупа слева */
+.iconSearch {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  opacity: 0.85;
+}
+
+.input {
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1;
+  color: #000;
+  width: 100%;
+  padding-right: rem(10);
+
+  &::placeholder {
+    color: #333333;
+    opacity: 50%;
+  }
+}
+
+/* Кнопка «Где я?» (белая, с тонкой рамкой) */
+.whereBtn {
+  width: rem(109);
+  height: rem(56);
+  padding: rem(0) rem(16) rem(0) rem(12);
+  border: rem(2) solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  color: #1490e3;
+  font-size: rem(14);
+  font-weight: 500;
+  border-radius: rem(8);
+  display: inline-flex;
+  align-items: center;
+  gap: rem(8);
+  cursor: pointer;
+  transition: box-shadow .15s ease, transform .05s ease;
+  white-space: nowrap;
+
+  &:hover {
+    box-shadow: 0 2px 10px rgba(20, 144, 227, 0.18);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  @include mobile {
+    width: rem(77);
+    height: rem(24);
+    padding: 0;
+    background: none;
+    border: none;
+  }
+}
+
+.iconAnchor {
+  display: inline-flex;
+}

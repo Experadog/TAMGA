@@ -12,11 +12,43 @@
         padding: rem(32) rem(16);
     }
 
-    &__logo {
+    &__head {
         display: flex;
         align-items: center;
         column-gap: rem(20);
+
+        &__logo {
+            display: flex;
+            align-items: center;
+            column-gap: rem(9);
+
+            &:hover {
+                text-decoration: none;
+                color: currentColor;
+            }
+
+            @include mobile {
+                column-gap: rem(7);
+            }
+        }
+
+        &__img {
+            width: rem(122);
+            height: rem(26);
+
+            @include tablet {
+                width: rem(112);
+                height: rem(24);
+            }
+
+            @include mobile {
+                width: rem(112);
+                height: rem(24);
+            }
+        }
     }
+
+
 
     &__title {
         font-weight: 800;
@@ -65,7 +97,7 @@
             font-size: rem(16);
             line-height: 120%;
             color: #343844;
-            
+
             &:hover {
                 color: currentColor;
             }
@@ -84,6 +116,7 @@
             line-height: 122%;
             text-align: center;
             color: #4b5162;
+            gap: rem(4);
         }
     }
 
