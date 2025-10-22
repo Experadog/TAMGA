@@ -74,12 +74,24 @@
   padding: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: rem(24);
 
   @include tablet {
     grid-template-columns: repeat(1, 1fr);
-    gap: 1rem;
+    gap: rem(20);
   }
+
+  @include mobile {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: rem(16);
+    border-radius: rem(12);
+    overflow-x: auto;
+    padding-bottom: rem(24);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
 }
 
 .blog__contentItem {
@@ -104,6 +116,8 @@
   @include mobile {
     flex-direction: column;
     padding-bottom: 1rem;
+    min-width: rem(310);
+    min-height: rem(460);
   }
 }
 

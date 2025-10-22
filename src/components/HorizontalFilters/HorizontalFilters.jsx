@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import SimpleCustomSelect from '../SimpleCustomSelect';
 import styles from './HorizontalFilters.module.scss';
 
-export default function HorizontalFilters({ locale, directories: initialDirectories }) {
+export default function HorizontalFilters({ locale }) {
     const router = useRouter();
     const searchParams = useSearchParams();
 

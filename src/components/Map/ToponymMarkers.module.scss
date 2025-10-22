@@ -20,6 +20,12 @@
     gap: 8px;
 }
 
+.customPopup {
+    @include mobile {
+        max-width: rem(240);
+    }
+}
+
 .popupTitle {
     font-weight: 500;
     font-size: 18px;
@@ -39,6 +45,10 @@
     line-height: 143%;
     color: #333;
     margin: 8px 0;
+
+    @include mobile {
+        max-width: rem(180);
+    }
 }
 
 .popupActions {
@@ -47,6 +57,11 @@
     align-items: center;
     gap: 12px;
     margin-top: 20px;
+
+    @include mobile {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
 .popupMatching {
@@ -66,15 +81,15 @@
     letter-spacing: 0.04em;
     color: #0094EB;
     text-decoration: none;
-    
+
     &:hover {
         text-decoration: underline;
     }
-    
+
     svg {
         transition: transform 0.2s ease;
     }
-    
+
     &:hover svg {
         transform: translateX(2px);
     }

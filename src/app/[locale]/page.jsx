@@ -1,3 +1,4 @@
+import { routing } from "@/i18n/routing";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import Blog from "@/components/Blog/Blog";
@@ -7,6 +8,66 @@ import MapClient from "@/components/Map/MapClient";
 import PopularToponyms from "@/components/PopularToponyms/PopularToponyms";
 import { ToponymDay } from "@/components/ToponymDay/ToponymDay";
 import styles from './page.module.scss';
+
+export async function generateMetadata({ params }) {
+  const { locale } = params;
+
+  const t = await getTranslations({ locale });
+
+  const title = t('home.seo.title');
+  const description = t('home.seo.description');
+
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
+  const pathname = `/${locale}`;
+  const absoluteUrl = `${siteUrl}${pathname}`;
+
+  const shareImage = '/openGraph.png';
+
+  return {
+    title,
+    description,
+    metadataBase: new URL(siteUrl),
+    alternates: {
+      canonical: pathname,
+      languages: routing.locales.reduce((acc, loc) => {
+        acc[loc] = loc === routing.defaultLocale ? '/' : `/${loc}`;
+        return acc;
+      }, {}),
+    },
+    openGraph: {
+      type: 'website',
+      locale,
+      siteName: 'Tamga.kg',
+      url: absoluteUrl,
+      title,
+      description,
+      images: [
+        {
+          url: shareImage,
+          width: 1200,
+          height: 630,
+          alt: title
+        }
+      ]
+    },
+
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [shareImage]
+    },
+
+    robots: {
+      index: true,
+      follow: true,
+      'max-snippet': -1,
+      'max-image-preview': 'large',
+      'max-video-preview': -1
+    }
+  };
+}
 
 export default async function Home({ params, searchParams }) {
   const { locale } = params;

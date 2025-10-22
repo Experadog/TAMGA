@@ -1,13 +1,13 @@
 'use client';
 
+import { useFetch } from '@/lib/hooks/useFetch';
 import { useRef } from 'react';
 import { MapContainer } from 'react-leaflet';
 import { BoundaryCanvasTileLayer } from './BoundaryCanvasTileLayer';
-import { useFetch } from '@/lib/hooks/useFetch';
 
-import ToponymMarkers from './ToponymMarkers';
 import FullScreenControl from './FullScreenControl';
 import LocationControl from './LocationControl';
+import ToponymMarkers from './ToponymMarkers';
 
 import 'leaflet/dist/leaflet.css';
 
@@ -40,7 +40,7 @@ export default function SearchableMapComponent({ searchTerm, searchType, locale 
     };
     
     return (
-        <div style={{ position: 'relative', height: '600px', width: '100%' }}>
+        <div style={{ position: 'relative', height: '100%', width: '100%' }}>
             <MapContainer
                 center={[41.2, 74.6]}
                 zoom={6}

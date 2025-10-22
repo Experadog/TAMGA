@@ -132,7 +132,7 @@ export default async function EtymologyPage({ params }) {
         <>
             <div className={clss.toponymWrapper}>
                 <article className={clss.toponymArticle}>
-                    <section className={clss.toponymArticle__section}>
+                    <section className={`${clss.toponymArticle__section} ${clss.toponymMap}`}>
                         <SearchableMapClient
                             searchTerm={getLocalizedValue(data, 'name', locale)}
                             searchType="etymology"

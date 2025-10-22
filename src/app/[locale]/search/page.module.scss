@@ -1,0 +1,135 @@
+@use '../../../assets/styles/helpers/' as *;
+
+.hero {
+  position: relative;
+  padding-top: rem(16);
+  padding-bottom: rem(24);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  gap: rem(16);
+  overflow: visible;
+
+  @include tablet {
+    padding-top: rem(64);
+  }
+
+  @include mobile {
+    padding-top: rem(64);
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    width: 100vw;
+
+    height: rem(512);
+    background: var(--color-background-blue);
+    pointer-events: none;
+    z-index: 0;
+
+    @include tablet {
+      height: rem(564);
+    }
+
+    @include mobile {
+      height: rem(452);
+    }
+  }
+
+
+
+  &__bg {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: rem(16);
+    width: rem(1301);
+    height: rem(496);
+    background: url('../../../assets/images/hero-kg-map-search.png') no-repeat center/contain;
+    z-index: 1;
+    pointer-events: none;
+    max-width: calc(100vw - rem(20));
+
+    @include tablet {
+      top: rem(64);
+      width: rem(735);
+      height: rem(360);
+      max-width: calc(100vw - rem(32));
+      background: url('../../../assets/images/hero-kg-map.png') no-repeat center/contain;
+    }
+
+    @include mobile {
+      top: rem(56);
+      width: rem(355);
+      height: rem(174);
+      max-width: calc(100vw - rem(20));
+      background: url('../../../assets/images/hero-kg-map.png') no-repeat center/contain;
+    }
+  }
+
+  &>*:not(.hero__bg) {
+    position: relative;
+    z-index: 1;
+  }
+
+  &__heading {
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--color-dark);
+    max-width: rem(1063);
+    padding-top: rem(48);
+
+    @include fluid-text(48, 24);
+
+    @include tablet {
+      max-width: rem(700);
+      padding-top: rem(60);
+    }
+
+    @include mobile {
+      letter-spacing: 0.02em;
+      max-width: rem(343);
+      padding-top: rem(20);
+    }
+  }
+
+  &__desc {
+    letter-spacing: 0.03em;
+    color: var(--color-dark);
+    max-width: rem(800);
+    @include fluid-text(20, 16);
+
+    @include mobile {
+      max-width: rem(320);
+    }
+  }
+
+  &__search {
+    width: 100%;
+    margin-top: rem(28);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: rem(84);
+
+    @include tablet {
+      gap: rem(79);
+    }
+
+    @include mobile {
+      gap: rem(51);
+      margin-top: rem(12);
+    }
+  }
+
+}
