@@ -1,5 +1,5 @@
 // BoundaryCanvasTileLayer.js
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useMap } from 'react-leaflet';
 import { useFetch } from '../../lib/hooks/useFetch';
 

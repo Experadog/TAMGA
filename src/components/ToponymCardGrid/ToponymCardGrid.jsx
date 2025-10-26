@@ -1,12 +1,12 @@
 import ClientMapWrapper from '@/app/[locale]/[toponym]/_components/ClientMapWrapper';
 import arrow from '@/assets/icons/arrowRight.svg';
+import MapClickable from '@/components/ToponymCard/MapClickable';
 import { Link } from '@/i18n/navigation';
 import { cleanHtml, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
 import Image from 'next/image';
-import MapClickable from './MapClickable';
-import styles from './ToponymCard.module.scss';
+import styles from './ToponymCardGrid.module.scss';
 
-function ToponymCard({ osmData, toponym, locale }) {
+function ToponymCardGrid({ osmData, toponym, locale }) {
 
   const {
     slug,
@@ -50,4 +50,4 @@ function ToponymCard({ osmData, toponym, locale }) {
   )
 }
 
-export default ToponymCard
+export default ToponymCardGrid

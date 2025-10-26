@@ -72,9 +72,45 @@ export const ToponymEtymology = ({ etymologies, locale, l }) => {
                                                                 </div>
                                                             );
                                                         })}
-                                                    {dict?.dialects_speech?.map((dial, dialIndex) => (
-                                                        <span key={dialIndex} className={`${styles.toponym__label} ${styles.toponym__labelDialect}`}>{getLocalizedValue(dial, 'name', locale)}</span>
-                                                    ))}
+                                                    {[...(dict?.dialects_speech ?? [])]
+                                                        // .sort((a, b) => {
+                                                        //     const va = Number(a?.order_by);
+                                                        //     const vb = Number(b?.order_by);
+                                                        //     const aa = Number.isFinite(va) ? va : Infinity;
+                                                        //     const bb = Number.isFinite(vb) ? vb : Infinity;
+                                                        //     return aa - bb;
+                                                        // })
+                                                        .map((dial, dialIndex) => {
+                                                            const dialName = getLocalizedValue(dial, 'name', locale);
+                                                            const dialDesc = getLocalizedValue(dial, 'description', locale);
+                                                            const dialId = `dial-desc-${dictIndex}-${dialIndex}`;
+
+                                                            return (
+                                                                <div
+                                                                    key={dial?.id ?? `${dialIndex}`}
+                                                                    className={styles.langBadge}
+                                                                    {...(dialDesc ? { 'aria-describedby': dialId } : {})}
+                                                                >
+                                                                    <span
+                                                                        className={`${styles.toponym__label} ${styles.toponym__labelDialect}`}
+                                                                        tabIndex={dialDesc ? 0 : -1}
+                                                                    >
+                                                                        {dialName}
+                                                                    </span>
+
+                                                                    {dialDesc && (
+                                                                        <span
+                                                                            id={dialId}
+                                                                            role="tooltip"
+                                                                            className={styles.langBadge__tooltip}
+                                                                        >
+                                                                            {dialDesc}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })}
+
                                                     {dict?.transcription && <span className={styles.toponymEtymology__transcription}>[{dict.transcription}]</span>}
                                                 </div>
                                                 <div className={styles.toponymEtymology__parent}>

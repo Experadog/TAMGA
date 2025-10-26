@@ -141,7 +141,8 @@
     transform: translateY(0);
     z-index: 20;
 
-    max-width: min(44ch, 80vw);
+    max-width: min(200ch, 80vw);
+    width: rem(250);
     padding: rem(8) rem(10);
     font-size: rem(14);
     line-height: 1.5;
@@ -165,7 +166,7 @@
     }
 
     &::before {
-        top: -7px;
+        top: -7.5px;
         border-width: 0 7px 7px 7px;
         border-color: transparent transparent #a2a9b1 transparent;
     }

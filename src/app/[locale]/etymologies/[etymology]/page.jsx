@@ -128,6 +128,10 @@ export default async function EtymologyPage({ params }) {
     const t = await getTranslations({ locale, namespace: 'toponym' });
     const l = await getTranslations({ locale, namespace: 'link' });
 
+    const plasts = data.dictionaries.flatMap(t =>
+        Array.isArray(t.plasts) ? t.plasts : []
+    );
+
     return (
         <>
             <div className={clss.toponymWrapper}>
@@ -150,6 +154,35 @@ export default async function EtymologyPage({ params }) {
                             )}
                         </ToponymDetails>
                     </section>
+
+                    {plasts.length > 0 && (
+                        <section className={clss.toponymArticle__section}>
+                            <ToponymDetails heading={t('plast.heading')} headingLevel={2}>
+                                <ul className={clss.toponymPlastList}>
+                                    {plasts.map((plastItem) => {
+                                        const parentName = plastItem.parent
+                                            ? getLocalizedValue(plastItem.parent, 'name', locale)
+                                            : null;
+
+                                        const childName = getLocalizedValue(plastItem, 'name', locale);
+                                        const isSublayer = Boolean(parentName);
+
+                                        return (
+                                            <li key={plastItem.name_ky} className={clss.toponymPlast}>
+                                                {isSublayer && (
+                                                    <span className={clss.toponym__label}>{parentName}</span>
+                                                )}
+                                                <span className={`${clss.toponym__label} ${isSublayer ? clss.toponym__labelChild : ''}`}>
+                                                    {childName}
+
+                                                </span>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            </ToponymDetails>
+                        </section>
+                    )}
 
                     <section className={clss.toponymArticle__section}>
                         <ToponymDetails heading={t('etymology-naming.heading')} headingLevel={2}>

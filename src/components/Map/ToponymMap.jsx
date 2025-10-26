@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useRef } from "react";
-import { MapContainer, Polygon, Polyline, CircleMarker } from 'react-leaflet';
+import { useEffect, useRef, useState } from "react";
+import { CircleMarker, MapContainer, Polygon, Polyline } from 'react-leaflet';
 import { BoundaryCanvasTileLayer } from './BoundaryCanvasTileLayer';
 
 import FullScreenControl from './FullScreenControl';

@@ -31,7 +31,7 @@ export async function fetchData({ toponym }) {
     }
 }
 
-export async function fetchOSMData(osmId, isCity = false) {
+async function fetchOSMData(osmId, isCity = false) {
     if (!osmId) return null;
 
     try {
@@ -288,6 +288,14 @@ export default async function ToponymPage({ params }) {
         }
     }
 
+    const eP = etymologies?.flatMap(t =>
+        Array.isArray(t.dictionaries) ? t.dictionaries : []
+    );
+
+    const etymologyPlasts = eP?.flatMap(t =>
+        Array.isArray(t.plasts) ? t.plasts : []
+    );
+
     return (
         <>
             <Breadcrumbs
@@ -333,30 +341,43 @@ export default async function ToponymPage({ params }) {
                         </ToponymDetails>
                     </section>
 
-                    {plast?.length > 0 && (
+                    {(plast?.length > 0 ? plast : etymologyPlasts)?.length > 0 && (
                         <section className={clss.toponymArticle__section}>
                             <ToponymDetails heading={t('plast.heading')} headingLevel={2}>
                                 <ul className={clss.toponymPlastList}>
-                                    {plast.map((plastItem) => {
-                                        const parentName = plastItem.parent
-                                            ? getLocalizedValue(plastItem.parent, 'name', locale)
-                                            : null;
+                                    {[...(plast?.length > 0 ? plast : etymologyPlasts)]
+                                        // фильтруем уникальные по названию
+                                        .filter(
+                                            (item, index, arr) =>
+                                                index ===
+                                                arr.findIndex(
+                                                    (i) =>
+                                                        getLocalizedValue(i, 'name', locale) ===
+                                                        getLocalizedValue(item, 'name', locale)
+                                                )
+                                        )
+                                        .map((plastItem) => {
+                                            const parentName = plastItem.parent
+                                                ? getLocalizedValue(plastItem.parent, 'name', locale)
+                                                : null;
 
-                                        const childName = getLocalizedValue(plastItem, 'name', locale);
-                                        const isSublayer = Boolean(parentName);
+                                            const childName = getLocalizedValue(plastItem, 'name', locale);
+                                            const isSublayer = Boolean(parentName);
 
-                                        return (
-                                            <li key={plastItem.name_ky} className={clss.toponymPlast}>
-                                                {isSublayer && (
-                                                    <span className={clss.toponym__label}>{parentName}</span>
-                                                )}
-                                                <span className={`${clss.toponym__label} ${isSublayer ? clss.toponym__labelChild : ''}`}>
-                                                    {childName}
-
-                                                </span>
-                                            </li>
-                                        );
-                                    })}
+                                            return (
+                                                <li key={plastItem.name_ky} className={clss.toponymPlast}>
+                                                    {isSublayer && (
+                                                        <span className={clss.toponym__label}>{parentName}</span>
+                                                    )}
+                                                    <span
+                                                        className={`${clss.toponym__label} ${isSublayer ? clss.toponym__labelChild : ''
+                                                            }`}
+                                                    >
+                                                        {childName}
+                                                    </span>
+                                                </li>
+                                            );
+                                        })}
                                 </ul>
                             </ToponymDetails>
                         </section>

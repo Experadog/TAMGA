@@ -9,7 +9,7 @@ import styles from './index.module.scss';
 async function Header({ locale }) {
     const t = await getTranslations({ locale, namespace: 'header.navigation' });
     const MENU_ITEMS = [
-        { name: t('search'), path: '/' },
+        { name: t('search'), path: '/search' },
         { name: t('glossary'), path: '/' },
         { name: t('map'), path: '/map' },
         { name: t('blog'), path: '/blog' },

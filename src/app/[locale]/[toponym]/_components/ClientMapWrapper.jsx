@@ -7,7 +7,7 @@ const ToponymMap = dynamic(() => import('@/components/Map/ToponymMap'), {
     ssr: false,
     loading: () => (
         <div style={{
-            height: '363px',
+            height: '100%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -25,7 +25,7 @@ export default function ClientMapWrapper({ toponym, osmId, osmData }) {
     return (
         <Suspense fallback={
             <div style={{
-                height: '363px',
+                height: '100%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

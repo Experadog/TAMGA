@@ -5,7 +5,7 @@ import Blog from "@/components/Blog/Blog";
 import MainForm from "@/components/MainForm/MainForm";
 import { MainSearch } from "@/components/MainSearch/MainSearch";
 import MapClient from "@/components/Map/MapClient";
-import PopularToponyms from "@/components/PopularToponyms/PopularToponyms";
+import { PopularToponyms } from "@/components/PopularToponyms/PopularToponyms";
 import { ToponymDay } from "@/components/ToponymDay/ToponymDay";
 import styles from './page.module.scss';
 
@@ -84,13 +84,13 @@ export default async function Home({ params, searchParams }) {
           {t('hero.description')}
         </p>
         <div className={styles.hero__search}>
-          <MainSearch />
+          <MainSearch locale={locale} />
           <ToponymDay />
         </div>
       </section>
 
       <section className={styles.popular}>
-        <PopularToponyms />
+        <PopularToponyms locale={locale} />
       </section>
 
       <section className={styles.mapContainer}>

@@ -1,5 +1,5 @@
 import { Link } from '@/i18n/navigation';
-import { getLocalizedValue, stripHtmlTags } from '@/lib/utils';
+import { getLocalizedValue } from '@/lib/utils';
 import * as L from 'leaflet';
 import { Marker, Popup, useMap } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
@@ -69,12 +69,12 @@ export default function ToponymMarkers({ toponyms = [], locale }) {
                                 <div className={clss.popupRegion}>{getLocalizedValue(toponym?.terms_topomyns, 'name', locale)}</div>
                             )}
 
-                            <div className={clss.popupDescription}>
+                            {/* <div className={clss.popupDescription}>
                                 {stripHtmlTags(getLocalizedValue(toponym, 'description', locale)).length > 100
                                     ? `${stripHtmlTags(getLocalizedValue(toponym, 'description', locale)).substring(0, 100)}...`
                                     : stripHtmlTags(getLocalizedValue(toponym, 'description', locale))
                                 }
-                            </div>
+                            </div> */}
 
                             <div className={clss.popupActions}>
                                 {toponym.matching_toponyms_count > 0 && (

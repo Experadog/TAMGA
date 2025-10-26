@@ -9,7 +9,7 @@ import settingsIcon from '@/assets/icons/settings.svg';
 import { getLocalizedValue } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import SimpleCustomSelect from '../SimpleCustomSelect';
 import styles from './HorizontalFilters.module.scss';
@@ -17,6 +17,8 @@ import styles from './HorizontalFilters.module.scss';
 export default function HorizontalFilters({ locale }) {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const onSearchPage = pathname?.endsWith('/search');
 
     const t = useTranslations('filters');
 
@@ -431,8 +433,11 @@ export default function HorizontalFilters({ locale }) {
         });
 
         const queryString = params.toString();
-        const newUrl = queryString ? `/${locale}/map?${queryString}` : `/${locale}/map`;
-        router.push(newUrl);
+        const basePath = onSearchPage ? `/${locale}/search` : `/${locale}/map`;
+        const newUrl = queryString ? `${basePath}?${queryString}` : basePath;
+        // На странице поиска — не уходим со страницы и не создаём запись в истории
+        if (onSearchPage) router.replace(newUrl);
+        else router.push(newUrl);
     };
 
     const handleInputChange = (name, value) => {

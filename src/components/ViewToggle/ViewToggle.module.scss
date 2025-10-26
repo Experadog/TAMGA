@@ -1,0 +1,41 @@
+@use '../../assets/styles/helpers/' as *;
+
+.toggleWrap {
+  display: inline-flex;
+  gap: rem(8);
+}
+
+.btn {
+  width: rem(40);
+  height: rem(40);
+  padding: 0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #CBD5E1;
+  background: #fff;
+  color: #3B3C3D;
+  cursor: pointer;
+  transition:
+    background-color .15s ease,
+    border-color .15s ease,
+    color .15s ease,
+    box-shadow .15s ease;
+
+  &:hover {
+    border-color: #c7d3df;
+    box-shadow: 0 0 0 1px rgba(0, 148, 235, 0.12);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 148, 235, 0.3);
+  }
+}
+
+.active {
+  background: #0094EB;
+  border-color: #0094EB;
+  color: #fff;
+}

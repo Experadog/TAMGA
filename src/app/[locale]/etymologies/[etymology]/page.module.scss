@@ -103,6 +103,20 @@
     margin-top: rem(16);
 }
 
+.toponymPlastList {
+    margin-top: rem(16);
+    display: flex;
+    flex-wrap: wrap;
+    gap: rem(16) 0;
+}
+
+.toponymPlast {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: rem(16) 0;
+}
+
 .toponym__label {
     display: inline-block;
     font-weight: 500;
@@ -112,4 +126,8 @@
     border-radius: rem(8);
     padding: rem(8) rem(16);
     margin-right: rem(16);
+}
+
+.toponym__labelChild {
+    font-style: italic;
 }
