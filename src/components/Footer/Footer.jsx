@@ -6,8 +6,8 @@ import star from '@/assets/icons/star.svg';
 import Image from 'next/image';
 import './index.scss';
 
-async function Footer() {
-    const t = await getTranslations('footer');
+async function Footer({ locale }) {
+    const t = await getTranslations({ locale, namespace: 'footer' });
 
     return (
         <footer className='footer'>

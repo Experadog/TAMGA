@@ -1,4 +1,4 @@
-import createNextIntlPlugin from 'next-intl/plugin'
+import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin();
 
@@ -9,6 +9,11 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: "http",
+                hostname: "storage.yandexcloud.net",
+                pathname: "/**",
+            },
+            {
+                protocol: "https",
                 hostname: "storage.yandexcloud.net",
                 pathname: "/**",
             },

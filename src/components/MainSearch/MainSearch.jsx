@@ -23,6 +23,7 @@ export const MainSearch = ({ locale: localeProp }) => {
   const [open, setOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
   const [isFocused, setIsFocused] = useState(false);
+  const [usedKeyboardNav, setUsedKeyboardNav] = useState(false);
 
   const wrapRef = useRef(null);
   const inputRef = useRef(null);
@@ -35,12 +36,16 @@ export const MainSearch = ({ locale: localeProp }) => {
     setQuery(qParam);
     setOpen(false);
     setItems([]);
+    setActiveIdx(-1);
+    setUsedKeyboardNav(false);
   }, [sp]);
 
   // Закрываем дропдаун при любом изменении пути
   useEffect(() => {
     setOpen(false);
     setItems([]);
+    setActiveIdx(-1);
+    setUsedKeyboardNav(false);
   }, [pathname]);
 
   // Поиск по API (дебаунс)
@@ -72,16 +77,26 @@ export const MainSearch = ({ locale: localeProp }) => {
             ? data.results
             : [];
 
-        setItems(arr);
-        setActiveIdx(arr.length ? 0 : -1);
-        setOpen(isFocused && arr.length > 0);
+        const seen = new Set();
+        const deduped = arr.filter((it) => {
+          const title = (getLocalizedValue(it, 'name', locale) || '')
+            .trim()
+            .toLowerCase();
+          if (!title || seen.has(title)) return false;
+          seen.add(title);
+          return true;
+        });
+
+        setItems(deduped);
+        setOpen(isFocused && deduped.length > 0);
+        setActiveIdx(-1);
       } catch (err) {
         if (err?.name !== 'AbortError') console.error('search error:', err);
       }
     }, DEBOUNCE_MS);
 
     return () => timerRef.current && clearTimeout(timerRef.current);
-  }, [query, isFocused]);
+  }, [query, isFocused, locale]);
 
   // Клик вне дропдауна
   useEffect(() => {
@@ -91,6 +106,7 @@ export const MainSearch = ({ locale: localeProp }) => {
         setOpen(false);
         setItems([]);
         setActiveIdx(-1);
+        setUsedKeyboardNav(false);
       }
     };
     document.addEventListener('mousedown', onDocClick);
@@ -106,6 +122,8 @@ export const MainSearch = ({ locale: localeProp }) => {
       if (value) params.set('search', value);
       else params.delete('search');
 
+      params.delete('page');
+
       const qs = params.toString();
       const targetUrl = qs ? `/${locale}/search?${qs}` : `/${locale}/search`;
 
@@ -113,12 +131,13 @@ export const MainSearch = ({ locale: localeProp }) => {
       setOpen(false);
       setItems([]);
       setActiveIdx(-1);
+      setUsedKeyboardNav(false);
       inputRef.current?.blur();
 
       if (pathname.endsWith('/search')) {
-        router.replace(targetUrl);
+        router.replace(targetUrl, { scroll: false });
       } else {
-        router.push(targetUrl);
+        router.push(targetUrl, { scroll: false });
       }
     },
     [router, pathname, sp, locale]
@@ -138,12 +157,13 @@ export const MainSearch = ({ locale: localeProp }) => {
   // Сабмит (Enter)
   const onSubmit = (e) => {
     e.preventDefault();
-    const chosen = activeIdx >= 0 ? items[activeIdx] : undefined;
-    if (chosen) onPick(chosen);
-    else {
+    if (usedKeyboardNav && activeIdx >= 0 && activeIdx < items.length) {
+      onPick(items[activeIdx]);
+    } else {
       setOpen(false);
       setItems([]);
       setActiveIdx(-1);
+      setUsedKeyboardNav(false);
       inputRef.current?.blur();
       updateURL(query);
     }
@@ -151,31 +171,36 @@ export const MainSearch = ({ locale: localeProp }) => {
 
   // Навигация стрелками
   const onKeyDown = (e) => {
-    if (!open || !items.length) return;
     if (e.key === 'ArrowDown') {
+      if (!open || !items.length) return;
       e.preventDefault();
-      setActiveIdx((i) => (i + 1) % items.length);
+      setUsedKeyboardNav(true);
+      setActiveIdx((i) => {
+        const next = i < 0 ? 0 : (i + 1) % items.length;
+        return next;
+      });
     } else if (e.key === 'ArrowUp') {
+      if (!open || !items.length) return;
       e.preventDefault();
-      setActiveIdx((i) => (i - 1 + items.length) % items.length);
+      setUsedKeyboardNav(true);
+      setActiveIdx((i) => {
+        if (i < 0) return items.length - 1;
+        return (i - 1 + items.length) % items.length;
+      });
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      const chosen = items[activeIdx];
-      if (chosen) onPick(chosen);
-      else updateURL(query);
+      (e.currentTarget.form)?.requestSubmit();
     } else if (e.key === 'Escape') {
       setOpen(false);
       setItems([]);
       setActiveIdx(-1);
+      setUsedKeyboardNav(false);
     }
   };
 
   const onWhereAmI = () => {
-    // закрываем дропдаун и снимаем фокус
     setOpen(false);
     inputRef.current?.blur();
-
-    // идём на карту с флажком авто-геолокации
     router.push(`/${locale}/map?locate=1`);
   };
 
@@ -198,6 +223,8 @@ export const MainSearch = ({ locale: localeProp }) => {
             onChange={(e) => {
               setQuery(e.target.value);
               setOpen(true);
+              setActiveIdx(-1);
+              setUsedKeyboardNav(false);
             }}
             onFocus={() => {
               setIsFocused(true);
@@ -206,6 +233,7 @@ export const MainSearch = ({ locale: localeProp }) => {
             onBlur={() => {
               setTimeout(() => setOpen(false), 0);
               setIsFocused(false);
+              setUsedKeyboardNav(false);
             }}
             onKeyDown={onKeyDown}
           />
@@ -221,7 +249,8 @@ export const MainSearch = ({ locale: localeProp }) => {
                     role="option"
                     aria-selected={idx === activeIdx}
                     className={`${styles.item} ${idx === activeIdx ? styles.active : ''}`}
-                    onMouseDown={(e) => e.preventDefault()} // чтобы не терять фокус перед кликом
+                    onMouseDown={(e) => e.preventDefault()}
+                    // onMouseEnter={() => setActiveIdx(idx)}
                     onClick={() => onPick(it)}
                   >
                     {title}

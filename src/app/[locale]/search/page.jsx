@@ -1,27 +1,29 @@
 import HorizontalFilters from "@/components/HorizontalFilters";
 import { MainSearch } from "@/components/MainSearch/MainSearch";
 import { Pagination } from "@/components/Pagination";
-import PreserveScroll from "@/components/PreserveScroll/PreserveScroll";
 import ToponymCard from "@/components/ToponymCard/ToponymCard";
 import ToponymCardGrid from "@/components/ToponymCardGrid/ToponymCardGrid";
 import ViewToggle from "@/components/ViewToggle/ViewToggle";
 import { getLocalizedValue } from "@/lib/utils";
 import { fetchOSMData } from "@/lib/utils/fetchOSMData";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Suspense } from "react";
 import styles from './page.module.scss';
 
 export default async function SearchPage({ params, searchParams }) {
-  const { locale } = params;
-  const t = await getTranslations('search')
+  const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: 'search' })
 
-  const page = searchParams?.page ? parseInt(searchParams.page) : 1;
+  const sp = await searchParams
+
+  const page = sp?.page ? parseInt(sp.page) : 1;
   const itemsPerPage = 16;
   const offset = (page - 1) * itemsPerPage;
 
   // 1) Собираем URLSearchParams из объекта Next
   const paramsFromUrl = new URLSearchParams();
-  for (const [key, val] of Object.entries(searchParams || {})) {
+  for (const [key, val] of Object.entries(sp || {})) {
     if (key === 'page') continue;
     if (Array.isArray(val)) {
       val.forEach(v => { if (v != null && v !== '') paramsFromUrl.append(key, String(v)); });
@@ -36,17 +38,13 @@ export default async function SearchPage({ params, searchParams }) {
     'region', 'aiyl_aimak', 'city', 'district', 'aiyl', 'special_territory',
   ];
 
-  // 2) Определяем: есть ли реально выбранные фильтры,
-  //    т.е. не считаем служебные и "language" само по себе
   const arraysPresent = arrayKeys.some(k => paramsFromUrl.has(k));
   const hasSearch = (paramsFromUrl.get('search') || '').trim().length > 0;
   const hasStarts = (paramsFromUrl.get('startswith') || '').trim().length > 0;
   const hasOrdering = (paramsFromUrl.get('ordering') || '').trim().length > 0;
 
-  // language считаем признаком ТОЛЬКО если он идёт вместе с startswith (алфавит)
   const hasMeaningfulFilters = arraysPresent || hasSearch || hasStarts || hasOrdering;
 
-  // 3) Только если есть смысловые фильтры — добавляем пагинацию и делаем запрос
   let data = [];
   let totalCount = 0;
 
@@ -69,7 +67,6 @@ export default async function SearchPage({ params, searchParams }) {
       totalCount = 0;
     }
   } else {
-    // Ничего не выбрано → ничего не грузим
     data = [];
     totalCount = 0;
   }
@@ -88,11 +85,10 @@ export default async function SearchPage({ params, searchParams }) {
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-  const view = searchParams?.view === 'grid' ? 'grid' : 'list';
+  const view = sp?.view === 'grid' ? 'grid' : 'list';
 
   return (
     <>
-      <PreserveScroll />
       <section className={styles.hero}>
         <div className={styles.hero__bg} />
         <h1 className={styles.hero__heading}>{t('hero.title')}</h1>
@@ -100,10 +96,11 @@ export default async function SearchPage({ params, searchParams }) {
           {t('hero.description')}
         </p>
         <div className={styles.hero__search}>
-          <MainSearch locale={locale} />
+          <Suspense fallback={null}>
+            <MainSearch locale={locale} />
+          </Suspense>
         </div>
       </section>
-
       <section className={styles.identicalSection}>
         <div className={styles.identicalSection__container}>
           <h3 className={styles.identicalSection__heading}>Идентичные топонимы:</h3>
@@ -125,17 +122,19 @@ export default async function SearchPage({ params, searchParams }) {
 
         </div>
       </section>
-
       <section>
-        <HorizontalFilters locale={locale} />
+        <Suspense fallback={null}>
+          <HorizontalFilters locale={locale} />
+        </Suspense>
       </section>
 
       <section className={styles.results}>
         <div className={styles.results__count}>
           <h3 className={styles.results__count__heading}>Найдено результатов: {totalCount}</h3>
-          <ViewToggle />
+          <Suspense fallback={null}>
+            <ViewToggle />
+          </Suspense>
         </div>
-
         <ul className={`${styles.results__cards} ${view === 'grid' ? styles.results__cards_grid : styles.results__cards_list}`}>
           {data.length > 0 ? (
             cards.map(({ item, osmData }) => (
@@ -152,17 +151,15 @@ export default async function SearchPage({ params, searchParams }) {
           )
           }
         </ul>
-
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          totalCount={totalCount}
-          itemsPerPage={itemsPerPage}
-        />
+        <Suspense fallback={null}>
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            totalCount={totalCount}
+            itemsPerPage={itemsPerPage}
+          />
+        </Suspense>
       </section>
-
-      {/* <SearchResultsCSR locale={locale} /> */}
-
     </>
   )
 }

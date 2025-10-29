@@ -8,8 +8,8 @@ import styles from './Blog.module.scss';
 export default async function Blog({ locale, searchParams }) {
   const page = searchParams?.page ? parseInt(searchParams.page) : 1;
 
-  const t = await getTranslations('home');
-  const l = await getTranslations('link')
+  const t = await getTranslations({ locale, namespace: 'home' });
+  const l = await getTranslations({ locale, namespace: 'link' })
 
   const truncateText = (text, maxLength = 120) => {
     if (!text) return '';

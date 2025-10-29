@@ -1,19 +1,21 @@
-import Image from 'next/image';
-import styles from './page.module.scss';
-import Link from 'next/link';
-import blogImgFallback from '@/assets/images/blog-img-fallback.png'
+import blogImgFallback from '@/assets/images/blog-img-fallback.png';
 import { Hero } from '@/components/Hero/Hero';
 import { Pagination } from '@/components/Pagination';
-import { getTranslations } from "next-intl/server";
-import { cleanHtml, getLocalizedValue, stripHtmlTags, formatDate } from '@/lib/utils';
+import { cleanHtml, formatDate, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import Image from 'next/image';
+import Link from 'next/link';
+import styles from './page.module.scss';
 
 
 export default async function Blog({ params, searchParams }) {
-    const { locale } = params;
-    const page = searchParams?.page ? parseInt(searchParams.page) : 1;
+    const { locale } = await params;
+    setRequestLocale(locale);
+    const sp = await searchParams
+    const page = sp?.page ? parseInt(sp.page) : 1;
 
-    const t = await getTranslations('blog');
-    const l = await getTranslations('link')
+    const t = await getTranslations({ locale, namespace: 'blog' });
+    const l = await getTranslations({ locale, namespace: 'link' })
 
     const truncateText = (text, maxLength = 120) => {
         if (!text) return '';

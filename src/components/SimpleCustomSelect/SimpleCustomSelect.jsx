@@ -1,21 +1,32 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import styles from './SimpleCustomSelect.module.scss';
 import { useTranslations } from 'next-intl';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import styles from './SimpleCustomSelect.module.scss';
 
-export default function SimpleCustomSelect({ 
-    options = [], 
-    selectedValues = [], 
-    onChange, 
+export default function SimpleCustomSelect({
+    options = [],
+    selectedValues = [],
+    onChange,
     placeholder = "Выберите опции",
     className = "",
     getOptionLabel = null,
     getOptionValue = null,
-    multiSelect = true
+    multiSelect = true,
+
+    searchableThreshold = 100,
+    forceSearch = false,
+    searchInputPlaceholder = 'Поиск...',
+    remoteMode = false,
+    onQueryChange,
+    loading = false,
+    emptyHint = 'Начните ввод для поиска'
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
+
+    // NEW: состояние строки поиска
+    const [query, setQuery] = useState('');
 
     const t = useTranslations('filters.group')
 
@@ -31,6 +42,11 @@ export default function SimpleCustomSelect({
     const optionLabel = getOptionLabel || defaultGetOptionLabel;
     const optionValue = getOptionValue || defaultGetOptionValue;
 
+    const onQueryChangeRef = useRef(onQueryChange);
+    useEffect(() => {
+        onQueryChangeRef.current = onQueryChange;
+    }, [onQueryChange]);
+
     // Закрытие при клике вне компонента
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -43,6 +59,68 @@ export default function SimpleCustomSelect({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // NEW: фильтрация дерева с сохранением иерархии
+    const filterTree = (items, q) => {
+        if (!q) return items;
+        const needle = q.trim().toLowerCase();
+        const walk = (arr) => {
+            const out = [];
+            for (const node of arr || []) {
+                const label = (optionLabel(node) || '').toString().toLowerCase();
+                const kids = node.children ? walk(node.children) : [];
+                // Оставляем, если совпал сам или кто-то из детей
+                if (label.includes(needle) || kids.length > 0) {
+                    out.push(kids.length ? { ...node, children: kids } : node);
+                }
+            }
+            return out;
+        };
+        return walk(items);
+    };
+
+    // NEW: плоский список id текущего видимого набора (после фильтра)
+    const flattenIds = (items) => {
+        const acc = [];
+        const walk = (arr) => {
+            for (const node of arr || []) {
+                acc.push(optionValue(node));
+                if (node.children?.length) walk(node.children);
+            }
+        };
+        walk(items);
+        return acc;
+    };
+
+    // NEW: показывать ли строку поиска
+    const showSearch = forceSearch || remoteMode || (options?.length || 0) > searchableThreshold;
+
+    // В remoteMode НЕ фильтруем локально — отдаём как есть
+    const filteredTree = useMemo(
+        () => (remoteMode ? options : filterTree(options, query)),
+        [options, query, remoteMode]
+    );
+    const filteredIds = useMemo(() => flattenIds(filteredTree), [filteredTree]);
+
+    // ДЕБАУНС запросов наружу при remoteMode
+    // useEffect(() => {
+    //     if (!remoteMode) return;
+    //     const h = setTimeout(() => {
+    //         onQueryChange?.(query);
+    //     }, 300);
+    //     return () => clearTimeout(h);
+    // }, [query, remoteMode, onQueryChange]);
+
+    // ДЕБАУНС удалённых запросов: только когда открыт, и введено >=2 символов
+    useEffect(() => {
+        if (!remoteMode || !isOpen) return;
+        const q = query.trim();
+        const h = setTimeout(() => {
+            onQueryChangeRef.current?.(q.length >= 2 ? q : '');
+        }, 300);
+        return () => clearTimeout(h);
+        // - }, [query, remoteMode, onQueryChange]);
+    }, [query, remoteMode, isOpen]);
+
     // Рекурсивная функция для рендеринга опций с поддержкой иерархии
     const renderOptionsRecursive = (items, level = 0) => {
         return items.map(option => {
@@ -53,7 +131,7 @@ export default function SimpleCustomSelect({
 
             return (
                 <div key={value} className={styles.optionGroup}>
-                    <label 
+                    <label
                         className={`${styles.option} ${level > 0 ? styles.childOption : ''}`}
                         style={{ paddingLeft: `${level * 20 + 12}px` }}
                     >
@@ -76,7 +154,7 @@ export default function SimpleCustomSelect({
 
     const handleOptionChange = (value, isChecked) => {
         let newSelectedValues;
-        
+
         if (multiSelect) {
             if (isChecked) {
                 newSelectedValues = [...selectedValues, value];
@@ -88,31 +166,54 @@ export default function SimpleCustomSelect({
             newSelectedValues = isChecked ? [value] : [];
             setIsOpen(false); // Закрываем dropdown после выбора
         }
-        
+
         onChange(newSelectedValues);
     };
 
     const handleToggleDropdown = () => {
-        setIsOpen(!isOpen);
+        setIsOpen((v) => !v);
+        // NEW: при открытии не трогаем query; при закрытии — можно очистить (по желанию)
     };
 
+    // NEW: выбрать все текущие (после фильтра)
+    const handleSelectAllFiltered = () => {
+        // Добавляем только ID из filteredIds, избегая дублей
+        const set = new Set([...selectedValues, ...filteredIds]);
+        onChange(Array.from(set));
+    };
+
+    // NEW: снять выделение у всех текущих (после фильтра)
+    const handleClearFiltered = () => {
+        const set = new Set(filteredIds);
+        onChange(selectedValues.filter((v) => !set.has(v)));
+    };
+
+    // NEW: текст на кнопке и отображение выбранного
     const getDisplayText = () => {
-        
         if (selectedValues.length === 1) {
-            const selectedOption = options.find(opt => optionValue(opt) === selectedValues[0]) ||
-                options.flatMap(opt => opt.children || []).find(opt => optionValue(opt) === selectedValues[0]);
-            return selectedOption ? optionLabel(selectedOption) : selectedValues[0];
+            const findById = (arr, id) => {
+                for (const n of arr || []) {
+                    if (optionValue(n) === id) return n;
+                    if (n.children?.length) {
+                        const f = findById(n.children, id);
+                        if (f) return f;
+                    }
+                }
+                return null;
+            };
+            const selectedNode = findById(options, selectedValues[0]);
+            return selectedNode ? optionLabel(selectedNode) : selectedValues[0];
         }
-        
         if (selectedValues.length > 1) {
             return `${t('choosed')}: ${selectedValues.length}`;
         }
+        return ''; // плейсхолдер
     };
 
     return (
         <div className={`${styles.simpleCustomSelect} ${className}`} ref={dropdownRef}>
             <span className={styles.SimpleCustomSelectPlaceholder}>{placeholder}</span>
-            <div 
+            <div
                 className={`${styles.selectButton} ${isOpen ? styles.open : ''}`}
                 onClick={handleToggleDropdown}
             >
@@ -128,13 +229,48 @@ export default function SimpleCustomSelect({
 
             {isOpen && (
                 <div className={styles.dropdown}>
-                    <div className={styles.optionsList}>
-                        {options.length > 0 ? (
-                            renderOptionsRecursive(options)
-                        ) : (
-                            <div className={styles.noOptions}>
-                                Опции не найдены
+                    {/* NEW: строка поиска (условно) */}
+                    {showSearch && (
+                        <div className={styles.searchRow}>
+                            <input
+                                type="text"
+                                className={styles.searchInput}
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                placeholder={searchInputPlaceholder}
+                                id="scs-search"
+                                name="scs-search"
+                                autoComplete="off"
+                                spellCheck={false}
+                                aria-label="Поиск по опциям"
+                            />
+                            <div className={styles.searchActions}>
+                                <button type="button" className={styles.btn} onClick={handleSelectAllFiltered}>
+                                    Выбрать всё
+                                </button>
+                                <button type="button" className={styles.btnAlt} onClick={handleClearFiltered}>
+                                    Очистить
+                                </button>
                             </div>
+                        </div>
+                    )}
+
+                    {/* <div className={styles.optionsList}>
+                        {filteredTree.length > 0 ? (
+                            renderOptionsRecursive(filteredTree)
+                        ) : (
+                            <div className={styles.noOptions}>Ничего не найдено</div>
+                        )}
+                    </div> */}
+                    <div className={styles.optionsList}>
+                        {remoteMode && !query.trim() ? (
+                            <div className={styles.noOptions}>{emptyHint}</div>
+                        ) : loading ? (
+                            <div className={styles.noOptions}>Загрузка…</div>
+                        ) : filteredTree.length > 0 ? (
+                            renderOptionsRecursive(filteredTree)
+                        ) : (
+                            <div className={styles.noOptions}>Ничего не найдено</div>
                         )}
                     </div>
                 </div>

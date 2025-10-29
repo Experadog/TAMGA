@@ -22,13 +22,10 @@ export default function ViewToggle() {
     if (m === mode) return;
 
     const params = new URLSearchParams(sp.toString());
-    if (m === 'list') {
-      // list — значение по умолчанию; можно чистить параметр
-      params.delete('view');
-    } else {
-      params.set('view', m);
-    }
-    router.replace(`${pathname}?${params.toString()}`);
+    if (m === 'list') params.delete('view');
+    else params.set('view', m);
+
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false }); // ← вот это важно
     setMode(m);
   };
 

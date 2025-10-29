@@ -7,15 +7,16 @@ import { MainSearch } from "@/components/MainSearch/MainSearch";
 import MapClient from "@/components/Map/MapClient";
 import { PopularToponyms } from "@/components/PopularToponyms/PopularToponyms";
 import { ToponymDay } from "@/components/ToponymDay/ToponymDay";
+import { Suspense } from "react";
 import styles from './page.module.scss';
 
 export async function generateMetadata({ params }) {
-  const { locale } = params;
+  const { locale } = await params;
 
-  const t = await getTranslations({ locale });
+  const t = await getTranslations({ locale, namespace: 'home' });
 
-  const title = t('home.seo.title');
-  const description = t('home.seo.description');
+  const title = t('seo.title');
+  const description = t('seo.description');
 
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
@@ -70,10 +71,10 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Home({ params, searchParams }) {
-  const { locale } = params;
-  const t = await getTranslations('home');
-  // Enable static rendering
+  const { locale } = await params;
+  const sp = await searchParams
   setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: 'home' });
 
   return (
     <>
@@ -84,13 +85,17 @@ export default async function Home({ params, searchParams }) {
           {t('hero.description')}
         </p>
         <div className={styles.hero__search}>
-          <MainSearch locale={locale} />
+          <Suspense fallback={null}>
+            <MainSearch locale={locale} />
+          </Suspense>
           <ToponymDay />
         </div>
       </section>
 
       <section className={styles.popular}>
-        <PopularToponyms locale={locale} />
+        <Suspense fallback={null}>
+          <PopularToponyms locale={locale} />
+        </Suspense>
       </section>
 
       <section className={styles.mapContainer}>
@@ -102,17 +107,23 @@ export default async function Home({ params, searchParams }) {
           <button className={styles.button}>Перейти на карту</button>
         </div>
         <div className={styles.mapWrapper}>
-          <MapClient locale={locale} />
+          <Suspense fallback={null}>
+            <MapClient locale={locale} />
+          </Suspense>
         </div>
         <div className={styles.buttonBlock}>
           <button className={`${styles.button} ${styles.buttonDown}`}>Перейти на карту</button>
         </div>
       </section>
       <section className={styles.blogContainer}>
-        <Blog locale={locale} searchParams={searchParams} />
+        <Suspense fallback={null}>
+          <Blog locale={locale} searchParams={sp} />
+        </Suspense>
       </section>
       <section className={styles.formContainer}>
-        <MainForm />
+        <Suspense fallback={null}>
+          <MainForm />
+        </Suspense>
       </section>
     </>
   );

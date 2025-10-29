@@ -1,16 +1,18 @@
 import { Hero } from "@/components/Hero/Hero";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-import Image from "next/image";
 import chevron from '@/assets/icons/chevron.svg';
 import email from '@/assets/icons/email.svg';
-import phone from '@/assets/icons/phone.svg';
 import location from '@/assets/icons/location.svg';
+import phone from '@/assets/icons/phone.svg';
+import Image from "next/image";
 
 import clss from './page.module.scss';
 
 export default async function AboutPage({ params }) {
-    const t = await getTranslations('about')
+    const { locale } = await params
+    setRequestLocale(locale);
+    const t = await getTranslations({ locale, namespace: 'about' })
     return (
         <>
             <Hero heading={t('title')} description={t('description')} />

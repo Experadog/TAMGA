@@ -170,6 +170,7 @@
   margin-top: rem(8);
 }
 
-// .active {
-//   background: #EBF2FF;
-// }
+.item.active,
+.item[aria-selected="true"] {
+  background: #EBF2FF;
+}

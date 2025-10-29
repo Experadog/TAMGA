@@ -1,12 +1,11 @@
-import Link from 'next/link';
-import { cleanHtml, formatDate, getLocalizedValue } from '@/lib/utils';
-import clss from './page.module.scss';
-import './styles.scss'
+import avaImgFallback from '@/assets/images/ava-img-fallback.png';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { getTranslations } from 'next-intl/server';
+import { cleanHtml, formatDate, getLocalizedValue } from '@/lib/utils';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
-import avaImgFallback from '@/assets/images/ava-img-fallback.png'
-
+import Link from 'next/link';
+import clss from './page.module.scss';
+import './styles.scss';
 
 export async function fetchData({ post }) {
     try {
@@ -21,7 +20,8 @@ export async function fetchData({ post }) {
 
 
 export default async function Blog({ params }) {
-    const { locale, post } = params;
+    const { locale, post } = await params;
+    setRequestLocale(locale);
 
     const data = await fetchData({ post });
     if (!data) throw new Error('Post data not found');
@@ -94,7 +94,9 @@ export default async function Blog({ params }) {
                 </section>
 
                 <section className={clss.blogPost__section}>
-                    <Image className={clss.blogPost__image} src={image} alt='' width={930} height={532} loading='lazy' />
+                    {image &&
+                        <Image className={clss.blogPost__image} src={image} alt='' width={930} height={532} loading='lazy' />
+                    }
                 </section>
 
                 <section className={clss.blogPost__section}>
@@ -140,7 +142,7 @@ export default async function Blog({ params }) {
                     )}
                 </section>
 
-            </article>
+            </article >
 
 
             <aside>

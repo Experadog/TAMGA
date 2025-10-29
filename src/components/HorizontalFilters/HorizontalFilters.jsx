@@ -10,7 +10,7 @@ import { getLocalizedValue } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import SimpleCustomSelect from '../SimpleCustomSelect';
 import styles from './HorizontalFilters.module.scss';
 
@@ -42,6 +42,68 @@ export default function HorizontalFilters({ locale }) {
         // urban_settlements: [], // ???
     });
 
+    const LS_KEY = `labels:${locale}`;
+
+    function mapFromObj(obj) {
+        const m = new Map();
+        if (obj && typeof obj === 'object') {
+            Object.entries(obj).forEach(([k, v]) => m.set(Number(k), v));
+        }
+        return m;
+    }
+
+    function objFromMap(m) {
+        const o = {};
+        for (const [k, v] of m.entries()) o[k] = v;
+        return o;
+    }
+
+    // Кэш подписей, чтобы чипы показывались даже если options пусты
+    const [entityLabels, setEntityLabels] = useState({
+        aiyl_aimaks: new Map(),
+        cities: new Map(),
+        districts: new Map(),
+        aiyls: new Map(),
+        special_territories: new Map(),
+    });
+
+    useEffect(() => {
+        try {
+            const raw = localStorage.getItem(LS_KEY);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            setEntityLabels({
+                aiyl_aimaks: mapFromObj(parsed.aiyl_aimaks),
+                cities: mapFromObj(parsed.cities),
+                districts: mapFromObj(parsed.districts),
+                aiyls: mapFromObj(parsed.aiyls),
+                special_territories: mapFromObj(parsed.special_territories),
+            });
+        } catch { }
+    }, [LS_KEY]);
+
+    const persistEntityLabels = (next) => {
+        try {
+            const payload = {
+                aiyl_aimaks: objFromMap(next.aiyl_aimaks),
+                cities: objFromMap(next.cities),
+                districts: objFromMap(next.districts),
+                aiyls: objFromMap(next.aiyls),
+                special_territories: objFromMap(next.special_territories),
+            };
+            localStorage.setItem(LS_KEY, JSON.stringify(payload));
+        } catch { }
+    };
+
+    // Лоадеры на время удалённого поиска
+    const [loadingRemote, setLoadingRemote] = useState({
+        aiyl_aimaks: false,
+        cities: false,
+        districts: false,
+        aiyls: false,
+        special_territories: false,
+    });
+
     // Загрузка основных справочников при монтировании
     useEffect(() => {
         const loadInitialDirectories = async () => {
@@ -57,11 +119,11 @@ export default function HorizontalFilters({ locale }) {
                     terms,
                     thematicGroups,
                     regions,
-                    aiylAimaks,
-                    cities,
-                    districts,
-                    aiyls,
-                    specialTerritories,
+                    // aiylAimaks,
+                    // cities,
+                    // districts,
+                    // aiyls,
+                    // specialTerritories,
                     // urbanSettlements,
                 ] = await Promise.all([
                     fetch('/api/directories/plast').then(res => res.ok ? res.json() : { results: [] }),
@@ -74,11 +136,11 @@ export default function HorizontalFilters({ locale }) {
                     fetch('/api/directories/terms').then(res => res.ok ? res.json() : { results: [] }),
                     fetch('/api/directories/thematic-groups').then(res => res.ok ? res.json() : { results: [] }),
                     fetch('/api/territories/regions').then(res => res.ok ? res.json() : { results: [] }),
-                    fetch('/api/territories/aiyl-aimaks').then(res => res.ok ? res.json() : { results: [] }),
-                    fetch('/api/territories/cities').then(res => res.ok ? res.json() : { results: [] }),
-                    fetch('/api/territories/districts').then(res => res.ok ? res.json() : { results: [] }),
-                    fetch('/api/territories/aiyls').then(res => res.ok ? res.json() : { results: [] }),
-                    fetch('/api/territories/special-territories').then(res => res.ok ? res.json() : { results: [] }),
+                    // fetch('/api/territories/aiyl-aimaks').then(res => res.ok ? res.json() : { results: [] }),
+                    // fetch('/api/territories/cities').then(res => res.ok ? res.json() : { results: [] }),
+                    // fetch('/api/territories/districts').then(res => res.ok ? res.json() : { results: [] }),
+                    // fetch('/api/territories/aiyls').then(res => res.ok ? res.json() : { results: [] }),
+                    // fetch('/api/territories/special-territories').then(res => res.ok ? res.json() : { results: [] }),
                     // fetch('/api/territories/urban-settlements').then(res => res.ok ? res.json() : { results: [] }),
                 ]);
 
@@ -94,11 +156,11 @@ export default function HorizontalFilters({ locale }) {
                     terms: terms.results || [],
                     thematic_groups: thematicGroups.results || [],
                     regions: regions.results || [],
-                    aiyl_aimaks: aiylAimaks.results || [],
-                    cities: cities.results || [],
-                    districts: districts.results || [],
-                    aiyls: aiyls.results || [],
-                    special_territories: specialTerritories.results || [],
+                    // aiyl_aimaks: aiylAimaks.results || [],
+                    // cities: cities.results || [],
+                    // districts: districts.results || [],
+                    // aiyls: aiyls.results || [],
+                    // special_territories: specialTerritories.results || [],
                     // urban_settlements: urbanSettlements.results || [],
                 }));
             } catch (error) {
@@ -108,6 +170,66 @@ export default function HorizontalFilters({ locale }) {
 
         loadInitialDirectories();
     }, []);
+
+    // Унифицированный фетчер для 5 справочников: только ?search
+    const fetchRemoteDirectory = useCallback(async (type, q) => {
+        // Пустой запрос → пустые результаты, никаких сетевых вызовов
+        if (!q || !q.trim()) {
+            setDirectories(prev => ({ ...prev, [type]: [] }));
+            setLoadingRemote(prev => ({ ...prev, [type]: false }));
+            return;
+        }
+        try {
+            setLoadingRemote(prev => ({ ...prev, [type]: true }));
+            // const res = await fetch(`/api/territories/${type.replace('_', '-')}` + `?search=${encodeURIComponent(q.trim())}`);
+            // if (!res.ok) throw new Error(`${type} fetch failed`);
+            const slug = type.replace(/_/g, '-'); // replace **все** подчёркивания
+            const url = `/api/territories/${slug}?search=${encodeURIComponent(q.trim())}`;
+            const res = await fetch(url);
+            // Не бросаем исключение — мягко обрабатываем не-200
+            if (!res.ok) {
+                console.warn(`${type} fetch non-OK:`, res.status);
+                setDirectories(prev => ({ ...prev, [type]: [] }));
+                return;
+            }
+            const data = await res.json();
+            const list = data?.results || [];
+            setDirectories(prev => ({ ...prev, [type]: list }));
+            // обновим кэш подписей для чипов
+            setEntityLabels(prev => {
+                const map = new Map(prev[type]);
+                for (const it of list) {
+                    map.set(it.id, getLocalizedValue(it, 'name', locale));
+                }
+                const next = { ...prev, [type]: map };
+                persistEntityLabels(next);
+                return next;
+            });
+
+        } catch (e) {
+            console.error('remote search error:', type, e);
+            setDirectories(prev => ({ ...prev, [type]: [] }));
+        } finally {
+            setLoadingRemote(prev => ({ ...prev, [type]: false }));
+        }
+    }, [locale]);
+
+    const queryHandlers = useMemo(() => ({
+        districts: (q) => fetchRemoteDirectory('districts', q),
+        cities: (q) => fetchRemoteDirectory('cities', q),
+        aiyl_aimaks: (q) => fetchRemoteDirectory('aiyl_aimaks', q),
+        aiyls: (q) => fetchRemoteDirectory('aiyls', q),
+        special_territories: (q) => fetchRemoteDirectory('special_territories', q),
+    }), [fetchRemoteDirectory]);
+
+    const getLabelFromCache = (type, id) => {
+        const dir = directories[type] || [];
+        const inList = dir.find(x => x.id === id);
+        if (inList) return getLocalizedValue(inList, 'name', locale);
+        const cached = entityLabels[type]?.get(id);
+        // если подписи нет — вернём пусто, чип не отрисуем
+        return cached || '';
+    };
 
     // Инициализация состояния из searchParams
     const [filters, setFilters] = useState({
@@ -132,7 +254,6 @@ export default function HorizontalFilters({ locale }) {
         aiyl: [],
         special_territory: [],
         // urban_settlement: [],
-
     });
 
     // Состояние для управления отображением фильтров
@@ -436,8 +557,8 @@ export default function HorizontalFilters({ locale }) {
         const basePath = onSearchPage ? `/${locale}/search` : `/${locale}/map`;
         const newUrl = queryString ? `${basePath}?${queryString}` : basePath;
         // На странице поиска — не уходим со страницы и не создаём запись в истории
-        if (onSearchPage) router.replace(newUrl);
-        else router.push(newUrl);
+        if (onSearchPage) router.replace(newUrl, { scroll: false });
+        else router.push(newUrl, { scroll: false });
     };
 
     const handleInputChange = (name, value) => {
@@ -875,28 +996,27 @@ export default function HorizontalFilters({ locale }) {
                         )}
 
                         {/* Районы */}
-                        {filterVisibility.districts && directories.districts.length > 0 && (
+                        {filterVisibility.districts && (
                             <div className={styles.filterGroup}>
                                 <SimpleCustomSelect
                                     options={directories.districts}
                                     selectedValues={tempFilters.district}
-                                    onChange={(values) => {
-                                        handleCustomMultiSelectChange('district', values);
-                                        // Загружаем города для выбранных районов
-                                        if (values.length > 0) {
-                                            values.forEach(districtId => loadDirectories('cities', districtId));
-                                        }
-                                    }}
+                                    onChange={(values) => handleCustomMultiSelectChange('district', values)}
                                     placeholder={t('group.districts')}
                                     className={styles.customSelect}
                                     getOptionLabel={(option) => getLocalizedValue(option, 'name', locale)}
                                     multiSelect={true}
+                                    forceSearch={true}
+                                    remoteMode={true}
+                                    loading={loadingRemote.districts}
+                                    onQueryChange={queryHandlers.districts}
+                                    emptyHint="Введите название района"
                                 />
                             </div>
                         )}
 
                         {/* Города */}
-                        {filterVisibility.cities && directories.cities.length > 0 && (
+                        {filterVisibility.cities && (
                             <div className={styles.filterGroup}>
                                 <SimpleCustomSelect
                                     options={directories.cities}
@@ -906,12 +1026,17 @@ export default function HorizontalFilters({ locale }) {
                                     className={styles.customSelect}
                                     getOptionLabel={(option) => getLocalizedValue(option, 'name', locale)}
                                     multiSelect={true}
+                                    forceSearch={true}
+                                    remoteMode={true}
+                                    loading={loadingRemote.cities}
+                                    onQueryChange={queryHandlers.cities}
+                                    emptyHint="Введите название города"
                                 />
                             </div>
                         )}
 
                         {/* Айыл-Айымаки */}
-                        {filterVisibility.aiyl_aimaks && directories.aiyl_aimaks.length > 0 && (
+                        {filterVisibility.aiyl_aimaks && (
                             <div className={styles.filterGroup}>
                                 <SimpleCustomSelect
                                     options={directories.aiyl_aimaks}
@@ -921,12 +1046,17 @@ export default function HorizontalFilters({ locale }) {
                                     className={styles.customSelect}
                                     getOptionLabel={(option) => getLocalizedValue(option, 'name', locale)}
                                     multiSelect={true}
+                                    forceSearch={true}
+                                    remoteMode={true}
+                                    loading={loadingRemote.aiyl_aimaks}
+                                    onQueryChange={queryHandlers.aiyl_aimaks}
+                                    emptyHint="Введите название айыл-акмака"
                                 />
                             </div>
                         )}
 
                         {/* Айылы */}
-                        {filterVisibility.aiyls && directories.aiyls.length > 0 && (
+                        {filterVisibility.aiyls && (
                             <div className={styles.filterGroup}>
                                 <SimpleCustomSelect
                                     options={directories.aiyls}
@@ -936,12 +1066,17 @@ export default function HorizontalFilters({ locale }) {
                                     className={styles.customSelect}
                                     getOptionLabel={(option) => getLocalizedValue(option, 'name', locale)}
                                     multiSelect={true}
+                                    forceSearch={true}
+                                    remoteMode={true}
+                                    loading={loadingRemote.aiyls}
+                                    onQueryChange={queryHandlers.aiyls}
+                                    emptyHint="Введите название айыла"
                                 />
                             </div>
                         )}
 
                         {/* Специальные территории */}
-                        {filterVisibility.special_territories && directories.special_territories.length > 0 && (
+                        {filterVisibility.special_territories && (
                             <div className={styles.filterGroup}>
                                 <SimpleCustomSelect
                                     options={directories.special_territories}
@@ -951,6 +1086,11 @@ export default function HorizontalFilters({ locale }) {
                                     className={styles.customSelect}
                                     getOptionLabel={(option) => getLocalizedValue(option, 'name', locale)}
                                     multiSelect={true}
+                                    forceSearch={true}
+                                    remoteMode={true}
+                                    loading={loadingRemote.special_territories}
+                                    onQueryChange={queryHandlers.special_territories}
+                                    emptyHint="Введите название спец. территории"
                                 />
                             </div>
                         )}
@@ -1117,10 +1257,10 @@ export default function HorizontalFilters({ locale }) {
 
                     {/* Районы */}
                     {filters.district.map(id => {
-                        const district = directories.districts.find(d => d.id === id);
-                        return district ? (
+                        const label = getLabelFromCache('districts', id);
+                        return label ? (
                             <div key={`district-${id}`} className={styles.filterChip}>
-                                <span>{getLocalizedValue(district, 'name', locale)}</span>
+                                <span>{label}</span>
                                 <button onClick={() => removeFilter('district', filters.district.filter(v => v !== id))}>
                                     <Image src={buttonCancelIcon} alt='' />
                                 </button>
@@ -1130,10 +1270,10 @@ export default function HorizontalFilters({ locale }) {
 
                     {/* Города */}
                     {filters.city.map(id => {
-                        const city = directories.cities.find(c => c.id === id);
-                        return city ? (
+                        const label = getLabelFromCache('cities', id);
+                        return label ? (
                             <div key={`city-${id}`} className={styles.filterChip}>
-                                <span>{getLocalizedValue(city, 'name', locale)}</span>
+                                <span>{label}</span>
                                 <button onClick={() => removeFilter('city', filters.city.filter(v => v !== id))}>
                                     <Image src={buttonCancelIcon} alt='' />
                                 </button>
@@ -1143,10 +1283,10 @@ export default function HorizontalFilters({ locale }) {
 
                     {/* Айыл-Айымаки */}
                     {filters.aiyl_aimak.map(id => {
-                        const aiylAimak = directories.aiyl_aimaks.find(a => a.id === id);
-                        return aiylAimak ? (
+                        const label = getLabelFromCache('aiyl_aimaks', id);
+                        return label ? (
                             <div key={`aiyl_aimak-${id}`} className={styles.filterChip}>
-                                <span>{getLocalizedValue(aiylAimak, 'name', locale)}</span>
+                                <span>{label}</span>
                                 <button onClick={() => removeFilter('aiyl_aimak', filters.aiyl_aimak.filter(v => v !== id))}>
                                     <Image src={buttonCancelIcon} alt='' />
                                 </button>
@@ -1156,10 +1296,10 @@ export default function HorizontalFilters({ locale }) {
 
                     {/* Айылы */}
                     {filters.aiyl.map(id => {
-                        const aiyl = directories.aiyls.find(a => a.id === id);
-                        return aiyl ? (
+                        const label = getLabelFromCache('aiyls', id);
+                        return label ? (
                             <div key={`aiyl-${id}`} className={styles.filterChip}>
-                                <span>{getLocalizedValue(aiyl, 'name', locale)}</span>
+                                <span>{label}</span>
                                 <button onClick={() => removeFilter('aiyl', filters.aiyl.filter(v => v !== id))}>
                                     <Image src={buttonCancelIcon} alt='' />
                                 </button>
@@ -1169,10 +1309,10 @@ export default function HorizontalFilters({ locale }) {
 
                     {/* Специальные территории */}
                     {filters.special_territory.map(id => {
-                        const specialTerritory = directories.special_territories.find(s => s.id === id);
-                        return specialTerritory ? (
+                        const label = getLabelFromCache('special_territories', id);
+                        return label ? (
                             <div key={`special_territory-${id}`} className={styles.filterChip}>
-                                <span>{getLocalizedValue(specialTerritory, 'name', locale)}</span>
+                                <span>{label}</span>
                                 <button onClick={() => removeFilter('special_territory', filters.special_territory.filter(v => v !== id))}>
                                     <Image src={buttonCancelIcon} alt='' />
                                 </button>

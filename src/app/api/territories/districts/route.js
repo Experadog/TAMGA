@@ -1,23 +1,28 @@
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(req) {
     try {
-        const response = await fetch(`${process.env.API_URL}/territories/districts/`, {
-            cache: 'force-cache',
-            next: { revalidate: 3600 }
-        });
+        const { searchParams } = new URL(req.url);
+        const q = (searchParams.get('search') || '').trim();
 
-        if (!response.ok) {
-            throw new Error(`Failed to fetch districts: ${response.status}`);
+        // Если пустой поисковый запрос — возвращаем пустую выборку
+        if (!q) {
+            return NextResponse.json({ results: [] });
         }
 
-        const data = await response.json();
-        return NextResponse.json(data);
-    } catch (error) {
-        console.error('Error fetching districts:', error);
-        return NextResponse.json(
-            { error: 'Failed to fetch districts' },
-            { status: 500 }
-        );
+        const upstream = `${process.env.API_URL}/territories/districts/?search=${encodeURIComponent(q)}`;
+
+        const resp = await fetch(upstream, { cache: 'no-store' });
+
+        if (!resp.ok) {
+            return NextResponse.json({ results: [] }, { status: 200 });
+        }
+
+        const data = await resp.json();
+        const results = Array.isArray(data?.results) ? data.results : Array.isArray(data) ? data : [];
+        return NextResponse.json({ results });
+    } catch (e) {
+        console.error('Error fetching districts:', e);
+        return NextResponse.json({ results: [] }, { status: 200 });
     }
 }

@@ -3,6 +3,10 @@
 .toggleWrap {
   display: inline-flex;
   gap: rem(8);
+
+  @include mobile {
+    display: none;
+  }
 }
 
 .btn {

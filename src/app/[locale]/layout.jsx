@@ -68,7 +68,7 @@ export default async function RootLayout({ children, params }) {
       </head>
       {/* <body className={onest.variable}> */}
       <body className="font-onest">
-        <NextIntlClientProvider>
+        <NextIntlClientProvider locale={locale} >
           {GA_ID ? (
             <Suspense fallback={null}>
               <Analytics gaId={GA_ID} />
@@ -76,7 +76,7 @@ export default async function RootLayout({ children, params }) {
           ) : null}
           <Header locale={locale} />
           <main className="main container">{children}</main>
-          <Footer />
+          <Footer locale={locale} />
         </NextIntlClientProvider>
       </body>
     </html>
