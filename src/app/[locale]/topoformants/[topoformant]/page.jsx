@@ -1,10 +1,10 @@
-import clss from './page.module.scss';
-import { ToponymDetails } from '../../[toponym]/_components/ToponymDetails';
 import SearchableMapClient from '@/components/Map/SearchableMapClient';
 import { getLocalizedValue, stripHtmlTags } from '@/lib/utils';
 import { getTranslations } from 'next-intl/server';
+import { ToponymDetails } from '../../[toponym]/_components/ToponymDetails';
+import clss from './page.module.scss';
 
-export async function fetchData({ topoformant }) {
+async function fetchData({ topoformant }) {
     try {
         const resp = await fetch(`${process.env.API_URL}/topoformants/${topoformant}`)
         const data = await resp.json();

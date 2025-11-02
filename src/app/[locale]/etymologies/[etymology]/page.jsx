@@ -9,7 +9,7 @@ import { ToponymPernamentLink } from '../../[toponym]/_components/ToponymPername
 import { ToponymSources } from '../../[toponym]/_components/ToponymSources';
 import clss from './page.module.scss';
 
-export async function fetchData({ etymology }) {
+async function fetchData({ etymology }) {
     try {
         const resp = await fetch(`${process.env.API_URL}/etymologies/${etymology}`)
         const data = await resp.json();

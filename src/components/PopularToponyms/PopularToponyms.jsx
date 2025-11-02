@@ -2,9 +2,11 @@ import { fetchOSMData } from '@/lib/utils/fetchOSMData';
 import ToponymCard from '../ToponymCard/ToponymCard';
 import styles from './PopularToponyms.module.scss';
 
-export async function fetchData() {
+async function fetchData() {
   try {
-    const resp = await fetch(`${process.env.API_URL}/toponyms/toponym/list/maps`)
+    const resp = await fetch(`${process.env.API_URL}/toponyms/toponym/list/maps`, {
+      next: { revalidate: 300 }
+    })
     const data = await resp.json();
     return data;
   } catch (error) {
@@ -43,7 +45,7 @@ const statisticData = [
 
 export async function PopularToponyms({ locale }) {
 
-  const items = await fetchData();
+  const items = (await fetchData()) ?? [];
 
   // Топ-4 по count_visits (по убыванию). Если нет значения — считаем 0.
   const top4 = [...items]
@@ -54,7 +56,8 @@ export async function PopularToponyms({ locale }) {
   const cards = await Promise.all(
     top4.map(async (item) => {
       const isCity = item?.terms_topomyns?.name_en?.toLowerCase() === 'city';
-      const osmData = item?.osm_id ? await fetchOSMData(item.osm_id, isCity) : null;
+      const termEn = item?.terms_topomyns?.name_en || '';
+      const osmData = item?.osm_id ? await fetchOSMData(item.osm_id, isCity, termEn) : null;
       return { item, osmData };
     })
   );

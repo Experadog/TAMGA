@@ -49,21 +49,10 @@
   min-width: rem(184);
   min-height: rem(184);
 
-  img {
-    width: rem(184);
-    height: rem(184);
-  }
-
   @include mobile {
     width: rem(270);
     height: rem(200);
     min-height: rem(200);
-
-
-    img {
-      width: rem(270);
-      height: rem(200);
-    }
   }
 }
 

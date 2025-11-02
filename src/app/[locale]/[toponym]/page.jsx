@@ -20,7 +20,7 @@ import ClientMapWrapper from "./_components/ClientMapWrapper";
 import { ToponymPernamentLink } from "./_components/ToponymPernamentLink/ToponymPernamentLink";
 
 
-export async function fetchData({ toponym }) {
+async function fetchData({ toponym }) {
     try {
         const resp = await fetch(`${process.env.API_URL}/toponyms/${toponym}`)
         const data = await resp.json();
@@ -117,7 +117,7 @@ async function fetchOSMData(osmId, isCity = false) {
 }
 
 export async function generateMetadata({ params }) {
-    const { locale, toponym } = params;
+    const { locale, toponym } = await params;
 
     const data = await fetchData({ toponym });
     if (!data) { throw new Error('Toponym data not found') }
@@ -198,13 +198,13 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ToponymPage({ params }) {
-    const { locale, toponym } = params;
+    const { locale, toponym } = await params;
 
-    const headersList = headers();
-    const host = headersList.get('host');
-    const protocol = headersList.get('x-forwarded-proto') || 'http';
+    const headersList = await headers();
+    const host = headersList.get('host') || '';
+    const protocol = headersList.get('x-forwarded-proto') || 'https';
 
-    const fullPath = `${protocol}://${host}/${params.locale}/${params.toponym}`;
+    const fullPath = `${protocol}://${host}/${locale}/${toponym}`;
 
     const t = await getTranslations({ locale, namespace: 'toponym' });
     const l = await getTranslations({ locale, namespace: 'link' });

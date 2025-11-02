@@ -88,7 +88,9 @@ export default async function Home({ params, searchParams }) {
           <Suspense fallback={null}>
             <MainSearch locale={locale} />
           </Suspense>
-          <ToponymDay />
+          <Suspense fallback={null}>
+            <ToponymDay locale={locale} searchParams={sp} />
+          </Suspense>
         </div>
       </section>
 

@@ -1,62 +1,69 @@
-'use client';
-
-import arrow from '@/assets/icons/arrowRight.svg';
-import chevron from '@/assets/icons/chevron.svg';
-import imgDefault from '@/assets/images/toponym-day-default.png';
-import Image from 'next/image';
+import { fetchOSMData } from '@/lib/utils/fetchOSMData';
+import { fetchToponymOfDay, navHrefs, pickDateFromParams, toISO } from '@/lib/utils/toponymDay';
 import styles from './ToponymDay.module.scss';
+import ToponymDayCard from './ToponymDayCard';
 
-export const ToponymDay = () => {
+async function fetchData(day, month) {
+  try {
+    const base = `${process.env.API_URL}/toponyms/toponym/days/`;
+    const qs = (day && month) ? `?day=${encodeURIComponent(day)}&month=${encodeURIComponent(month)}` : '';
+    // const resp = await fetch(base + qs, { cache: 'no-store' });
+    const isSpecificDay = Boolean(day && month);
+    const resp = await fetch(base + qs, {
+      next: { revalidate: isSpecificDay ? 86400 : 300 } // 24h vs 5m
+    });
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch (error) {
+    console.error('Error fetching toponym data:', error);
+    return null;
+  }
+}
+
+export async function ToponymDay({ locale, searchParams }) {
+  const sp = await searchParams;
+  const { current, now, min, max } = pickDateFromParams(sp);
+  const dateISO = toISO(current);
+
+  const toponym = await fetchToponymOfDay(fetchData, current, now);
+
+  // прогреем кэш соседних дат (если в диапазоне)
+  try {
+    const prev = new Date(current); prev.setDate(prev.getDate() - 1);
+    const next = new Date(current); next.setDate(next.getDate() + 1);
+    const jobs = [];
+    if (prev >= min) jobs.push(fetchData(prev.getDate(), prev.getMonth() + 1));
+    if (next <= max) jobs.push(fetchData(next.getDate(), next.getMonth() + 1));
+    // не ждем — пусть бегут в фоне
+    Promise.allSettled(jobs);
+  } catch (_) { }
+
+  let osmData = null;
+  if (toponym?.osm_id) {
+    const termEn = (toponym?.terms_topomyns?.name_en || '').toLowerCase();
+    const isCity = termEn === 'city' || termEn === 'town';
+    osmData = await fetchOSMData(toponym.osm_id, isCity, termEn);
+  }
+  if (!osmData && Number.isFinite(toponym?.latitude) && Number.isFinite(toponym?.longitude)) {
+    osmData = { point: [toponym.latitude, toponym.longitude], elementType: 'node' };
+  }
+
+  const basePath = `/${locale}`;
+  const { prevHref, nextHref } = navHrefs(basePath, current, min, max, now);
+
+  console.log('DEBUG dateISO=', dateISO, 'sp=', sp);
+
   return (
     <section className={styles.toponymDay}>
-      <div className={styles.toponymDayLeft}>
-        <div className={styles.cardTop}>
-          <h2 className={styles.title}>Топоним дня</h2>
-          <div className={styles.dateBlock}>
-            <button className={styles.arrowBtn}>
-              <Image className={styles.chevronLeft} src={chevron} alt='' width={32} height={32} />
-            </button>
-            <span className={styles.date}>2025-02-10</span>
-            <button className={styles.arrowBtn}>
-              <Image className={styles.chevronRight} src={chevron} alt='' width={32} height={32} />
-            </button>
-          </div>
-        </div>
-        <div className={styles.cardBottom}>
-          <div className={styles.imagePlaceholder}>
-            <Image
-              src={imgDefault ?? imgDefault}
-              alt=''
-              width={322}
-              height={255}
-              className={styles.imagePlaceholderImage}
-            />
-          </div>
-          <div className={styles.info}>
-            <div className={styles.infoBlock}>
-              <h3 className={styles.name}>Название</h3>
-              <p className={styles.meta}>Регион</p>
-              <p className={styles.meta}>Тип объекта</p>
-              <p className={styles.meta}>Краткое описание</p>
-            </div>
-
-            <div className={styles.moreBlock}>
-              <button className={styles.moreBtn}>
-                Подробнее
-                <Image
-                  src={arrow}
-                  alt=''
-                  width={24}
-                  height={24}
-                  className={styles.moreArrow}
-                />
-              </button>
-
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <ToponymDayCard
+        locale={locale}
+        searchParams={sp}
+        toponym={toponym}
+        osmData={osmData}
+        dateISO={dateISO}
+        prevHref={prevHref}
+        nextHref={nextHref}
+      />
       <div className={styles.toponymDayRight}>
         <div className={styles.topBlock}>
           <h2 className={styles.topBlockTitle}>О проекте</h2>

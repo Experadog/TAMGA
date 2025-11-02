@@ -7,7 +7,7 @@ import Link from 'next/link';
 import clss from './page.module.scss';
 import './styles.scss';
 
-export async function fetchData({ post }) {
+async function fetchData({ post }) {
     try {
         const resp = await fetch(`${process.env.API_URL}/blogs/${post}`)
         const data = await resp.json();

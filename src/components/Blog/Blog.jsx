@@ -6,7 +6,7 @@ import Link from 'next/link';
 import styles from './Blog.module.scss';
 
 export default async function Blog({ locale, searchParams }) {
-  const page = searchParams?.page ? parseInt(searchParams.page) : 1;
+  const page = await searchParams?.page ? parseInt(searchParams.page) : 1;
 
   const t = await getTranslations({ locale, namespace: 'home' });
   const l = await getTranslations({ locale, namespace: 'link' })
