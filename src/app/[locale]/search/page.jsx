@@ -101,11 +101,10 @@ export default async function SearchPage({ params, searchParams }) {
           </Suspense>
         </div>
       </section>
-      <section className={styles.identicalSection}>
-        <div className={styles.identicalSection__container}>
-          <h3 className={styles.identicalSection__heading}>Идентичные топонимы:</h3>
-
-          {identicals.length > 0 ? (
+      {identicals.length > 0 && (
+        <section className={styles.identicalSection}>
+          <div className={styles.identicalSection__container}>
+            <h3 className={styles.identicalSection__heading}>Идентичные топонимы:</h3>
             <ul className={styles.identicalSection__list}>
               {identicals.map((identical, idx) => (
                 <li
@@ -116,12 +115,11 @@ export default async function SearchPage({ params, searchParams }) {
                 </li>
               ))}
             </ul>
-          ) : (
-            <p className={styles.identicalSection__empty}>ничего не найдено</p>
-          )}
+          </div>
+        </section>
+      )}
 
-        </div>
-      </section>
+
       <section>
         <Suspense fallback={null}>
           <HorizontalFilters locale={locale} />
@@ -135,22 +133,23 @@ export default async function SearchPage({ params, searchParams }) {
             <ViewToggle />
           </Suspense>
         </div>
-        <ul className={`${styles.results__cards} ${view === 'grid' ? styles.results__cards_grid : styles.results__cards_list}`}>
-          {data.length > 0 ? (
-            cards.map(({ item, osmData }) => (
-              <li key={item.id}>
-                {view === 'grid' ? (
-                  <ToponymCardGrid toponym={item} osmData={osmData} locale={locale} />
-                ) : (
-                  <ToponymCard toponym={item} osmData={osmData} locale={locale} />
-                )}
-              </li>
-            ))
-          ) : (
-            <p className={styles.identicalSection__empty}>Ничего не найдено</p>
-          )
-          }
-        </ul>
+        {data.length > 0 && (
+          <ul className={`${styles.results__cards} ${view === 'grid' ? styles.results__cards_grid : styles.results__cards_list}`}>
+            {
+              cards.map(({ item, osmData }) => (
+                <li key={item.id}>
+                  {view === 'grid' ? (
+                    <ToponymCardGrid toponym={item} osmData={osmData} locale={locale} />
+                  ) : (
+                    <ToponymCard toponym={item} osmData={osmData} locale={locale} />
+                  )}
+                </li>
+              ))
+            }
+          </ul>
+        )}
+
+
         <Suspense fallback={null}>
           <Pagination
             currentPage={page}

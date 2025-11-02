@@ -1,5 +1,6 @@
 import { fetchOSMData } from '@/lib/utils/fetchOSMData';
 import { fetchToponymOfDay, navHrefs, pickDateFromParams, toISO } from '@/lib/utils/toponymDay';
+import Link from 'next/link';
 import styles from './ToponymDay.module.scss';
 import ToponymDayCard from './ToponymDayCard';
 
@@ -72,7 +73,7 @@ export async function ToponymDay({ locale, searchParams }) {
           </p>
         </div>
         <div className={styles.bottomBlock}>
-          <button className={styles.bottomBlockButton}>Подробнее</button>
+          <Link href='/about' className={styles.bottomBlockButton}>Подробнее</Link>
         </div>
       </div>
     </section>

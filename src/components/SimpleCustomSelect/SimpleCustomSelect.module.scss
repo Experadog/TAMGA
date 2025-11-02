@@ -5,6 +5,14 @@
     min-width: 200px;
 }
 
+/* когда открыт инлайн-дропдаун: инпут без нижних скруглений,
+   и цвет бордера такой же, как у .dropdown (сцепка) */
+.inlineOpen .searchInput {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-color: #007bff;
+}
+
 .selectButton {
     display: flex;
     align-items: center;
@@ -141,17 +149,28 @@
     flex-direction: column;
     gap: 8px;
     align-items: center;
-    padding: 8px 8px 0;
+    // padding: 8px 8px 0;
 }
 
 .searchInput {
     flex: 1;
-    min-height: rem(36);
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 0 10px;
-    font-size: 14px;
     width: 100%;
+    min-height: rem(46);
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.2s ease;
+
+    &:hover {
+        border-color: #999;
+    }
+
+    &:focus {
+        border-color: #007bff;
+    }
 }
 
 .searchActions {

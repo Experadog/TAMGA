@@ -13,10 +13,21 @@ const checkLeafletAvailability = () => {
     return typeof window !== 'undefined' && window.L;
 };
 
+// ★ хелпер: валидно ли число
+const isFiniteCoord = (v) => typeof v === 'number' && Number.isFinite(v);
+
 export default function ToponymMap({ toponym, osmData }) {
     const [isMapReady, setIsMapReady] = useState(false);
     const [leafletReady, setLeafletReady] = useState(false);
     const mapRef = useRef(null);
+
+    // ★ вычисляем наличие валидной точки
+    const hasPoint =
+        isFiniteCoord(toponym?.latitude) && isFiniteCoord(toponym?.longitude);
+
+    // ★ безопасный центр и зум по умолчанию (КР, Бишкек)
+    const DEFAULT_CENTER = [42.8746, 74.5698];
+    const DEFAULT_ZOOM = 6;
 
     useEffect(() => {
         const checkLeaflet = () => {
@@ -26,7 +37,7 @@ export default function ToponymMap({ toponym, osmData }) {
                 setTimeout(checkLeaflet, 100);
             }
         };
-        
+
         checkLeaflet();
     }, []);
 
@@ -34,39 +45,51 @@ export default function ToponymMap({ toponym, osmData }) {
         if (mapRef.current && isMapReady) {
             const timeoutId = setTimeout(() => {
                 const map = mapRef.current;
-                
+
                 if (map && map.getContainer()) {
                     try {
                         if (osmData?.coords?.length > 0) {
                             // Фокусировка на OSM геометрии
                             let allLats = [];
                             let allLngs = [];
-                            
+
                             if (osmData.isMultiPolygon) {
-                                // Handle multi-polygon (cities)
+                                // мультиполигон
                                 osmData.coords.forEach(polygon => {
-                                    const lats = polygon.map(coord => coord[0]);
-                                    const lngs = polygon.map(coord => coord[1]);
+                                    const lats = polygon.map(coord => coord[0]).filter(isFiniteCoord);
+                                    const lngs = polygon.map(coord => coord[1]).filter(isFiniteCoord);
                                     allLats.push(...lats);
                                     allLngs.push(...lngs);
                                 });
                             } else {
-                                // Handle single polygon/polyline
-                                const coords = osmData.coords;
+                                // одиночный полигон/линия
+                                const coords = (osmData.coords || []).filter(
+                                    p => Array.isArray(p) && isFiniteCoord(p[0]) && isFiniteCoord(p[1])
+                                );
                                 allLats = coords.map(coord => coord[0]);
                                 allLngs = coords.map(coord => coord[1]);
                             }
-                            
-                            const minLat = Math.min(...allLats);
-                            const maxLat = Math.max(...allLats);
-                            const minLng = Math.min(...allLngs);
-                            const maxLng = Math.max(...allLngs);
-                            
-                            const bounds = [[minLat, minLng], [maxLat, maxLng]];
-                            map.fitBounds(bounds, { padding: [20, 20] });
-                        } else {
+
+                            if (allLats.length && allLngs.length) {
+                                const minLat = Math.min(...allLats);
+                                const maxLat = Math.max(...allLats);
+                                const minLng = Math.min(...allLngs);
+                                const maxLng = Math.max(...allLngs);
+                                const bounds = [[minLat, minLng], [maxLat, maxLng]];
+                                map.fitBounds(bounds, { padding: [20, 20] });
+                            } else if (hasPoint) {
+                                // на всякий случай fallback на точку
+                                map.setView([toponym.latitude, toponym.longitude], 12);
+                            } else {
+                                // крайний fallback — дефолтный центр
+                                map.setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+                            }
+                        } else if (hasPoint) {
                             // Фокусировка на точке топонима (для кружочка)
                             map.setView([toponym.latitude, toponym.longitude], 12);
+                        } else {
+                            // ★ если нет ни геометрии, ни точки — просто дефолт
+                            map.setView(DEFAULT_CENTER, DEFAULT_ZOOM);
                         }
                     } catch (error) {
                         console.error('Error focusing map:', error);
@@ -76,7 +99,7 @@ export default function ToponymMap({ toponym, osmData }) {
 
             return () => clearTimeout(timeoutId);
         }
-    }, [osmData, isMapReady, toponym.latitude, toponym.longitude]);
+    }, [osmData, isMapReady, hasPoint, toponym?.latitude, toponym?.longitude]); // ★ зависимость hasPoint
 
     const handleMapReady = () => {
         setIsMapReady(true);
@@ -101,7 +124,7 @@ export default function ToponymMap({ toponym, osmData }) {
     }
 
     return (
-        <div style={{ position: 'relative', height: '100%', width: '100%' }}>                
+        <div style={{ position: 'relative', height: '100%', width: '100%' }}>
             <MapContainer
                 ref={mapRef}
                 center={[toponym.latitude, toponym.longitude]}
@@ -124,13 +147,12 @@ export default function ToponymMap({ toponym, osmData }) {
                 <FullScreenControl />
                 <LocationControl />
 
-                {/* Render multi-polygon for relations (cities) */}
-                {osmData?.coords?.length > 0 && osmData.elementType === 'relation' && osmData.isMultiPolygon && isMapReady && (
+                {/* way: polygon / polyline */}
+                {osmData?.coords?.length > 0 && osmData.elementType === 'way' && isMapReady && (
                     <>
-                        {osmData.coords.map((polygon, index) => (
+                        {osmData.isClosedWay ? (
                             <Polygon
-                                key={index}
-                                positions={polygon}
+                                positions={osmData.coords}
                                 pathOptions={{
                                     color: "#0094EB",
                                     weight: 3,
@@ -140,7 +162,17 @@ export default function ToponymMap({ toponym, osmData }) {
                                     stroke: true
                                 }}
                             />
-                        ))}
+                        ) : (
+                            <Polyline
+                                positions={osmData.coords}
+                                pathOptions={{
+                                    color: "#0094EB",
+                                    weight: 4,
+                                    opacity: 1,
+                                    stroke: true
+                                }}
+                            />
+                        )}
                     </>
                 )}
 
@@ -162,8 +194,8 @@ export default function ToponymMap({ toponym, osmData }) {
                         ) : (
                             <Polyline
                                 positions={osmData.coords}
-                                pathOptions={{ 
-                                    color: "#0094EB", 
+                                pathOptions={{
+                                    color: "#0094EB",
                                     weight: 4,
                                     opacity: 1,
                                     stroke: true
@@ -173,8 +205,8 @@ export default function ToponymMap({ toponym, osmData }) {
                     </>
                 )}
 
-                {/* Render circle marker when no OSM data or unsupported type */}
-                {(!osmData?.coords?.length || (osmData.elementType !== 'way' && osmData.elementType !== 'relation')) && isMapReady && (
+                {/* ★ Маркер только если точка валидная */}
+                {(!osmData?.coords?.length || (osmData.elementType !== 'way' && osmData.elementType !== 'relation')) && isMapReady && hasPoint && (
                     <CircleMarker
                         center={[toponym.latitude, toponym.longitude]}
                         radius={8}
@@ -189,6 +221,23 @@ export default function ToponymMap({ toponym, osmData }) {
                     />
                 )}
             </MapContainer>
+            {/* ★ Мягкая заглушка поверх карты, если нет ни точки, ни геометрии */}
+            {!hasPoint && (!osmData?.coords?.length || osmData.elementType === undefined) && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        pointerEvents: 'none',
+                        color: '#666',
+                        fontSize: 14
+                    }}
+                >
+                    Координаты отсутствуют — объект на карте не отмечен
+                </div>
+            )}
         </div>
     );
 }

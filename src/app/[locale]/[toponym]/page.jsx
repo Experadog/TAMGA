@@ -229,7 +229,6 @@ export default async function ToponymPage({ params }) {
         matching_toponyms_count,
         plast,
         etymologies,
-        name_ky,
         latitude,
         longitude,
         archived_records,
@@ -269,24 +268,6 @@ export default async function ToponymPage({ params }) {
     const kyOfficialName = getLocalizedValue(data, 'name', 'ky');
     const ruOfficialName = getLocalizedValue(data, 'name', 'ru');
     const enOfficialName = getLocalizedValue(data, 'name', 'en');
-
-    const officialNaming = {
-        ru: {
-            ru: 'Русский',
-            ky: 'Кыргызский',
-            en: 'Английский'
-        },
-        ky: {
-            ru: 'Орусча',
-            ky: 'Кыргызча',
-            en: 'Английсче'
-        },
-        en: {
-            ru: 'Russian',
-            ky: 'Kyrgyz',
-            en: 'English'
-        }
-    }
 
     const eP = etymologies?.flatMap(t =>
         Array.isArray(t.dictionaries) ? t.dictionaries : []

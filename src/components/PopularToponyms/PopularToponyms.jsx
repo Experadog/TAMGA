@@ -1,4 +1,5 @@
 import { fetchOSMData } from '@/lib/utils/fetchOSMData';
+import Link from 'next/link';
 import ToponymCard from '../ToponymCard/ToponymCard';
 import styles from './PopularToponyms.module.scss';
 
@@ -70,7 +71,7 @@ export async function PopularToponyms({ locale }) {
           <p className={styles.description}>
             We understand that every heartbeat, every breath, and every moment matters. As a beacon of health and healing in England, we are dedicated to
           </p>
-          <button className={styles.button}>Посмотреть все</button>
+          <Link href='/glossary' className={styles.button}>Посмотреть все</Link>
         </div>
 
         <ul className={styles.cardsBlock}>
@@ -85,7 +86,7 @@ export async function PopularToponyms({ locale }) {
         </ul>
 
         <div className={styles.buttonBlock}>
-          <button className={`${styles.button} ${styles.buttonDown}`}>Посмотреть все</button>
+          <Link href='/glossary' className={`${styles.button} ${styles.buttonDown}`}>Посмотреть все</Link>
         </div>
       </div>
 

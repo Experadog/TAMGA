@@ -7,6 +7,7 @@ import { MainSearch } from "@/components/MainSearch/MainSearch";
 import MapClient from "@/components/Map/MapClient";
 import { PopularToponyms } from "@/components/PopularToponyms/PopularToponyms";
 import { ToponymDay } from "@/components/ToponymDay/ToponymDay";
+import Link from "next/link";
 import { Suspense } from "react";
 import styles from './page.module.scss';
 
@@ -106,7 +107,7 @@ export default async function Home({ params, searchParams }) {
           <p className={styles.description}>
             We understand that every heartbeat, every breath, and every moment matters. As a beacon of health and healing in England, we are dedicated to
           </p>
-          <button className={styles.button}>Перейти на карту</button>
+          <Link href='/map' className={styles.button}>Перейти на карту</Link>
         </div>
         <div className={styles.mapWrapper}>
           <Suspense fallback={null}>
@@ -114,7 +115,7 @@ export default async function Home({ params, searchParams }) {
           </Suspense>
         </div>
         <div className={styles.buttonBlock}>
-          <button className={`${styles.button} ${styles.buttonDown}`}>Перейти на карту</button>
+          <Link href='/map' className={`${styles.button} ${styles.buttonDown}`}>Перейти на карту</Link>
         </div>
       </section>
       <section className={styles.blogContainer}>
