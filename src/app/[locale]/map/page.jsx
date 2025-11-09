@@ -7,7 +7,7 @@ export default async function MapPage({ params }) {
 
   return (
     <div className={clss.pageContainer}>
-      <HorizontalFilters locale={locale} />
+      <HorizontalFilters locale={locale} pageKind="map" />
       <div className={clss.mapWrapper}>
         <MapClient locale={locale} />
       </div>

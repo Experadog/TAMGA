@@ -14,11 +14,26 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import SimpleCustomSelect from '../SimpleCustomSelect';
 import styles from './HorizontalFilters.module.scss';
 
-export default function HorizontalFilters({ locale }) {
+export default function HorizontalFilters({ locale, pageKind = 'auto' }) {
+
     const router = useRouter();
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const onSearchPage = pathname?.endsWith('/search');
+    const inferredKind =
+        pageKind !== 'auto'
+            ? pageKind
+            : pathname?.endsWith('/search')
+                ? 'search'
+                : pathname?.includes('/glossary')
+                    ? 'glossary'
+                    : 'map';
+
+    const basePathByKind = {
+        search: `/${locale}/search`,
+        glossary: `/${locale}/glossary`,
+        map: `/${locale}/map`,
+    };
+    const shouldReplace = inferredKind === 'search' || inferredKind === 'glossary';
 
     const t = useTranslations('filters');
 
@@ -43,6 +58,29 @@ export default function HorizontalFilters({ locale }) {
     });
 
     const LS_KEY = `labels:${locale}`;
+
+    const CLASS_LS_KEY = `selectedClassTopomyns:${locale}:${inferredKind}`;
+
+    const readStoredClasses = () => {
+        try {
+            const raw = sessionStorage.getItem(CLASS_LS_KEY);
+            if (!raw) return [];
+            const arr = JSON.parse(raw);
+            return Array.isArray(arr) ? arr.map(Number) : [];
+        } catch {
+            return [];
+        }
+    };
+    const writeStoredClasses = (ids) => {
+        try {
+            sessionStorage.setItem(CLASS_LS_KEY, JSON.stringify((ids || []).map(Number)));
+        } catch { }
+    };
+    const clearStoredClasses = () => {
+        try {
+            sessionStorage.removeItem(CLASS_LS_KEY);
+        } catch { }
+    };
 
     function mapFromObj(obj) {
         const m = new Map();
@@ -490,6 +528,8 @@ export default function HorizontalFilters({ locale }) {
 
     // Обновляем фильтры когда изменяются searchParams
     useEffect(() => {
+        const urlClass = searchParams.getAll('class_topomyns').map(Number);
+        const storedClass = urlClass.length ? urlClass : readStoredClasses();
         const newFilters = {
             search: searchParams.get('search') || '',
             startswith: searchParams.get('startswith') || '',
@@ -500,7 +540,8 @@ export default function HorizontalFilters({ locale }) {
             languages: searchParams.getAll('languages').map(Number),
             dialects_speech: searchParams.getAll('dialects_speech').map(Number),
             topoformants: searchParams.getAll('topoformants').map(Number),
-            class_topomyns: searchParams.getAll('class_topomyns').map(Number),
+            // class_topomyns: searchParams.getAll('class_topomyns').map(Number),
+            class_topomyns: storedClass,
             terms_topomyns: searchParams.getAll('terms_topomyns').map(Number),
             toponyms_typs: searchParams.getAll('toponyms_types').map(Number),
             terms: searchParams.getAll('terms').map(Number),
@@ -553,11 +594,17 @@ export default function HorizontalFilters({ locale }) {
             }
         });
 
+        // Сохраняем текущий режим отображения (list/grid/alpha)
+        try {
+            const currentView = searchParams.get('view');
+            if (currentView) params.set('view', currentView);
+        } catch { }
+
         const queryString = params.toString();
-        const basePath = onSearchPage ? `/${locale}/search` : `/${locale}/map`;
+        const basePath = basePathByKind[inferredKind];
         const newUrl = queryString ? `${basePath}?${queryString}` : basePath;
         // На странице поиска — не уходим со страницы и не создаём запись в истории
-        if (onSearchPage) router.replace(newUrl, { scroll: false });
+        if (shouldReplace) router.replace(newUrl, { scroll: false });
         else router.push(newUrl, { scroll: false });
     };
 
@@ -595,6 +642,9 @@ export default function HorizontalFilters({ locale }) {
     const handleCustomMultiSelectChange = (name, selectedValues) => {
         const newTempFilters = { ...tempFilters, [name]: selectedValues, offset: '0' };
         setTempFilters(newTempFilters);
+        if (name === 'class_topomyns') {
+            writeStoredClasses(selectedValues);
+        }
     };
 
     // Функция применения фильтров
@@ -609,7 +659,7 @@ export default function HorizontalFilters({ locale }) {
         if (hasClass && !hasTerms) {
             next.terms_topomyns = (termsTopomynsOptions || []).map(t => Number(t.id)).filter(Boolean);
         }
-
+        writeStoredClasses(next.class_topomyns || []);
         setFilters(next);
         updateURL(next);
     };
@@ -620,6 +670,10 @@ export default function HorizontalFilters({ locale }) {
         const newTempFilters = { ...tempFilters, [name]: selectedValues, offset: '0' };
         setFilters(newFilters);
         setTempFilters(newTempFilters);
+        if (name === 'class_topomyns') {
+            if ((selectedValues || []).length === 0) clearStoredClasses();
+            else writeStoredClasses(selectedValues);
+        }
         updateURL(newFilters);
     };
 
@@ -726,6 +780,7 @@ export default function HorizontalFilters({ locale }) {
         };
         setFilters(clearedFilters);
         setTempFilters(clearedFilters);
+        clearStoredClasses();
         updateURL(clearedFilters);
     };
 

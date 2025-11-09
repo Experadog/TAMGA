@@ -35,11 +35,15 @@
     }
 
     &__desc {
-        font-weight: 400;
-        font-size: rem(18);
-        line-height: 160%;
-        color: var(--color-dark-20);
+        font-weight: 500;
+        font-size: rem(16);
+        line-height: 100%;
+        color: var(--color-dark);
         margin-top: rem(16);
+
+        p {
+            --paragraphMarginBottom: 20px;
+        }
     }
 
     &__dictionaries {

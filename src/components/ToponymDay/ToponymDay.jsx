@@ -52,8 +52,6 @@ export async function ToponymDay({ locale, searchParams }) {
   const basePath = `/${locale}`;
   const { prevHref, nextHref } = navHrefs(basePath, current, min, max, now);
 
-  console.log('DEBUG dateISO=', dateISO, 'sp=', sp);
-
   return (
     <section className={styles.toponymDay}>
       <ToponymDayCard

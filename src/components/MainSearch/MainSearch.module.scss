@@ -68,6 +68,17 @@
   }
 }
 
+.fieldSecond {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  border-radius: 12px;
+  background: #F4F4F4;
+  padding-left: 44px;
+  width: 100%;
+}
+
 /* Лупа слева */
 .iconSearch {
   position: absolute;
@@ -173,4 +184,20 @@
 .item.active,
 .item[aria-selected="true"] {
   background: #EBF2FF;
+}
+
+.cardRoot {
+  width: 100%;
+  border-radius: rem(24);
+  padding: rem(24);
+  border-radius: rem(16);
+
+  @include tablet {
+    padding: rem(24);
+  }
+
+  @include mobile {
+    box-shadow: none;
+    padding: 0;
+  }
 }

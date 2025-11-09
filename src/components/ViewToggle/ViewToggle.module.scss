@@ -43,3 +43,21 @@
   border-color: #0094EB;
   color: #fff;
 }
+
+.toggleWrap[data-glossary='true'] {
+  @include mobile {
+    display: inline-flex;
+  }
+
+  @include tablet {
+    .btnHorizontal {
+      display: none;
+    }
+  }
+
+  @include mobile {
+    .btnHorizontal {
+      display: none;
+    }
+  }
+}

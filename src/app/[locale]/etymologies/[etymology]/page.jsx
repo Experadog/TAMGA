@@ -123,7 +123,7 @@ export default async function EtymologyPage({ params }) {
     headings.push(...getHeadings());
 
     const description = getLocalizedValue(data, 'description', locale);
-    const cleanDescription = stripHtmlTags(description);
+    const cleanDescription = cleanHtml(description);
 
     const t = await getTranslations({ locale, namespace: 'toponym' });
     const l = await getTranslations({ locale, namespace: 'link' });

@@ -50,6 +50,8 @@
 
   &:hover {
     background: #F5F5F5;
+    text-decoration: none;
+    color: #383838;
   }
 
   &:active {
@@ -91,6 +93,8 @@
 .buttonBlock {
   display: flex;
   justify-content: center;
+
+
 }
 
 .buttonDown {

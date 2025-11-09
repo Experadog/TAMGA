@@ -140,10 +140,6 @@
 
   @include hover {
     text-decoration: none;
-
-    & .blog__contentLink {
-      color: var(--color-accent);
-    }
   }
 
   @include tablet {
@@ -153,6 +149,16 @@
 
   @include mobile {
     flex-direction: column;
+  }
+}
+
+.blog__contentLink {
+  color: #303030;
+  text-decoration: none;
+
+  &:hover {
+    color: #303030;
+    text-decoration: none;
   }
 }
 

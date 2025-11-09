@@ -1,4 +1,4 @@
-import HorizontalFilters from "@/components/HorizontalFilters";
+import HorizontalFilters from "@/components/HorizontalFilters/HorizontalFilters";
 import { MainSearch } from "@/components/MainSearch/MainSearch";
 import { Pagination } from "@/components/Pagination";
 import ToponymCard from "@/components/ToponymCard/ToponymCard";
@@ -45,6 +45,14 @@ export default async function SearchPage({ params, searchParams }) {
 
   const hasMeaningfulFilters = arraysPresent || hasSearch || hasStarts || hasOrdering;
 
+  if (!hasOrdering) {
+    const orderingByLocale =
+      locale === 'ky' ? 'name_ky' :
+        locale === 'en' ? 'name_en' :
+          'name_ru';
+    paramsFromUrl.set('ordering', orderingByLocale);
+  }
+
   let data = [];
   let totalCount = 0;
 
@@ -71,6 +79,30 @@ export default async function SearchPage({ params, searchParams }) {
     totalCount = 0;
   }
 
+  const rawQ = (paramsFromUrl.get('search') || '').trim();
+  const norm = (s) =>
+    (s || '')
+      .trim()
+      .toLocaleLowerCase('ru')
+      .replaceAll('ё', 'е');
+
+  if (rawQ) {
+    const q = norm(rawQ);
+
+    data = data.slice().sort((a, b) => {
+      const an = norm(getLocalizedValue(a, 'name', locale) || '');
+      const bn = norm(getLocalizedValue(b, 'name', locale) || '');
+
+      const aStarts = an.startsWith(q) ? 0 : 1;
+      const bStarts = bn.startsWith(q) ? 0 : 1;
+
+      if (aStarts !== bStarts) return aStarts - bStarts;
+
+      return (getLocalizedValue(a, 'name', locale) || '')
+        .localeCompare(getLocalizedValue(b, 'name', locale) || '', locale);
+    });
+  }
+
   const identicals = data.flatMap(t =>
     Array.isArray(t.identical_toponyms) ? t.identical_toponyms : []
   );
@@ -85,7 +117,7 @@ export default async function SearchPage({ params, searchParams }) {
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-  const view = sp?.view === 'grid' ? 'grid' : 'list';
+  const view = sp?.view === 'vertical' ? 'vertical' : 'horizontal';
 
   return (
     <>
@@ -122,7 +154,7 @@ export default async function SearchPage({ params, searchParams }) {
 
       <section>
         <Suspense fallback={null}>
-          <HorizontalFilters locale={locale} />
+          <HorizontalFilters locale={locale} pageKind="search" />
         </Suspense>
       </section>
 
@@ -130,15 +162,15 @@ export default async function SearchPage({ params, searchParams }) {
         <div className={styles.results__count}>
           <h3 className={styles.results__count__heading}>Найдено результатов: {totalCount}</h3>
           <Suspense fallback={null}>
-            <ViewToggle />
+            <ViewToggle modes={['horizontal', 'vertical']} />
           </Suspense>
         </div>
         {data.length > 0 && (
-          <ul className={`${styles.results__cards} ${view === 'grid' ? styles.results__cards_grid : styles.results__cards_list}`}>
+          <ul className={`${styles.results__cards} ${view === 'vertical' ? styles.results__cards_grid : styles.results__cards_list}`}>
             {
               cards.map(({ item, osmData }) => (
                 <li key={item.id}>
-                  {view === 'grid' ? (
+                  {view === 'vertical' ? (
                     <ToponymCardGrid toponym={item} osmData={osmData} locale={locale} />
                   ) : (
                     <ToponymCard toponym={item} osmData={osmData} locale={locale} />

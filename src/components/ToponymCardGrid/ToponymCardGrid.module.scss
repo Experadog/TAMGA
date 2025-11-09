@@ -42,12 +42,15 @@
   min-width: rem(270);
   min-height: rem(200);
 
-  img {
-    width: rem(270);
+  @include tablet {
+    width: rem(308);
     height: rem(200);
   }
 
-  @include mobile {}
+  @include mobile {
+    width: rem(303);
+    height: rem(156);
+  }
 }
 
 .cardContent {

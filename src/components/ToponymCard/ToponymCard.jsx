@@ -13,11 +13,14 @@ function ToponymCard({ osmData, toponym, locale }) {
     region,
     terms_topomyns,
     matching_toponyms_count,
-    osm_id
+    osm_id,
+    name_en,
   } = toponym;
 
+  const nameEN = (name_en || '').normalize('NFC');
+
   return (
-    <Link href={`/${slug}`} className={styles.cardContainer}>
+    <div className={styles.cardContainer}>
       <MapClickable>
         <div className={styles.cardImage}>
           <ClientMapWrapper toponym={toponym} osmId={osm_id} osmData={osmData} />
@@ -25,16 +28,31 @@ function ToponymCard({ osmData, toponym, locale }) {
       </MapClickable>
       <div className={styles.cardContent}>
         <div className={styles.topContent}>
-          <h3 className={styles.title}>{getLocalizedValue(toponym, 'name', locale)}</h3>
-          <p className={styles.description}>{getLocalizedValue(region[0], 'name', locale)}</p>
-          <p className={styles.description}>{getLocalizedValue(terms_topomyns, 'name', locale)}</p>
+          <h3 className={styles.title}>
+            {getLocalizedValue(toponym, 'name', locale)}
+          </h3>
+          <p className={styles.description}>
+            {getLocalizedValue(Array.isArray(region) ? region[0] : region, 'name', locale) || ''}
+          </p>
+          <p className={styles.description}>
+            {getLocalizedValue(terms_topomyns, 'name', locale)}
+          </p>
           <p className={styles.descriptionBody}>
-            {cleanHtml(stripHtmlTags(getLocalizedValue(toponym, 'description', locale)))}
+            {cleanHtml(stripHtmlTags(getLocalizedValue(toponym, 'description', locale) || ''))}
           </p>
         </div>
         <div className={styles.bottomContent}>
-          <p className={styles.similar}>{matching_toponyms_count} cовпадений</p>
-          <button className={styles.moreBtn}>
+          <Link
+            href={{
+              pathname: `/glossary/${nameEN}`,
+              query: { search: nameEN }
+            }}
+            className={styles.similar}
+            prefetch={false}
+          >
+            {matching_toponyms_count} cовпадений
+          </Link>
+          <Link href={`/${slug}`} className={styles.moreBtn} prefetch={false}>
             Подробнее
             <Image
               src={arrow}
@@ -43,10 +61,10 @@ function ToponymCard({ osmData, toponym, locale }) {
               height={24}
               className={styles.moreArrow}
             />
-          </button>
+          </Link>
         </div>
       </div>
-    </Link>
+    </div>
   )
 }
 

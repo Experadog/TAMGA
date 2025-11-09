@@ -247,7 +247,14 @@ export default async function ToponymPage({ params }) {
         },
         {
             name: b('catalog'),
-            href: `/${locale}/map`,
+            href: {
+                pathname: `/${locale}/map`,
+                query: {
+                    startswith: 'а',
+                    offset: '0',
+                    language: locale
+                }
+            },
             isLink: true
         },
         {
@@ -450,7 +457,7 @@ export default async function ToponymPage({ params }) {
                             <ToponymDetails heading={t('archival-records.heading')} headingLevel={2}>
                                 <ul className={clss.toponymArchivedRecords}>
                                     {archived_records?.map((record, index) => (
-                                        <li key={record} className={clss.toponymArchivedRecord}>
+                                        <li key={record?.id ?? record?.file ?? index} className={clss.toponymArchivedRecord}>
                                             <Link href={record?.file} target="_blank" rel="noopener noreferrer">
                                                 <img
                                                     src={record?.file}

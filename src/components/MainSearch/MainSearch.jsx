@@ -10,7 +10,7 @@ import styles from './MainSearch.module.scss';
 
 const DEBOUNCE_MS = 100;
 
-export const MainSearch = ({ locale: localeProp }) => {
+export const MainSearch = ({ locale: localeProp, variant = 'default' }) => {
   const router = useRouter();
   const sp = useSearchParams();
   const pathname = usePathname();
@@ -124,8 +124,11 @@ export const MainSearch = ({ locale: localeProp }) => {
 
       params.delete('page');
 
+      const isSearchPage = pathname.endsWith('/search');
+      const isGlossaryPage = pathname.includes('/glossary');
+      const basePath = isGlossaryPage ? `/${locale}/glossary` : `/${locale}/search`;
       const qs = params.toString();
-      const targetUrl = qs ? `/${locale}/search?${qs}` : `/${locale}/search`;
+      const targetUrl = qs ? `${basePath}?${qs}` : basePath;
 
       // Закрываем дропдаун и убираем фокус
       setOpen(false);
@@ -134,11 +137,8 @@ export const MainSearch = ({ locale: localeProp }) => {
       setUsedKeyboardNav(false);
       inputRef.current?.blur();
 
-      if (pathname.endsWith('/search')) {
-        router.replace(targetUrl, { scroll: false });
-      } else {
-        router.push(targetUrl, { scroll: false });
-      }
+      if (isSearchPage || isGlossaryPage) router.replace(targetUrl, { scroll: false });
+      else router.push(targetUrl, { scroll: false });
     },
     [router, pathname, sp, locale]
   );
@@ -201,78 +201,154 @@ export const MainSearch = ({ locale: localeProp }) => {
   const onWhereAmI = () => {
     setOpen(false);
     inputRef.current?.blur();
-    router.push(`/${locale}/map?locate=1`);
+    router.push(`/${locale}/map?startswith=а&offset=0&language=${locale}&locate=1`);
   };
 
   return (
-    <div className={styles.mainSearch} ref={wrapRef}>
-      <form className={styles.card} onSubmit={onSubmit} role="search" aria-label="Главный поиск">
-        <div className={styles.field}>
-          <span className={styles.iconSearch} aria-hidden="true">
-            {/* Лупа (SVG) */}
-            <Image className={styles.labelSearch} src={search} width={24} height={24} alt="" />
-          </span>
-          <input
-            ref={inputRef}
-            className={styles.input}
-            type="search"
-            name="search"
-            autoComplete="off"
-            placeholder={'Поиск топонимов'}
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setOpen(true);
-              setActiveIdx(-1);
-              setUsedKeyboardNav(false);
-            }}
-            onFocus={() => {
-              setIsFocused(true);
-              if (items.length) setOpen(true);
-            }}
-            onBlur={() => {
-              setTimeout(() => setOpen(false), 0);
-              setIsFocused(false);
-              setUsedKeyboardNav(false);
-            }}
-            onKeyDown={onKeyDown}
-          />
+    <>
+      {variant === 'default' ? (
+        <div className={styles.mainSearch} ref={wrapRef}>
+          <form className={styles.card} onSubmit={onSubmit} role="search" aria-label="Главный поиск">
+            <div className={styles.field}>
+              <span className={styles.iconSearch} aria-hidden="true">
+                {/* Лупа (SVG) */}
+                <Image className={styles.labelSearch} src={search} width={24} height={24} alt="" />
+              </span>
+              <input
+                ref={inputRef}
+                className={styles.input}
+                type="search"
+                name="search"
+                autoComplete="off"
+                placeholder={'Поиск топонимов'}
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setOpen(true);
+                  setActiveIdx(-1);
+                  setUsedKeyboardNav(false);
+                }}
+                onFocus={() => {
+                  setIsFocused(true);
+                  if (items.length) setOpen(true);
+                }}
+                onBlur={() => {
+                  setTimeout(() => setOpen(false), 0);
+                  setIsFocused(false);
+                  setUsedKeyboardNav(false);
+                }}
+                onKeyDown={onKeyDown}
+              />
 
-          {/* Выпадающий список */}
-          {open && items.length > 0 && (
-            <ul className={styles.dropdown} role="listbox">
-              {items.map((it, idx) => {
-                const title = getLocalizedValue(it, 'name', locale);
-                return (
-                  <li
-                    key={`${it.id}-${idx}`}
-                    role="option"
-                    aria-selected={idx === activeIdx}
-                    className={`${styles.item} ${idx === activeIdx ? styles.active : ''}`}
-                    onMouseDown={(e) => e.preventDefault()}
-                    // onMouseEnter={() => setActiveIdx(idx)}
-                    onClick={() => onPick(it)}
-                  >
-                    {title}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+              {/* Выпадающий список */}
+              {open && items.length > 0 && (
+                <ul className={styles.dropdown} role="listbox">
+                  {items.map((it, idx) => {
+                    const title = getLocalizedValue(it, 'name', locale);
+                    return (
+                      <li
+                        key={`${it.id}-${idx}`}
+                        role="option"
+                        aria-selected={idx === activeIdx}
+                        className={`${styles.item} ${idx === activeIdx ? styles.active : ''}`}
+                        onMouseDown={(e) => e.preventDefault()}
+                        // onMouseEnter={() => setActiveIdx(idx)}
+                        onClick={() => onPick(it)}
+                      >
+                        {title}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+
+            <button
+              type="button"
+              className={styles.whereBtn}
+              onClick={onWhereAmI}
+            >
+              <span className={styles.iconAnchor} aria-hidden="true">
+                {/* Якорь (SVG) */}
+                <Image className={styles.labelHuman} src={human} width={24} height={24} alt="" />
+              </span>
+              Где я?
+            </button>
+          </form>
         </div>
-
-        <button
-          type="button"
-          className={styles.whereBtn}
-          onClick={onWhereAmI}
+      ) : (
+        <form
+          className={`${styles.card} ${styles.cardRoot}`}
+          onSubmit={onSubmit}
+          role="search"
+          aria-label="Главный поиск"
         >
-          <span className={styles.iconAnchor} aria-hidden="true">
-            {/* Якорь (SVG) */}
-            <Image className={styles.labelHuman} src={human} width={24} height={24} alt="" />
-          </span>
-          Где я?
-        </button>
-      </form>
-    </div>
+          <div className={`${styles.field} ${styles.fieldSecond}`}>
+            <span className={styles.iconSearch} aria-hidden="true">
+              {/* Лупа (SVG) */}
+              <Image className={styles.labelSearch} src={search} width={24} height={24} alt="" />
+            </span>
+            <input
+              ref={inputRef}
+              className={styles.input}
+              type="search"
+              name="search"
+              autoComplete="off"
+              placeholder={'Поиск по каталогу'}
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setOpen(true);
+                setActiveIdx(-1);
+                setUsedKeyboardNav(false);
+              }}
+              onFocus={() => {
+                setIsFocused(true);
+                if (items.length) setOpen(true);
+              }}
+              onBlur={() => {
+                setTimeout(() => setOpen(false), 0);
+                setIsFocused(false);
+                setUsedKeyboardNav(false);
+              }}
+              onKeyDown={onKeyDown}
+            />
+
+            {/* Выпадающий список */}
+            {open && items.length > 0 && (
+              <ul className={styles.dropdown} role="listbox">
+                {items.map((it, idx) => {
+                  const title = getLocalizedValue(it, 'name', locale);
+                  return (
+                    <li
+                      key={`${it.id}-${idx}`}
+                      role="option"
+                      aria-selected={idx === activeIdx}
+                      className={`${styles.item} ${idx === activeIdx ? styles.active : ''}`}
+                      onMouseDown={(e) => e.preventDefault()}
+                      // onMouseEnter={() => setActiveIdx(idx)}
+                      onClick={() => onPick(it)}
+                    >
+                      {title}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+
+          {/* <button
+            type="button"
+            className={styles.whereBtn}
+            onClick={onWhereAmI}
+          >
+            <span className={styles.iconAnchor} aria-hidden="true">
+              <Image className={styles.labelHuman} src={human} width={24} height={24} alt="" />
+            </span>
+            Где я?
+          </button> */}
+        </form>
+      )}
+    </>
   );
 };

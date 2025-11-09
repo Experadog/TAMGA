@@ -10,8 +10,18 @@ async function Header({ locale }) {
     const t = await getTranslations({ locale, namespace: 'header.navigation' });
     const MENU_ITEMS = [
         { name: t('search'), path: '/search' },
-        { name: t('glossary'), path: '/' },
-        { name: t('map'), path: '/map' },
+        { name: t('gloss'), path: '/glossary' },
+        {
+            name: t('map'),
+            path: {
+                pathname: `/map`,
+                query: {
+                    startswith: 'а',
+                    offset: '0',
+                    language: locale
+                }
+            },
+        },
         { name: t('blog'), path: '/blog' },
         { name: t('about'), path: '/about' },
     ]

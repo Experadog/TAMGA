@@ -14,8 +14,16 @@ import 'leaflet/dist/leaflet.css';
 
 export default function CountryMap({ locale }) {
     const mapRef = useRef();
-
     const sp = useSearchParams();
+
+    const cleanSearch = useMemo(() => {
+        const raw = sp.get('search') || '';
+        if (!raw) return '';
+        try { return decodeURIComponent(decodeURIComponent(raw)); } catch { }
+        try { return decodeURIComponent(raw); } catch { }
+        return raw;
+    }, [sp]);
+
     // Строим URL из ФАКТИЧЕСКИХ query-параметров
     const apiUrl = useMemo(() => {
         const params = new URLSearchParams();
@@ -24,9 +32,13 @@ export default function CountryMap({ locale }) {
             if (v && String(v).trim() !== '') params.append(k, v);
         }
 
+        if (params.has('search')) {
+            params.set('search', cleanSearch);
+        }
+
         const qs = params.toString();
         return `/api/toponyms/toponym/list/maps${qs ? `?${qs}` : ''}`;
-    }, [sp]);
+    }, [sp, cleanSearch]);
     const { data = {}, isLoading: loading, isError: error } = useFetch(apiUrl);
 
     // Извлекаем топонимы и пагинацию из ответа

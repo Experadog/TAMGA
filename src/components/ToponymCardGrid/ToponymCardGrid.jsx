@@ -13,11 +13,14 @@ function ToponymCardGrid({ osmData, toponym, locale }) {
     region,
     terms_topomyns,
     matching_toponyms_count,
-    osm_id
+    osm_id,
+    name_en,
   } = toponym;
 
+  const nameEN = (name_en || '').normalize('NFC');
+
   return (
-    <Link href={`/${slug}`} className={styles.cardContainer}>
+    <div className={styles.cardContainer}>
       <MapClickable>
         <div className={styles.cardImage}>
           <ClientMapWrapper toponym={toponym} osmId={osm_id} osmData={osmData} />
@@ -33,8 +36,17 @@ function ToponymCardGrid({ osmData, toponym, locale }) {
           </p>
         </div>
         <div className={styles.bottomContent}>
-          <p className={styles.similar}>{matching_toponyms_count} cовпадений</p>
-          <button className={styles.moreBtn}>
+          <Link
+            href={{
+              pathname: `/glossary/${nameEN}`,
+              query: { search: nameEN }
+            }}
+            className={styles.similar}
+            prefetch={false}
+          >
+            {matching_toponyms_count} cовпадений
+          </Link>
+          <Link href={`/${slug}`} className={styles.moreBtn} prefetch={false}>
             Подробнее
             <Image
               src={arrow}
@@ -43,10 +55,10 @@ function ToponymCardGrid({ osmData, toponym, locale }) {
               height={24}
               className={styles.moreArrow}
             />
-          </button>
+          </Link>
         </div>
       </div>
-    </Link>
+    </div>
   )
 }
 

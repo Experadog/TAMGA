@@ -43,7 +43,7 @@ export default async function Blog({ params }) {
         },
         {
             name: data.autors[0].first_name + ' ' + data.autors[0].last_name,
-            href: `/${locale}/map`,
+            href: `#`, //Сделать тут ссылку на страницу автора, её сверстать
             isLink: true
         },
         {

@@ -98,9 +98,13 @@
 .toponymDesc {
     font-weight: 500;
     font-size: rem(16);
-    line-height: 150%;
+    line-height: 100%;
     color: var(--color-dark);
     margin-top: rem(16);
+
+    p {
+        --paragraphMarginBottom: 20px;
+    }
 }
 
 .toponymPlastList {

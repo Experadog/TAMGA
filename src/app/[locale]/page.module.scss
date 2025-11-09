@@ -206,6 +206,8 @@
 
     &:hover {
         background: #F5F5F5;
+        color: #383838;
+        text-decoration: none;
     }
 
     &:active {
@@ -223,11 +225,44 @@
     height: rem(724);
     border-radius: rem(16);
 
+    @include mobile {
+        height: rem(488);
+    }
+}
+
+.defaultImage {
+    width: 100%;
+    height: rem(733);
+
     @include tablet {
-        //
+        display: none;
     }
 
     @include mobile {
+        display: none;
+    }
+}
+
+.mapTablet {
+    display: none;
+
+    @include tablet {
+        display: block;
+        width: 100%;
+        height: rem(733);
+    }
+
+    @include mobile {
+        display: none;
+    }
+}
+
+.mapMobile {
+    display: none;
+
+    @include mobile {
+        display: block;
+        width: 100%;
         height: rem(488);
     }
 }
