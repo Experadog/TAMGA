@@ -1,9 +1,9 @@
 import avaImgFallback from '@/assets/images/ava-img-fallback.png';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Link } from '@/i18n/navigation';
 import { cleanHtml, formatDate, getLocalizedValue } from '@/lib/utils';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
-import Link from 'next/link';
 import clss from './page.module.scss';
 import './styles.scss';
 

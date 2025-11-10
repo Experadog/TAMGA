@@ -1,7 +1,6 @@
 import { routing } from "@/i18n/routing";
 import { cleanHtml, getLocalizedValue, stripHtmlTags } from "@/lib/utils";
 import Image from "next/image";
-import Link from "next/link";
 
 import { getTranslations } from "next-intl/server";
 import { ToponymAsideItem } from "./_components/ToponymAsideItem";
@@ -15,6 +14,8 @@ import chevronIcon from '@/assets/icons/chevron.svg';
 import coordinatesIcon from '@/assets/icons/coordinates.svg';
 import twoArrowsIcon from '@/assets/icons/two-arrow.svg';
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Link } from "@/i18n/navigation";
+import { getStartsWithByLocale } from "@/lib/utils/getStartsWithByLocale";
 import { headers } from "next/headers";
 import ClientMapWrapper from "./_components/ClientMapWrapper";
 import { ToponymPernamentLink } from "./_components/ToponymPernamentLink/ToponymPernamentLink";
@@ -199,6 +200,7 @@ export async function generateMetadata({ params }) {
 
 export default async function ToponymPage({ params }) {
     const { locale, toponym } = await params;
+    const startswith = getStartsWithByLocale(locale);
 
     const headersList = await headers();
     const host = headersList.get('host') || '';
@@ -248,9 +250,9 @@ export default async function ToponymPage({ params }) {
         {
             name: b('catalog'),
             href: {
-                pathname: `/${locale}/map`,
+                pathname: `/map`,
                 query: {
-                    startswith: 'а',
+                    startswith,
                     offset: '0',
                     language: locale
                 }

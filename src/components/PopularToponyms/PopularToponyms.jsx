@@ -1,5 +1,5 @@
+import { Link } from '@/i18n/navigation';
 import { fetchOSMData } from '@/lib/utils/fetchOSMData';
-import Link from 'next/link';
 import ToponymCard from '../ToponymCard/ToponymCard';
 import styles from './PopularToponyms.module.scss';
 

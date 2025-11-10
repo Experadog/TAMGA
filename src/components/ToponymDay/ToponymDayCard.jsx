@@ -1,9 +1,9 @@
 import ClientMapWrapper from '@/app/[locale]/[toponym]/_components/ClientMapWrapper';
 import arrow from '@/assets/icons/arrowRight.svg';
 import chevron from '@/assets/icons/chevron.svg';
+import { Link } from '@/i18n/navigation';
 import { cleanHtml, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
 import Image from 'next/image';
-import Link from 'next/link';
 import styles from './ToponymDay.module.scss';
 
 function ToponymDayCard({ osmData, toponym, locale, dateISO, prevHref, nextHref }) {

@@ -2,21 +2,24 @@ import { getTranslations } from 'next-intl/server';
 import { BurgerMenu } from '../BurgerMenu';
 import { LocaleSwitcher } from '../LocaleSwitcher';
 
+import { Link } from '@/i18n/navigation';
+import { getStartsWithByLocale } from '@/lib/utils/getStartsWithByLocale';
 import Image from 'next/image';
-import Link from 'next/link';
 import styles from './index.module.scss';
 
 async function Header({ locale }) {
     const t = await getTranslations({ locale, namespace: 'header.navigation' });
+    const startswith = getStartsWithByLocale(locale);
+
     const MENU_ITEMS = [
         { name: t('search'), path: '/search' },
-        { name: t('gloss'), path: '/glossary' },
+        { name: t('glossary'), path: '/glossary' },
         {
             name: t('map'),
             path: {
                 pathname: `/map`,
                 query: {
-                    startswith: 'а',
+                    startswith,
                     offset: '0',
                     language: locale
                 }

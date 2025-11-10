@@ -1,5 +1,4 @@
-import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import clss from './Breadcrumbs.module.scss';
 
 export const Breadcrumbs = ({ items, ariaLabel = 'Breadcrumb navigation', className }) => {

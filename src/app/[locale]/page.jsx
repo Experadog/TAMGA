@@ -10,8 +10,9 @@ import { MainSearch } from "@/components/MainSearch/MainSearch";
 // import MapClient from "@/components/Map/MapClient";
 import { PopularToponyms } from "@/components/PopularToponyms/PopularToponyms";
 import { ToponymDay } from "@/components/ToponymDay/ToponymDay";
+import { Link } from "@/i18n/navigation";
+import { getStartsWithByLocale } from "@/lib/utils/getStartsWithByLocale";
 import Image from "next/image";
-import Link from "next/link";
 import { Suspense } from "react";
 import styles from './page.module.scss';
 
@@ -79,6 +80,7 @@ export default async function Home({ params, searchParams }) {
   const { locale } = await params;
   const sp = await searchParams
   setRequestLocale(locale);
+  const startswith = getStartsWithByLocale(locale);
   const t = await getTranslations({ locale, namespace: 'home' });
 
   return (
@@ -113,9 +115,9 @@ export default async function Home({ params, searchParams }) {
           </p>
           <Link
             href={{
-              pathname: `/${locale}/map`,
+              pathname: `/map`,
               query: {
-                startswith: 'а',
+                startswith,
                 offset: '0',
                 language: locale,
               },
@@ -136,9 +138,9 @@ export default async function Home({ params, searchParams }) {
         <div className={styles.buttonBlock}>
           <Link
             href={{
-              pathname: `/${locale}/map`,
+              pathname: `/map`,
               query: {
-                startswith: 'а',
+                startswith,
                 offset: '0',
                 language: locale,
               },

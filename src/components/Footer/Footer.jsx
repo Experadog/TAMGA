@@ -28,62 +28,62 @@ async function Footer({ locale }) {
                 </div>
                 <div className="footer__content">
                     <div className="footer__column">
-                        <Link href='/' className='footer__column-main-link'>{t('about-neuros.heading')}</Link>
+                        <Link href='#' className='footer__column-main-link'>{t('about-neuros.heading')}</Link>
                         <ul className='footer__column-list'>
                             <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='/'>{t('about-neuros.company-overview')}</Link>
+                                <Link className='footer__column-link' href='#'>{t('about-neuros.company-overview')}</Link>
                             </li>
                             <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='/'>{t('about-neuros.careers')}</Link>
+                                <Link className='footer__column-link' href='#'>{t('about-neuros.careers')}</Link>
                             </li>
                             <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='/'>{t('about-neuros.press-media')}</Link>
+                                <Link className='footer__column-link' href='#'>{t('about-neuros.press-media')}</Link>
                             </li>
                             <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='/'>{t('about-neuros.testimonials')}</Link>
+                                <Link className='footer__column-link' href='#'>{t('about-neuros.testimonials')}</Link>
                             </li>
                         </ul>
                     </div>
                     <div className="footer__column">
-                        <Link href='/' className='footer__column-main-link'>{t('support-contact.heading')}</Link>
+                        <Link href='#' className='footer__column-main-link'>{t('support-contact.heading')}</Link>
                         <ul className='footer__column-list'>
                             <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='/'>{t('support-contact.contact-us')}</Link>
+                                <Link className='footer__column-link' href='#'>{t('support-contact.contact-us')}</Link>
                             </li>
                             <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='/'>{t('support-contact.technical-support')}</Link>
+                                <Link className='footer__column-link' href='#'>{t('support-contact.technical-support')}</Link>
                             </li>
                             <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='/'>{t('support-contact.feedback')}</Link>
+                                <Link className='footer__column-link' href='#'>{t('support-contact.feedback')}</Link>
                             </li>
                             <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='/'>{t('support-contact.community-form')}</Link>
+                                <Link className='footer__column-link' href='#'>{t('support-contact.community-form')}</Link>
                             </li>
                         </ul>
                     </div>
                     <div className="footer__column">
-                        <Link href='/' className='footer__column-main-link'>{t('connect.heading')}</Link>
+                        <Link href='#' className='footer__column-main-link'>{t('connect.heading')}</Link>
                         <ul className='footer__column-list'>
                             <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='/'>
+                                <Link className='footer__column-link' href='#'>
                                     <Image src={star} width='17' height='17' alt='' />
                                     Instagram
                                 </Link>
                             </li>
                             <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='/'>
+                                <Link className='footer__column-link' href='#'>
                                     <Image src={star} width='17' height='17' alt='' />
                                     Facebook
                                 </Link>
                             </li>
                             <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='/'>
+                                <Link className='footer__column-link' href='#'>
                                     <Image src={star} width='17' height='17' alt='' />
                                     Twitter / X
                                 </Link>
                             </li>
                             <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='/'>
+                                <Link className='footer__column-link' href='#'>
                                     <Image src={star} width='17' height='17' alt='' />
                                     Linkedin
                                 </Link>
@@ -96,13 +96,13 @@ async function Footer({ locale }) {
                 <span className='footer__copyright'>{t('copyright.year')} · {t('copyright.description')}.</span>
                 <ul className='footer__extra-list'>
                     <li className='footer__extra-item'>
-                        <Link className='footer__extra-link' href='/'>{t('compliance.term-of-use')}</Link>
+                        <Link className='footer__extra-link' href='#'>{t('compliance.term-of-use')}</Link>
                     </li>
                     <li className='footer__extra-item'>
-                        <Link className='footer__extra-link' href='/'>{t('compliance.privacy-policy')}</Link>
+                        <Link className='footer__extra-link' href='#'>{t('compliance.privacy-policy')}</Link>
                     </li>
                     <li className='footer__extra-item'>
-                        <Link className='footer__extra-link' href='/'>{t('compliance.security')}</Link>
+                        <Link className='footer__extra-link' href='#'>{t('compliance.security')}</Link>
                     </li>
                 </ul>
             </div>

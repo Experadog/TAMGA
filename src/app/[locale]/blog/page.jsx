@@ -1,10 +1,10 @@
 import blogImgFallback from '@/assets/images/blog-img-fallback.png';
 import { Hero } from '@/components/Hero/Hero';
 import { Pagination } from '@/components/Pagination';
+import { Link } from '@/i18n/navigation';
 import { cleanHtml, formatDate, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from 'next/image';
-import Link from 'next/link';
 import styles from './page.module.scss';
 
 
@@ -52,7 +52,7 @@ export default async function Blog({ params, searchParams }) {
                 <ul className={styles.blog__contentList}>
                     {blogs.map((blog) => (
                         <li className={styles.blog__contentItem} key={blog.id}>
-                            <Link href={`blog/${blog.slug}`} className={styles.blog__contentItemMainLink}>
+                            <Link href={`/blog/${blog.slug}`} className={styles.blog__contentItemMainLink}>
                                 {blog?.image ? (
                                     <Image
                                         className={styles.blog__contentItemImg}

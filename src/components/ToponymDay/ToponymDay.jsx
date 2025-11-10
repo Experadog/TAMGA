@@ -1,6 +1,6 @@
+import { Link } from '@/i18n/navigation';
 import { fetchOSMData } from '@/lib/utils/fetchOSMData';
 import { fetchToponymOfDay, navHrefs, pickDateFromParams, toISO } from '@/lib/utils/toponymDay';
-import Link from 'next/link';
 import styles from './ToponymDay.module.scss';
 import ToponymDayCard from './ToponymDayCard';
 

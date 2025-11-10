@@ -98,7 +98,9 @@
 
   @include line-clamp(2);
 
-  max-height: calc(2 * rem(20));
+  p {
+    --paragraphMarginBottom: 8px;
+  }
 }
 
 .topContent {

@@ -1,7 +1,7 @@
 import ClientMapWrapper from '@/app/[locale]/[toponym]/_components/ClientMapWrapper';
 import arrow from '@/assets/icons/arrowRight.svg';
 import { Link } from '@/i18n/navigation';
-import { cleanHtml, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
+import { cleanHtml, getLocalizedValue } from '@/lib/utils';
 import Image from 'next/image';
 import MapClickable from './MapClickable';
 import styles from './ToponymCard.module.scss';
@@ -18,6 +18,9 @@ function ToponymCard({ osmData, toponym, locale }) {
   } = toponym;
 
   const nameEN = (name_en || '').normalize('NFC');
+
+  const description = getLocalizedValue(toponym, 'description', locale) || '';
+  const cleanDescription = cleanHtml(description);
 
   return (
     <div className={styles.cardContainer}>
@@ -37,9 +40,9 @@ function ToponymCard({ osmData, toponym, locale }) {
           <p className={styles.description}>
             {getLocalizedValue(terms_topomyns, 'name', locale)}
           </p>
-          <p className={styles.descriptionBody}>
-            {cleanHtml(stripHtmlTags(getLocalizedValue(toponym, 'description', locale) || ''))}
-          </p>
+          <div className={styles.descriptionBody} dangerouslySetInnerHTML={{ __html: cleanDescription }}>
+            {/* {cleanHtml(getLocalizedValue(toponym, 'description', locale) || '')} */}
+          </div>
         </div>
         <div className={styles.bottomContent}>
           <Link

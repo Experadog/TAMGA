@@ -1,8 +1,8 @@
 import blogImgFallback from '@/assets/images/blog-img-fallback.png';
+import { Link } from '@/i18n/navigation';
 import { cleanHtml, formatDate, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
 import { getTranslations } from "next-intl/server";
 import Image from 'next/image';
-import Link from 'next/link';
 import styles from './Blog.module.scss';
 
 export default async function Blog({ locale, searchParams }) {
@@ -48,7 +48,7 @@ export default async function Blog({ locale, searchParams }) {
       <ul className={styles.blog__contentList}>
         {blogs.map((blog) => (
           <li className={styles.blog__contentItem} key={blog.id}>
-            <Link href={`blog/${blog.slug}`} className={styles.blog__contentItemMainLink}>
+            <Link href={`/blog/${blog.slug}`} className={styles.blog__contentItemMainLink}>
               {blog?.image ? (
                 <Image
                   className={styles.blog__contentItemImg}
