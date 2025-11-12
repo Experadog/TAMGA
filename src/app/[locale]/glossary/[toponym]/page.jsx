@@ -6,6 +6,17 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import clss from './page.module.scss';
 
+// --- Нормализация для точного сравнения названий ---
+function normalizeName(raw) {
+  const s = String(raw ?? "");
+  const unifiedDashes = s.replace(/[\u2010-\u2015\u2212]/g, "-");
+  const spacesFixed = unifiedDashes
+    .replace(/\s*-\s*/g, "-")
+    .replace(/\s+/g, " ")
+    .trim();
+  return spacesFixed.toLowerCase();
+}
+
 async function fetchMatchesBySlug(rawToponym) {
   const search = decodeURIComponent(String(rawToponym || '')).toLowerCase();
   if (!search) return { results: [], count: 0 };
@@ -49,6 +60,20 @@ export default async function GlossaryToponymPage({ params, searchParams }) {
   const data = await fetchMatchesBySlug(toponym);
   if (!data) throw new Error('Toponym data not found');
 
+  // --- ВЫРЕЗАЕМ НЕИДЕНТИЧНЫЕ НАЗВАНИЯ НА ФРОНТЕ ---
+  const targetRaw =
+    (typeof sp?.search === "string" && sp.search) ? sp.search : toponym;
+  const target = normalizeName(decodeURIComponent(String(targetRaw || "")));
+
+  const filteredResults = (data.results ?? []).filter((item) => {
+    const nKy = normalizeName(getLocalizedValue(item, "name", "ky"));
+    const nRu = normalizeName(getLocalizedValue(item, "name", "ru"));
+    const nEn = normalizeName(getLocalizedValue(item, "name", "en"));
+    return (nKy && nKy === target) || (nRu && nRu === target) || (nEn && nEn === target);
+  });
+
+  const safeData = { results: filteredResults, count: filteredResults.length };
+
   console.log("DATA", data)
 
   return (
@@ -66,9 +91,9 @@ export default async function GlossaryToponymPage({ params, searchParams }) {
             <span className={clss.backText}>Назад</span>
           </Link>
           <span className={clss.dictionary}>Словарь общих слов в Кыргызских топонимах</span>
-          {data.results.length > 0 &&
+          {safeData.results.length > 0 &&
             <ul className={clss.list}>
-              {data.results.map(item => (
+              {safeData.results.map(item => (
                 <li key={item.id} className={clss.itemCard}>
                   <strong className={clss.popupTitle}>{getLocalizedValue(item, 'name', locale)}</strong>
 

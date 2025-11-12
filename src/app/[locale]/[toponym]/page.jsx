@@ -335,7 +335,7 @@ export default async function ToponymPage({ params }) {
                         <section className={clss.toponymArticle__section}>
                             <ToponymDetails heading={t('plast.heading')} headingLevel={2}>
                                 <ul className={clss.toponymPlastList}>
-                                    {[...(plast?.length > 0 ? plast : etymologyPlasts)]
+                                    {/* {[...(plast?.length > 0 ? plast : etymologyPlasts)]
                                         // фильтруем уникальные по названию
                                         .filter(
                                             (item, index, arr) =>
@@ -367,7 +367,59 @@ export default async function ToponymPage({ params }) {
                                                     </span>
                                                 </li>
                                             );
-                                        })}
+                                        })} */}
+                                    {(() => {
+                                        // 1) исходные данные
+                                        const source = [...(plast?.length > 0 ? plast : etymologyPlasts)];
+
+                                        // 2) уникализация по названию пласта (child)
+                                        const seenChild = new Set();
+                                        const uniqByChild = [];
+                                        for (const p of source) {
+                                            const childName = (getLocalizedValue(p, 'name', locale) || '').trim();
+                                            const key = childName.toLowerCase();
+                                            if (!childName || seenChild.has(key)) continue;
+                                            seenChild.add(key);
+                                            uniqByChild.push(p);
+                                        }
+
+                                        // 3) группировка по имени родителя (по тексту, не по id)
+                                        const groupsMap = new Map();
+
+                                        for (const item of uniqByChild) {
+                                            const parentNameRaw = item?.parent ? getLocalizedValue(item.parent, 'name', locale) : null;
+                                            const normalizedParentKey = (parentNameRaw ? parentNameRaw : '__no_parent__').toLowerCase().trim();
+                                            const existed = groupsMap.get(normalizedParentKey);
+                                            if (existed) {
+                                                existed.items.push(item);
+                                            } else {
+                                                groupsMap.set(normalizedParentKey, { parentName: parentNameRaw, items: [item] });
+                                            }
+                                        }
+
+                                        // 4) вывод: в каждой группе показываем parent только у первого элемента
+                                        return Array.from(groupsMap.values()).map((group, gi) =>
+                                            group.items.map((plastItem, idx) => {
+                                                const parentName = group.parentName; // одинаков для группы
+                                                const childName = getLocalizedValue(plastItem, 'name', locale);
+                                                const showParentOnce = Boolean(parentName) && idx === 0;
+                                                const isSublayer = Boolean(parentName);
+
+                                                return (
+                                                    <li key={`${childName || plastItem.name_ky || gi + '-' + idx}`} className={clss.toponymPlast}>
+                                                        {showParentOnce && (
+                                                            <span className={clss.toponym__label}>{parentName}</span>
+                                                        )}
+                                                        <span
+                                                            className={`${clss.toponym__label} ${isSublayer ? clss.toponym__labelChild : ''}`}
+                                                        >
+                                                            {childName}
+                                                        </span>
+                                                    </li>
+                                                );
+                                            })
+                                        );
+                                    })()}
                                 </ul>
                             </ToponymDetails>
                         </section>

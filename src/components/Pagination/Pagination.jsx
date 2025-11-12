@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams, usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import styles from './Pagination.module.scss';
 
 export const Pagination = ({ currentPage = 1, totalPages = 1, totalCount = 0, itemsPerPage = 9 }) => {
@@ -15,7 +15,7 @@ export const Pagination = ({ currentPage = 1, totalPages = 1, totalCount = 0, it
     const createPageURL = (pageNumber) => {
         const params = new URLSearchParams(searchParams);
         params.set('page', pageNumber.toString());
-        return `${pathname}?${params.toString()}`;
+        return `${pathname}?${params.toString()}#results-top`;
     };
 
     // Вычисляем диапазон отображаемых страниц

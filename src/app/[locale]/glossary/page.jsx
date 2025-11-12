@@ -12,6 +12,41 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import styles from './page.module.scss';
 
+function normTitle(it, locale) {
+  // берём локализованное имя; если пусто — фоллбэки
+  const t =
+    (it?.[`name_${locale}`]) ||
+    it?.name_ru ||
+    it?.name_ky ||
+    it?.name_en ||
+    '';
+  return String(t).trim();
+}
+
+function hasNumericSuffix(slug) {
+  return /-\d+$/.test(String(slug || ''));
+}
+
+// Дедупликация по названию: предпочитаем slug БЕЗ числового хвоста
+function dedupePreferBaseSlug(items, locale) {
+  const byTitle = new Map();
+  for (const it of items) {
+    const title = normTitle(it, locale);
+    if (!title) continue;
+    const key = title.toLowerCase();
+    const existing = byTitle.get(key);
+    if (!existing) {
+      byTitle.set(key, it);
+      continue;
+    }
+    // если уже есть — заменяем, только если существующий с цифрой, а новый без
+    if (hasNumericSuffix(existing.slug) && !hasNumericSuffix(it.slug)) {
+      byTitle.set(key, it);
+    }
+  }
+  return Array.from(byTitle.values());
+}
+
 export default async function GlossaryPage({ params, searchParams }) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -52,23 +87,45 @@ export default async function GlossaryPage({ params, searchParams }) {
   let data = [];
   let totalCount = 0;
 
-  paramsFromUrl.set('limit', String(itemsPerPage));
-  paramsFromUrl.set('offset', String(offset));
+  // --- Набираем до 60 уникальных (после дедупа), дозапрашивая батчи по мере надобности
+  const batchSize = itemsPerPage; // можно увеличить до 100 при желании
+  let fetched = 0;                // сколько уже пропустили от начала
+  let uniquePool = [];            // общий мешок из которого возьмём первые 60
+  let keepFetching = true;
 
-  const url = `${process.env.API_URL}/toponyms?${paramsFromUrl.toString()}`;
+  while (keepFetching) {
+    paramsFromUrl.set('limit', String(batchSize));
+    paramsFromUrl.set('offset', String(offset + fetched));
+    const url = `${process.env.API_URL}/toponyms?${paramsFromUrl.toString()}`;
 
-  try {
-    const resp = await fetch(url, { cache: 'no-store' });
-    if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
+    try {
+      const resp = await fetch(url, { cache: 'no-store' });
+      if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
+      const json = await resp.json();
 
-    const json = await resp.json();
-    data = Array.isArray(json?.results) ? json.results : (Array.isArray(json) ? json : []);
-    totalCount = typeof json?.count === 'number' ? json.count : data.length;
-  } catch (err) {
-    console.error('Error fetching toponyms:', err);
-    data = [];
-    totalCount = 0;
+      const batch = Array.isArray(json?.results) ? json.results : (Array.isArray(json) ? json : []);
+      if (typeof json?.count === 'number') totalCount = json.count;
+
+      // добавляем и тут же дедуплицируем пул
+      uniquePool = dedupePreferBaseSlug(uniquePool.concat(batch), locale);
+
+      fetched += batch.length;
+
+      // условия выхода:
+      // - набрали 60 уникальных
+      // - или бэк вернул меньше, чем запросили (кончились данные)
+      // - или fetched достиг totalCount (подстраховка)
+      if (uniquePool.length >= itemsPerPage || batch.length < batchSize || (totalCount && offset + fetched >= totalCount)) {
+        keepFetching = false;
+      }
+    } catch (err) {
+      console.error('Error fetching toponyms:', err);
+      break;
+    }
   }
+
+  // берём первые 60 уникальных для страницы
+  data = uniquePool.slice(0, itemsPerPage);
 
   const cards = await Promise.all(
     data.map(async (item) => {
@@ -96,6 +153,7 @@ export default async function GlossaryPage({ params, searchParams }) {
         </Suspense>
       </section>
 
+      <div id="results-top" />
       <section className={styles.results}>
         <div className={styles.results__count}>
           <h3 className={styles.results__count__heading}>Найдено результатов: {totalCount}</h3>

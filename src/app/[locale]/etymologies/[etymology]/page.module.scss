@@ -99,11 +99,21 @@
     font-weight: 500;
     font-size: rem(16);
     line-height: 100%;
-    color: var(--color-dark);
+    color: var(--color-dark-20);
     margin-top: rem(16);
 
     p {
         --paragraphMarginBottom: 20px;
+    }
+
+    a {
+        color: var(--color-dark-20);
+        text-decoration: underline;
+
+        &:hover {
+            color: #007bff;
+        }
+
     }
 }
 
