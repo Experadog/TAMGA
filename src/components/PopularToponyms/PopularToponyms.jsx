@@ -30,37 +30,9 @@ async function fetchClassToponymsCount() {
   }
 }
 
-// const statisticData = [
-//   {
-//     id: 0,
-//     title: '5,000 +',
-//     description: 'Ороним'
-//   },
-//   {
-//     id: 1,
-//     title: '2,500 +',
-//     description: 'Ойконим'
-//   },
-//   {
-//     id: 2,
-//     title: '5,000 +',
-//     description: 'Антропотопонимы'
-//   },
-//   {
-//     id: 3,
-//     title: '2,000 +',
-//     description: 'Неотопонимы'
-//   },
-//   {
-//     id: 4,
-//     title: '2,400 +',
-//     description: 'Этнотопонимы'
-//   }
-// ]
-
 export async function PopularToponyms({ locale }) {
-
-  const items = (await fetchData()) ?? [];
+  const data = await fetchData();
+  const items = Array.isArray(data?.results) ? data.results : [];
   const statisticData = (await fetchClassToponymsCount()) ?? [];
 
   // Топ-4 по count_visits (по убыванию). Если нет значения — считаем 0.
