@@ -73,13 +73,6 @@ export const ToponymEtymology = ({ etymologies, locale, l }) => {
                                                             );
                                                         })}
                                                     {[...(dict?.dialects_speech ?? [])]
-                                                        // .sort((a, b) => {
-                                                        //     const va = Number(a?.order_by);
-                                                        //     const vb = Number(b?.order_by);
-                                                        //     const aa = Number.isFinite(va) ? va : Infinity;
-                                                        //     const bb = Number.isFinite(vb) ? vb : Infinity;
-                                                        //     return aa - bb;
-                                                        // })
                                                         .map((dial, dialIndex) => {
                                                             const dialName = getLocalizedValue(dial, 'name', locale);
                                                             const dialDesc = getLocalizedValue(dial, 'description', locale);

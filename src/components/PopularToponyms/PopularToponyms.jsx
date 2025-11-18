@@ -1,11 +1,12 @@
 import { Link } from '@/i18n/navigation';
 import { fetchOSMData } from '@/lib/utils/fetchOSMData';
+import { getLocalizedValue } from '../../lib/utils/get-localize-value';
 import ToponymCard from '../ToponymCard/ToponymCard';
 import styles from './PopularToponyms.module.scss';
 
 async function fetchData() {
   try {
-    const resp = await fetch(`${process.env.API_URL}/toponyms/toponym/list/maps`, {
+    const resp = await fetch(`${process.env.API_URL}/toponyms`, {
       next: { revalidate: 300 }
     })
     const data = await resp.json();
@@ -16,37 +17,51 @@ async function fetchData() {
   }
 }
 
-const statisticData = [
-  {
-    id: 0,
-    title: '5,000 +',
-    description: 'Ороним'
-  },
-  {
-    id: 1,
-    title: '2,500 +',
-    description: 'Ойконим'
-  },
-  {
-    id: 2,
-    title: '5,000 +',
-    description: 'Антропотопонимы'
-  },
-  {
-    id: 3,
-    title: '2,000 +',
-    description: 'Неотопонимы'
-  },
-  {
-    id: 4,
-    title: '2,400 +',
-    description: 'Этнотопонимы'
+async function fetchClassToponymsCount() {
+  try {
+    const resp = await fetch(`${process.env.API_URL}/directories/class-topomyns-count`, {
+      next: { revalidate: 300 }
+    })
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching class toponym count:', error);
+    return null;
   }
-]
+}
+
+// const statisticData = [
+//   {
+//     id: 0,
+//     title: '5,000 +',
+//     description: 'Ороним'
+//   },
+//   {
+//     id: 1,
+//     title: '2,500 +',
+//     description: 'Ойконим'
+//   },
+//   {
+//     id: 2,
+//     title: '5,000 +',
+//     description: 'Антропотопонимы'
+//   },
+//   {
+//     id: 3,
+//     title: '2,000 +',
+//     description: 'Неотопонимы'
+//   },
+//   {
+//     id: 4,
+//     title: '2,400 +',
+//     description: 'Этнотопонимы'
+//   }
+// ]
 
 export async function PopularToponyms({ locale }) {
 
   const items = (await fetchData()) ?? [];
+  const statisticData = (await fetchClassToponymsCount()) ?? [];
 
   // Топ-4 по count_visits (по убыванию). Если нет значения — считаем 0.
   const top4 = [...items]
@@ -81,8 +96,7 @@ export async function PopularToponyms({ locale }) {
                 <ToponymCard toponym={item} osmData={osmData} locale={locale} />
               </li>
             ))
-          )
-          }
+          )}
         </ul>
 
         <div className={styles.buttonBlock}>
@@ -92,12 +106,14 @@ export async function PopularToponyms({ locale }) {
 
 
       <div className={styles.popularToponymsBottom}>
-        {statisticData.map(item => (
-          <ul key={item.id} className={styles.list}>
-            <li className={styles.elOne}>{item.title}</li>
-            <li className={styles.elTwo}>{item.description}</li>
-          </ul>
-        ))}
+        {statisticData.length > 0 && (
+          statisticData.map(item => (
+            <ul key={item.id} className={styles.list}>
+              <li className={styles.elOne}>{item.count_toponyms} +</li>
+              <li className={styles.elTwo}>{getLocalizedValue(item, 'name', locale)}</li>
+            </ul>
+          ))
+        )}
       </div>
     </>
   )

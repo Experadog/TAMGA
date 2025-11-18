@@ -66,7 +66,7 @@ export const MainSearch = ({ locale: localeProp, variant = 'default' }) => {
       abortRef.current = new AbortController();
 
       try {
-        const url = `/api/toponyms/toponym/list/maps?search=${encodeURIComponent(`"${trimmed}"`)}`;
+        const url = `/api/toponyms?search=${encodeURIComponent(`"${trimmed}"`)}`;
         const res = await fetch(url, { signal: abortRef.current.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();

@@ -21,7 +21,7 @@ async function fetchData({ etymology }) {
 }
 
 export async function generateMetadata({ params }) {
-    const { locale, etymology } = params;
+    const { locale, etymology } = await params;
 
     const data = await fetchData({ etymology });
     if (!data) { throw new Error('Toponym data not found') }
@@ -104,13 +104,13 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function EtymologyPage({ params }) {
-    const { locale, etymology } = params;
+    const { locale, etymology } = await params;
 
-    const headersList = headers();
+    const headersList = await headers();
     const host = headersList.get('host');
     const protocol = headersList.get('x-forwarded-proto') || 'http';
 
-    const fullPath = `${protocol}://${host}/${params.locale}/${params.etymology}`;
+    const fullPath = `${protocol}://${host}/${locale}/${etymology}`;
 
     const data = await fetchData({ etymology });
     if (!data) throw new Error('Eymology data not found');
@@ -155,30 +155,77 @@ export default async function EtymologyPage({ params }) {
                         </ToponymDetails>
                     </section>
 
-                    {plasts.length > 0 && (
+                    {plasts?.length > 0 && (
                         <section className={clss.toponymArticle__section}>
                             <ToponymDetails heading={t('plast.heading')} headingLevel={2}>
                                 <ul className={clss.toponymPlastList}>
-                                    {plasts.map((plastItem) => {
-                                        const parentName = plastItem.parent
-                                            ? getLocalizedValue(plastItem.parent, 'name', locale)
-                                            : null;
+                                    {(() => {
+                                        // 1) Исходные данные
+                                        const source = [...plasts];
 
-                                        const childName = getLocalizedValue(plastItem, 'name', locale);
-                                        const isSublayer = Boolean(parentName);
+                                        // 2) Уникализация по названию пласта (child)
+                                        const seenChild = new Set();
+                                        const uniqByChild = [];
+                                        for (const p of source) {
+                                            const childName = (getLocalizedValue(p, 'name', locale) || '').trim();
+                                            if (!childName) continue;
+                                            const key = childName.toLowerCase();
+                                            if (seenChild.has(key)) continue;
+                                            seenChild.add(key);
+                                            uniqByChild.push(p);
+                                        }
 
-                                        return (
-                                            <li key={plastItem.name_ky} className={clss.toponymPlast}>
-                                                {isSublayer && (
-                                                    <span className={clss.toponym__label}>{parentName}</span>
-                                                )}
-                                                <span className={`${clss.toponym__label} ${isSublayer ? clss.toponym__labelChild : ''}`}>
-                                                    {childName}
+                                        // 3) Группировка по имени родителя (по тексту, не по id)
+                                        const groupsMap = new Map();
 
-                                                </span>
-                                            </li>
+                                        for (const item of uniqByChild) {
+                                            const parentNameRaw = item?.parent
+                                                ? getLocalizedValue(item.parent, 'name', locale)
+                                                : null;
+
+                                            const normalizedParentKey = (parentNameRaw ?? '__no_parent__')
+                                                .toLowerCase()
+                                                .trim();
+
+                                            const existed = groupsMap.get(normalizedParentKey);
+                                            if (existed) {
+                                                existed.items.push(item);
+                                            } else {
+                                                groupsMap.set(normalizedParentKey, {
+                                                    parentName: parentNameRaw,
+                                                    items: [item],
+                                                });
+                                            }
+                                        }
+
+                                        // 4) Вывод: в каждой группе показываем parent только у первого элемента
+                                        return Array.from(groupsMap.values()).flatMap((group, gi) =>
+                                            group.items.map((plastItem, idx) => {
+                                                const parentName = group.parentName; // одинаков для группы
+                                                const childName = getLocalizedValue(plastItem, 'name', locale);
+                                                const showParentOnce = Boolean(parentName) && idx === 0;
+                                                const isSublayer = Boolean(parentName);
+
+                                                return (
+                                                    <li
+                                                        key={`${parentName ?? 'noparent'}__${childName || plastItem.name_ky || gi + '-' + idx
+                                                            }`}
+                                                        className={clss.toponymPlast}
+                                                    >
+                                                        {showParentOnce && (
+                                                            <span className={clss.toponym__label}>{parentName}</span>
+                                                        )}
+                                                        <span
+                                                            className={`${clss.toponym__label} ${isSublayer ? clss.toponym__labelChild : ''
+                                                                }`}
+                                                        >
+                                                            {childName}
+                                                        </span>
+                                                    </li>
+                                                );
+                                            }),
                                         );
-                                    })}
+                                    })()}
                                 </ul>
                             </ToponymDetails>
                         </section>

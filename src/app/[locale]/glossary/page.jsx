@@ -50,7 +50,7 @@ function dedupePreferBaseSlug(items, locale) {
 export default async function GlossaryPage({ params, searchParams }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: 'glossary' })
+  const t = await getTranslations({ locale, namespace: 'glossaryPage' })
   const sp = await searchParams
 
   const rawView = typeof sp?.view === 'string' ? sp.view.toLowerCase() : '';
@@ -87,10 +87,9 @@ export default async function GlossaryPage({ params, searchParams }) {
   let data = [];
   let totalCount = 0;
 
-  // --- Набираем до 60 уникальных (после дедупа), дозапрашивая батчи по мере надобности
-  const batchSize = itemsPerPage; // можно увеличить до 100 при желании
-  let fetched = 0;                // сколько уже пропустили от начала
-  let uniquePool = [];            // общий мешок из которого возьмём первые 60
+  const batchSize = itemsPerPage;
+  let fetched = 0;
+  let uniquePool = [];
   let keepFetching = true;
 
   while (keepFetching) {
@@ -106,15 +105,10 @@ export default async function GlossaryPage({ params, searchParams }) {
       const batch = Array.isArray(json?.results) ? json.results : (Array.isArray(json) ? json : []);
       if (typeof json?.count === 'number') totalCount = json.count;
 
-      // добавляем и тут же дедуплицируем пул
       uniquePool = dedupePreferBaseSlug(uniquePool.concat(batch), locale);
 
       fetched += batch.length;
 
-      // условия выхода:
-      // - набрали 60 уникальных
-      // - или бэк вернул меньше, чем запросили (кончились данные)
-      // - или fetched достиг totalCount (подстраховка)
       if (uniquePool.length >= itemsPerPage || batch.length < batchSize || (totalCount && offset + fetched >= totalCount)) {
         keepFetching = false;
       }

@@ -52,6 +52,7 @@ export default function ToponymAlphaList({ items, locale }) {
                     language: locale,
                   },
                 }}
+                scroll={true}
               >
                 <span className={cl.seeMap}>Посмотреть на карте</span>
                 <Image src={seeMap} alt='' width={24} height={24} />

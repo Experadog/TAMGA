@@ -268,9 +268,16 @@ export default async function ToponymPage({ params }) {
 
     const description = getLocalizedValue(data, 'description', locale);
     const cleanDescription = cleanHtml(description);
+
     const term = getLocalizedValue(data?.terms_topomyns, 'name', locale);
+    const termDescription = getLocalizedValue(data?.terms_topomyns, 'description', locale);
+
     const termClassToponym = getLocalizedValue(data?.terms_topomyns?.class_toponym, 'name', locale);
+    const termClassToponymDescription = getLocalizedValue(data?.terms_topomyns?.class_toponym, 'description', locale);
+
     const termsClassParent = getLocalizedValue(data?.terms_topomyns?.class_toponym?.parent, 'name', locale);
+    const termsClassParentDescription = getLocalizedValue(data?.terms_topomyns?.class_toponym?.parent, 'description', locale);
+
     const information = getLocalizedValue(data, 'information', locale);
     const cleanInformation = stripHtmlTags(information);
 
@@ -301,9 +308,86 @@ export default async function ToponymPage({ params }) {
                     <section className={clss.toponymArticle__section}>
                         <ToponymDetails heading={heading} headingLevel={1}>
                             <ul className={clss.toponymTerms}>
-                                <li key={1}>{termsClassParent && <span className={clss.toponymTerm}>{termsClassParent}</span>}</li>
-                                <li key={2}>{termClassToponym && <span className={clss.toponymTerm}>{termClassToponym}</span>}</li>
-                                <li key={3}>{term && <span className={clss.toponymTerm}>{term}</span>}</li>
+                                {termsClassParent && (
+                                    <li key="parent">
+                                        <div
+                                            className={clss.langBadge}
+                                            {...(termsClassParentDescription
+                                                ? { 'aria-describedby': 'toponym-parent-desc' }
+                                                : {})}
+                                        >
+                                            <span
+                                                className={clss.toponymTerm}
+                                                tabIndex={termsClassParentDescription ? 0 : -1}
+                                            >
+                                                {termsClassParent}
+                                            </span>
+
+                                            {termsClassParentDescription && (
+                                                <span
+                                                    id="toponym-parent-desc"
+                                                    role="tooltip"
+                                                    className={clss.langBadge__tooltip}
+                                                >
+                                                    {termsClassParentDescription}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </li>
+                                )}
+
+                                {termClassToponym && (
+                                    <li key="class">
+                                        <div
+                                            className={clss.langBadge}
+                                            {...(termClassToponymDescription
+                                                ? { 'aria-describedby': 'toponym-class-desc' }
+                                                : {})}
+                                        >
+                                            <span
+                                                className={clss.toponymTerm}
+                                                tabIndex={termClassToponymDescription ? 0 : -1}
+                                            >
+                                                {termClassToponym}
+                                            </span>
+
+                                            {termClassToponymDescription && (
+                                                <span
+                                                    id="toponym-class-desc"
+                                                    role="tooltip"
+                                                    className={clss.langBadge__tooltip}
+                                                >
+                                                    {termClassToponymDescription}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </li>
+                                )}
+                                {term && (
+                                    <li key="term">
+                                        <div
+                                            className={clss.langBadge}
+                                            {...(termDescription ? { 'aria-describedby': 'toponym-term-desc' } : {})}
+                                        >
+                                            <span
+                                                className={clss.toponymTerm}
+                                                tabIndex={termDescription ? 0 : -1}
+                                            >
+                                                {term}
+                                            </span>
+
+                                            {termDescription && (
+                                                <span
+                                                    id="toponym-term-desc"
+                                                    role="tooltip"
+                                                    className={clss.langBadge__tooltip}
+                                                >
+                                                    {termDescription}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </li>
+                                )}
                             </ul>
 
                             {description && (
@@ -335,39 +419,6 @@ export default async function ToponymPage({ params }) {
                         <section className={clss.toponymArticle__section}>
                             <ToponymDetails heading={t('plast.heading')} headingLevel={2}>
                                 <ul className={clss.toponymPlastList}>
-                                    {/* {[...(plast?.length > 0 ? plast : etymologyPlasts)]
-                                        // фильтруем уникальные по названию
-                                        .filter(
-                                            (item, index, arr) =>
-                                                index ===
-                                                arr.findIndex(
-                                                    (i) =>
-                                                        getLocalizedValue(i, 'name', locale) ===
-                                                        getLocalizedValue(item, 'name', locale)
-                                                )
-                                        )
-                                        .map((plastItem) => {
-                                            const parentName = plastItem.parent
-                                                ? getLocalizedValue(plastItem.parent, 'name', locale)
-                                                : null;
-
-                                            const childName = getLocalizedValue(plastItem, 'name', locale);
-                                            const isSublayer = Boolean(parentName);
-
-                                            return (
-                                                <li key={plastItem.name_ky} className={clss.toponymPlast}>
-                                                    {isSublayer && (
-                                                        <span className={clss.toponym__label}>{parentName}</span>
-                                                    )}
-                                                    <span
-                                                        className={`${clss.toponym__label} ${isSublayer ? clss.toponym__labelChild : ''
-                                                            }`}
-                                                    >
-                                                        {childName}
-                                                    </span>
-                                                </li>
-                                            );
-                                        })} */}
                                     {(() => {
                                         // 1) исходные данные
                                         const source = [...(plast?.length > 0 ? plast : etymologyPlasts)];

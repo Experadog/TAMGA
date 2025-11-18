@@ -1,8 +1,8 @@
-import backIcon from "@/assets/icons/backIcon.svg";
+// import backIcon from "@/assets/icons/backIcon.svg";
 import MapClient from "@/components/Map/MapClient";
-import { Link } from "@/i18n/navigation";
+// import { Link } from "@/i18n/navigation";
 import { getLocalizedValue, stripHtmlTags } from "@/lib/utils";
-import Image from "next/image";
+// import Image from "next/image";
 import { redirect } from "next/navigation";
 import clss from './page.module.scss';
 
@@ -22,7 +22,7 @@ async function fetchMatchesBySlug(rawToponym) {
   if (!search) return { results: [], count: 0 };
   const params = new URLSearchParams({ search });
   try {
-    const url = `${process.env.API_URL}/toponyms/toponym/list/maps/?${params.toString()}`;
+    const url = `${process.env.API_URL}/toponyms/?${params.toString()}`;
     const resp = await fetch(url, { cache: "no-store" });
     if (!resp.ok) return { results: [], count: 0 };
     const json = await resp.json();
@@ -86,10 +86,10 @@ export default async function GlossaryToponymPage({ params, searchParams }) {
         </article>
 
         <aside className={clss.toponymAside}>
-          <Link href={`/glossary`} className={clss.backButton}>
+          {/* <Link href={`/glossary`} className={clss.backButton}>
             <Image src={backIcon} alt="" width={24} height={24} />
             <span className={clss.backText}>Назад</span>
-          </Link>
+          </Link> */}
           <span className={clss.dictionary}>Словарь общих слов в Кыргызских топонимах</span>
           {safeData.results.length > 0 &&
             <ul className={clss.list}>
