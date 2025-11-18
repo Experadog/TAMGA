@@ -3,7 +3,6 @@ import { cleanHtml, getLocalizedValue, stripHtmlTags } from "@/lib/utils";
 import Image from "next/image";
 
 import { getTranslations } from "next-intl/server";
-import { ToponymAsideItem } from "./_components/ToponymAsideItem";
 import { ToponymDetails } from "./_components/ToponymDetails";
 import { ToponymEtymology } from "./_components/ToponymEtymology";
 import { ToponymHierarchy } from "./_components/ToponymHierarchy/ToponymHierarchy";
@@ -17,14 +16,29 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Link } from "@/i18n/navigation";
 import { getStartsWithByLocale } from "@/lib/utils/getStartsWithByLocale";
 import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 import ClientMapWrapper from "./_components/ClientMapWrapper";
 import { ToponymPernamentLink } from "./_components/ToponymPernamentLink/ToponymPernamentLink";
 
-
 async function fetchData({ toponym }) {
     try {
-        const resp = await fetch(`${process.env.API_URL}/toponyms/${toponym}`)
+        const resp = await fetch(`${process.env.API_URL}/toponyms/${toponym}`, {
+            cache: 'no-store',
+        });
+
+        if (!resp.ok) {
+            if (resp.status === 404) {
+                return null;
+            }
+            throw new Error(`HTTP error! status: ${resp.status}`);
+        }
+
         const data = await resp.json();
+
+        if (!data || !data.id) {
+            return null;
+        }
+
         return data;
     } catch (error) {
         console.error('Error fetching toponym data:', error);
@@ -213,7 +227,8 @@ export default async function ToponymPage({ params }) {
     const b = await getTranslations({ locale, namespace: 'breadcrumbs.toponym' });
 
     const data = await fetchData({ toponym });
-    if (!data) throw new Error('Toponym data not found');
+    // if (!data) throw new Error('Toponym data not found');
+    if (!data) notFound();
 
     // Check if the toponym is a city based on terms_topomyns.name_en
     const isCity = data.terms_topomyns?.name_en?.toLowerCase() === 'city';
@@ -645,7 +660,7 @@ export default async function ToponymPage({ params }) {
 
                 <aside className={clss.toponymAside}>
                     {(region?.length > 0 || city?.length > 0 || district?.length > 0 || aiyl_aimak?.length > 0 || aiyl?.length > 0) && (
-                        <section className={clss.toponymAside__section}>
+                        <section className={`${clss.toponymAside__section} ${clss.toponymAside__section_sticky}`}>
                             <ToponymHierarchy
                                 region={region?.[0]}
                                 city={city?.[0]}
@@ -657,7 +672,7 @@ export default async function ToponymPage({ params }) {
                         </section>
                     )}
 
-                    {identical_toponyms?.length > 0 && (
+                    {/* {identical_toponyms?.length > 0 && (
                         <section className={clss.toponymAside__section}>
                             <ToponymAsideItem
                                 heading={t('identical-toponyms')}
@@ -665,9 +680,9 @@ export default async function ToponymPage({ params }) {
                                 locale={locale}
                             />
                         </section>
-                    )}
+                    )} */}
 
-                    {matching_toponyms?.length > 0 && (
+                    {/* {matching_toponyms?.length > 0 && (
                         <section className={clss.toponymAside__section}>
                             <ToponymAsideItem
                                 heading={t('matches')}
@@ -676,7 +691,7 @@ export default async function ToponymPage({ params }) {
                                 locale={locale}
                             />
                         </section>
-                    )}
+                    )} */}
                 </aside>
             </div>
         </>

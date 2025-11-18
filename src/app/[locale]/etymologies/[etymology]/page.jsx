@@ -3,6 +3,7 @@ import { routing } from "@/i18n/routing";
 import { cleanHtml, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
 import { getTranslations } from 'next-intl/server';
 import { headers } from "next/headers";
+import { notFound } from 'next/navigation';
 import { ToponymDetails } from '../../[toponym]/_components/ToponymDetails';
 import { ToponymEtymology } from '../../[toponym]/_components/ToponymEtymology';
 import { ToponymPernamentLink } from '../../[toponym]/_components/ToponymPernamentLink/ToponymPernamentLink';
@@ -12,7 +13,20 @@ import clss from './page.module.scss';
 async function fetchData({ etymology }) {
     try {
         const resp = await fetch(`${process.env.API_URL}/etymologies/${etymology}`)
+
+        if (!resp.ok) {
+            if (resp.status === 404) {
+                return null;
+            }
+            throw new Error(`HTTP error! status: ${resp.status}`);
+        }
+
         const data = await resp.json();
+
+        if (!data || !data.id) {
+            return null;
+        }
+
         return data;
     } catch (error) {
         console.error('Error fetching etymology data:', error);
@@ -113,7 +127,8 @@ export default async function EtymologyPage({ params }) {
     const fullPath = `${protocol}://${host}/${locale}/${etymology}`;
 
     const data = await fetchData({ etymology });
-    if (!data) throw new Error('Eymology data not found');
+    // if (!data) throw new Error('Eymology data not found');
+    if (!data) notFound();
 
     const headings = []
     const synonyms = data?.synonyms.map(synonym => getLocalizedValue(synonym, 'name', locale)) || [];

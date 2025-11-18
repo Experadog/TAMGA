@@ -29,6 +29,10 @@ export default function ToponymMap({ toponym, osmData }) {
     const DEFAULT_CENTER = [42.8746, 74.5698];
     const DEFAULT_ZOOM = 6;
 
+    const initialCenter = hasPoint
+        ? [toponym.latitude, toponym.longitude]
+        : DEFAULT_CENTER;
+
     useEffect(() => {
         const checkLeaflet = () => {
             if (checkLeafletAvailability()) {
@@ -127,7 +131,7 @@ export default function ToponymMap({ toponym, osmData }) {
         <div style={{ position: 'relative', height: '100%', width: '100%' }}>
             <MapContainer
                 ref={mapRef}
-                center={[toponym.latitude, toponym.longitude]}
+                center={initialCenter}
                 zoom={5}
                 minZoom={6}
                 maxZoom={18}
@@ -177,7 +181,7 @@ export default function ToponymMap({ toponym, osmData }) {
                 )}
 
                 {/* Render single polygon/polyline for ways */}
-                {osmData?.coords?.length > 0 && osmData.elementType === 'way' && isMapReady && (
+                {/* {osmData?.coords?.length > 0 && osmData.elementType === 'way' && isMapReady && (
                     <>
                         {osmData.isClosedWay ? (
                             <Polygon
@@ -203,7 +207,7 @@ export default function ToponymMap({ toponym, osmData }) {
                             />
                         )}
                     </>
-                )}
+                )} */}
 
                 {/* ★ Маркер только если точка валидная */}
                 {(!osmData?.coords?.length || (osmData.elementType !== 'way' && osmData.elementType !== 'relation')) && isMapReady && hasPoint && (

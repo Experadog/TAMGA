@@ -79,12 +79,13 @@ export async function PopularToponyms({ locale }) {
 
       <div className={styles.popularToponymsBottom}>
         {statisticData.length > 0 && (
-          statisticData.map(item => (
-            <ul key={item.id} className={styles.list}>
-              <li className={styles.elOne}>{item.count_toponyms} +</li>
-              <li className={styles.elTwo}>{getLocalizedValue(item, 'name', locale)}</li>
-            </ul>
-          ))
+          statisticData.map(item =>
+            Number(item.count_toponyms) > 0 && (
+              <ul key={item.id} className={styles.list}>
+                <li className={styles.elOne}>{item.count_toponyms} +</li>
+                <li className={styles.elTwo}>{getLocalizedValue(item, 'name', locale)}</li>
+              </ul>
+            ))
         )}
       </div>
     </>

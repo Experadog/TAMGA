@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import styles from './Pagination.module.scss';
 
-export const Pagination = ({ currentPage = 1, totalPages = 1, totalCount = 0, itemsPerPage = 9 }) => {
+export const Pagination = ({ currentPage = 1, totalPages = 1, totalCount = 0 }) => {
     const searchParams = useSearchParams();
     const pathname = usePathname();
 
@@ -21,26 +21,43 @@ export const Pagination = ({ currentPage = 1, totalPages = 1, totalCount = 0, it
     // Вычисляем диапазон отображаемых страниц
     const getPageNumbers = () => {
         const pages = [];
-        const maxVisiblePages = 5;
+        // const maxVisiblePages = 5;
 
         // Добавляем проверку на валидность
         if (!totalPages || totalPages <= 0) return [1];
 
-        if (totalPages <= maxVisiblePages) {
+        if (totalPages <= 3) {
             // Если страниц мало, показываем все
             for (let i = 1; i <= totalPages; i++) {
                 pages.push(i);
             }
-        } else {
-            // Логика для большого количества страниц
-            if (currentPage <= 3) {
-                pages.push(1, 2, 3, '...', totalPages);
-            } else if (currentPage >= totalPages - 2) {
-                pages.push(1, '...', totalPages - 2, totalPages - 1, totalPages);
-            } else {
-                pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
-            }
         }
+
+        // 1 или 2 страница → 1 2 3
+        if (currentPage === 1 || currentPage === 2) {
+            pages.push(1, 2, 3);
+            return pages;
+        }
+
+        // Последняя или предпоследняя → (N-2, N-1, N)
+        if (currentPage === totalPages || currentPage === totalPages - 1) {
+            pages.push(totalPages - 2, totalPages - 1, totalPages);
+            return pages;
+        }
+
+        // Всё остальное → (current-1, current, current+1)
+        pages.push(currentPage - 1, currentPage, currentPage + 1);
+
+        // else {
+        //     // Логика для большого количества страниц
+        //     if (currentPage <= 3) {
+        //         pages.push(1, 2, 3, '...', totalPages);
+        //     } else if (currentPage >= totalPages - 2) {
+        //         pages.push(1, '...', totalPages - 2, totalPages - 1, totalPages);
+        //     } else {
+        //         pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+        //     }
+        // }
 
         return pages;
     };

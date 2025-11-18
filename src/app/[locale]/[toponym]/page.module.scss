@@ -126,6 +126,15 @@
             padding: rem(12);
         }
     }
+
+    &__section_sticky {
+        position: sticky;
+        top: rem(24);
+
+        @include tablet {
+            position: static;
+        }
+    }
 }
 
 .langBadge {

@@ -4,13 +4,27 @@ import { Link } from '@/i18n/navigation';
 import { cleanHtml, formatDate, getLocalizedValue } from '@/lib/utils';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
+import { notFound } from 'next/navigation';
 import clss from './page.module.scss';
 import './styles.scss';
 
 async function fetchData({ post }) {
     try {
         const resp = await fetch(`${process.env.API_URL}/blogs/${post}`)
+
+        if (!resp.ok) {
+            if (resp.status === 404) {
+                return null;
+            }
+            throw new Error(`HTTP error! status: ${resp.status}`);
+        }
+
         const data = await resp.json();
+
+        if (!data || !data.id) {
+            return null;
+        }
+
         return data;
     } catch (error) {
         console.error('Error fetching blog data:', error);
@@ -24,7 +38,8 @@ export default async function Blog({ params }) {
     setRequestLocale(locale);
 
     const data = await fetchData({ post });
-    if (!data) throw new Error('Post data not found');
+    // if (!data) throw new Error('Post data not found');
+    if (!data) notFound();
 
     const { image, autors, sources, published_date, inspectors } = data;
 

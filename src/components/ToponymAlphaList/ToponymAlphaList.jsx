@@ -63,6 +63,8 @@ export default function ToponymAlphaList({ items, locale }) {
                 <ul key={ci} className={cl.col} role="list">
                   {chunk.map(it => {
                     const title = getLocalizedValue(it, 'name', locale) || '';
+                    const matches =
+                      it.matching_toponyms_count_fixed ?? 0;
                     return (
                       <li key={it.id} className={cl.rowBlock}>
                         <Link href={`/${it.slug}`} className={cl.row} prefetch={false}>
@@ -77,7 +79,7 @@ export default function ToponymAlphaList({ items, locale }) {
                           prefetch={false}
                         >
                           <span className={cl.meta}>
-                            {it.matching_toponyms_count ?? 0} совпадений
+                            {matches} совпадений
                           </span>
                           <Image className={cl.chev} src={chevron} alt='' width={10} height={10} />
                         </Link>

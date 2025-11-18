@@ -84,13 +84,14 @@ export default async function GlossaryPage({ params, searchParams }) {
     paramsFromUrl.set('ordering', orderingByLocale);
   }
 
-  let data = [];
   let totalCount = 0;
 
   const batchSize = itemsPerPage;
   let fetched = 0;
   let uniquePool = [];
   let keepFetching = true;
+
+  const nameCounts = new Map();
 
   while (keepFetching) {
     paramsFromUrl.set('limit', String(batchSize));
@@ -104,6 +105,13 @@ export default async function GlossaryPage({ params, searchParams }) {
 
       const batch = Array.isArray(json?.results) ? json.results : (Array.isArray(json) ? json : []);
       if (typeof json?.count === 'number') totalCount = json.count;
+
+      for (const it of batch) {
+        const title = normTitle(it, locale);
+        if (!title) continue;
+        const key = title.toLowerCase();
+        nameCounts.set(key, (nameCounts.get(key) || 0) + 1);
+      }
 
       uniquePool = dedupePreferBaseSlug(uniquePool.concat(batch), locale);
 
@@ -119,7 +127,16 @@ export default async function GlossaryPage({ params, searchParams }) {
   }
 
   // берём первые 60 уникальных для страницы
-  data = uniquePool.slice(0, itemsPerPage);
+  const pageItems = uniquePool.slice(0, itemsPerPage);
+
+  const data = pageItems.map((item) => {
+    const key = normTitle(item, locale).toLowerCase();
+    const count = nameCounts.get(key) || 0;
+    return {
+      ...item,
+      matching_toponyms_count_fixed: count,
+    };
+  });
 
   const cards = await Promise.all(
     data.map(async (item) => {

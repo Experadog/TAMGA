@@ -1,13 +1,27 @@
 import SearchableMapClient from '@/components/Map/SearchableMapClient';
 import { getLocalizedValue, stripHtmlTags } from '@/lib/utils';
 import { getTranslations } from 'next-intl/server';
+import { notFound } from 'next/navigation';
 import { ToponymDetails } from '../../[toponym]/_components/ToponymDetails';
 import clss from './page.module.scss';
 
 async function fetchData({ topoformant }) {
     try {
         const resp = await fetch(`${process.env.API_URL}/topoformants/${topoformant}`)
+
+        if (!resp.ok) {
+            if (resp.status === 404) {
+                return null;
+            }
+            throw new Error(`HTTP error! status: ${resp.status}`);
+        }
+
         const data = await resp.json();
+
+        if (!data || !data.id) {
+            return null;
+        }
+
         return data;
     } catch (error) {
         console.error('Error fetching topoformant data:', error);
@@ -19,7 +33,8 @@ export default async function TopoformantPage({ params }) {
     const { locale, topoformant } = params;
 
     const data = await fetchData({ topoformant });
-    if (!data) throw new Error('Topoformant data not found');
+    // if (!data) throw new Error('Topoformant data not found');
+    if (!data) notFound();
 
     const headings = []
     const synonyms = data?.affixes.map(synonym => getLocalizedValue(synonym, 'name', locale)) || [];
@@ -39,10 +54,10 @@ export default async function TopoformantPage({ params }) {
             <div className={clss.toponymWrapper}>
                 <article className={clss.toponymArticle}>
                     <section className={clss.toponymArticle__section}>
-                        <SearchableMapClient 
+                        <SearchableMapClient
                             searchTerm={getLocalizedValue(data, 'name', locale)}
                             searchType="topoformant"
-                            locale={locale} 
+                            locale={locale}
                         />
                     </section>
 
