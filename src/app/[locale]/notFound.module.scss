@@ -1,0 +1,194 @@
+@use '../../assets/styles/helpers/' as *;
+
+.notFound {
+  background-color: #CCE9FB;
+  padding: rem(130) 0 rem(172) 0;
+  height: calc(100vh - 75px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @include tablet {
+    padding: rem(100) 0 rem(120) 0;
+    height: calc(100vh - 68px);
+  }
+
+  @include mobile {
+    padding: rem(50) 0 rem(70) 0;
+  }
+
+  &__container {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: rem(700);
+    height: rem(530);
+
+    @include tablet {
+      align-items: center;
+    }
+
+    @include mobile {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: rem(417);
+
+    @include tablet {
+      gap: 10px;
+      max-width: rem(300);
+    }
+  }
+
+}
+
+
+.iconAbs1 {
+  position: absolute;
+  left: 0;
+  bottom: rem(158);
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.iconAbs2 {
+  position: absolute;
+  left: rem(9);
+  top: rem(146);
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.iconAbs3 {
+  position: absolute;
+  left: rem(147);
+  top: rem(22);
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.iconAbs4 {
+  position: absolute;
+  top: 0;
+  right: rem(272);
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.iconAbs5 {
+  position: absolute;
+  top: rem(44);
+  right: rem(78);
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.iconAbs6 {
+  position: absolute;
+  right: 0;
+  bottom: rem(292);
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.iconAbs7 {
+  position: absolute;
+  right: 0;
+  bottom: rem(122);
+
+  @include mobile {
+    display: none;
+  }
+}
+
+
+.page {
+  font-weight: 400;
+  font-size: rem(30);
+  line-height: 142%;
+  letter-spacing: 0%;
+  text-align: center;
+  text-transform: lowercase;
+  color: #1E1E1E;
+
+  @include tablet {
+    font-size: rem(20);
+  }
+
+  @include mobile {}
+}
+
+.header404 {
+  font-weight: 800;
+  font-size: rem(200);
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  text-transform: capitalize;
+  color: #002D5E;
+
+  @include tablet {
+    font-size: rem(100);
+    font-weight: 600;
+  }
+
+  @include mobile {}
+}
+
+.text {
+  font-weight: 400;
+  font-size: rem(20);
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  text-transform: lowercase;
+  margin: rem(20) 0;
+  color: #1E1E1E;
+
+  @include tablet {
+    font-size: rem(16);
+  }
+
+  @include mobile {}
+}
+
+.btnLink {
+  font-weight: 500;
+  font-size: rem(16);
+  line-height: rem(24);
+  letter-spacing: 0.5px;
+  color: #FFFFFF;
+  background: #0094EB;
+  border-radius: rem(50);
+  padding: rem(16) rem(74);
+
+  &:hover {
+    color: #FFFFFF;
+    text-decoration: none;
+    background: #018ad9;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}

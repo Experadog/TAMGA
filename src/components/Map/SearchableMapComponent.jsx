@@ -13,14 +13,14 @@ import 'leaflet/dist/leaflet.css';
 
 export default function SearchableMapComponent({ searchTerm, searchType, locale }) {
     const mapRef = useRef();
-    
+
     // Создаем URL для поиска топонимов
-    const apiUrl = `/api/toponyms?search=${encodeURIComponent(searchTerm)}`;
+    const apiUrl = `/api/toponyms?search_etymologies=${encodeURIComponent(searchTerm)}`;
     const { data = {}, isLoading: loading, isError: error } = useFetch(apiUrl);
-    
+
     // Извлекаем топонимы из ответа
     let toponymsArray = [];
-    
+
     if (data.results && Array.isArray(data.results)) {
         toponymsArray = data.results;
     } else if (Array.isArray(data)) {
@@ -38,7 +38,7 @@ export default function SearchableMapComponent({ searchTerm, searchType, locale 
                 return 'Топонимы не найдены';
         }
     };
-    
+
     return (
         <div style={{ position: 'relative', height: '100%', width: '100%' }}>
             <MapContainer
@@ -47,12 +47,12 @@ export default function SearchableMapComponent({ searchTerm, searchType, locale 
                 minZoom={5}
                 maxZoom={18}
                 maxBounds={[
-                    [39.0, 69.0], 
-                    [43.5, 81.0] 
+                    [39.0, 69.0],
+                    [43.5, 81.0]
                 ]}
                 maxBoundsViscosity={1.0}
                 attributionControl={false}
-                style={{ height: '100%', width: '100%', backgroundColor: '#d3ecfd', borderRadius: '16px'}}
+                style={{ height: '100%', width: '100%', backgroundColor: '#d3ecfd', borderRadius: '16px' }}
                 whenCreated={(mapInstance) => {
                     mapRef.current = mapInstance;
                 }}

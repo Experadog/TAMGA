@@ -1,6 +1,22 @@
 @use '../../assets/styles/helpers/' as *;
 
+.blogBreadcrumbs {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 64px;
+
+    @include tablet {
+        left: 24px;
+    }
+
+    @include mobile {
+        left: 16px;
+    }
+}
+
 .hero {
+    z-index: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -37,5 +53,53 @@
         @include mobile {
             font-size: rem(14);
         }
+    }
+
+
+    &__author {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    &__authorAvatar {
+        width: rem(64);
+        height: rem(64);
+        border-radius: 100%;
+
+        &__image {
+            border-radius: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__authorInfo {
+        margin-top: rem(12);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+
+    &__authorName {
+        color: #1D1F1E;
+        font-weight: 500;
+        font-size: 24px;
+        line-height: 24px;
+        letter-spacing: -0.4%;
+
+    }
+
+    &__authorType {
+        color: #646A69;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 20px;
+        letter-spacing: -0.4%;
+
     }
 }

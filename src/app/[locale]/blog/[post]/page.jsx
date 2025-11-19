@@ -33,7 +33,7 @@ async function fetchData({ post }) {
 }
 
 
-export default async function Blog({ params }) {
+export default async function BlogDetail({ params }) {
     const { locale, post } = await params;
     setRequestLocale(locale);
 
@@ -58,7 +58,7 @@ export default async function Blog({ params }) {
         },
         {
             name: data.autors[0].first_name + ' ' + data.autors[0].last_name,
-            href: `#`, //Сделать тут ссылку на страницу автора, её сверстать
+            href: `/blog/authors/${data.autors[0].slug}`,
             isLink: true
         },
         {
@@ -91,17 +91,19 @@ export default async function Blog({ params }) {
                         <div className={clss.blogPost__autors}>
                             <ul className={clss.blogPost__autorsList}>
                                 {autors.map((author) => (
-                                    <li key={author?.id} className={clss.blogPost__author}>
-                                        {author?.avatar
-                                            ? <Image className={clss.blogPost__authorImage} src={author?.avatar} alt={author?.first_name} width={56} height={56} />
-                                            : <Image className={clss.blogPost__authorImage} src={avaImgFallback} alt="Avatar" width={56} height={56} />
-                                        }
+                                    <Link key={author?.id} href={`/blog/authors/${data.autors[0].slug}`}>
+                                        <li className={clss.blogPost__author}>
+                                            {author?.avatar
+                                                ? <Image className={clss.blogPost__authorImage} src={author?.avatar} alt={author?.first_name} width={56} height={56} />
+                                                : <Image className={clss.blogPost__authorImage} src={avaImgFallback} alt="Avatar" width={56} height={56} />
+                                            }
 
-                                        <div className={clss.blogPost__authorInfo}>
-                                            <p className={clss.blogPost__authorName}>{author?.first_name} {author?.last_name}</p>
-                                            <p className={clss.blogPost__authorRole}>{t('author.heading')}</p>
-                                        </div>
-                                    </li>
+                                            <div className={clss.blogPost__authorInfo}>
+                                                <p className={clss.blogPost__authorName}>{author?.first_name} {author?.last_name}</p>
+                                                <p className={clss.blogPost__authorRole}>{t('author.heading')}</p>
+                                            </div>
+                                        </li>
+                                    </Link>
                                 ))}
                             </ul>
                         </div>
