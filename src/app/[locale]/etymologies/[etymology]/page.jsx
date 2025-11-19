@@ -38,7 +38,7 @@ export async function generateMetadata({ params }) {
     const { locale, etymology } = await params;
 
     const data = await fetchData({ etymology });
-    if (!data) { throw new Error('Toponym data not found') }
+    if (!data) { throw new Error('Etymology data not found') }
 
     const siteUrl =
         process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
@@ -124,7 +124,7 @@ export default async function EtymologyPage({ params }) {
     const host = headersList.get('host');
     const protocol = headersList.get('x-forwarded-proto') || 'http';
 
-    const fullPath = `${protocol}://${host}/${locale}/${etymology}`;
+    const fullPath = `${protocol}://${host}/${locale}/etymologies/${etymology}`;
 
     const data = await fetchData({ etymology });
     // if (!data) throw new Error('Eymology data not found');

@@ -4,6 +4,8 @@ import MapClient from "@/components/Map/MapClient";
 import { getLocalizedValue, stripHtmlTags } from "@/lib/utils";
 // import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
+import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 import clss from './page.module.scss';
 
@@ -53,6 +55,100 @@ async function fetchMatchesBySlug(rawToponym) {
   }
 }
 
+export async function generateMetadata({ params }) {
+  const { locale, toponym } = await params;
+
+  const data = await fetchMatchesBySlug(toponym);
+  if (!data) { throw new Error('Toponym data not found') }
+
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
+  const pathname = `/${locale}/glossary/${toponym}`;
+  const absoluteUrl = `${siteUrl}${pathname}`;
+
+  const collapse = (s = '') =>
+    String(s || '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  const tMeta = await getTranslations({
+    locale,
+    namespace: 'identicalToponymsPage.metadata',
+  });
+
+  const titleTranslate = tMeta('title') || '';
+  const descriptionTranslate = tMeta('description') || '';
+
+  const rawResults = Array.isArray(data.results) ? data.results : [];
+
+  const target = normalizeName(
+    decodeURIComponent(String(toponym || ''))
+  );
+
+  const filteredResults = rawResults.filter((item) => {
+    const nKy = normalizeName(getLocalizedValue(item, "name", "ky"));
+    const nRu = normalizeName(getLocalizedValue(item, "name", "ru"));
+    const nEn = normalizeName(getLocalizedValue(item, "name", "en"));
+
+    return (
+      (nKy && nKy === target) ||
+      (nRu && nRu === target) ||
+      (nEn && nEn === target)
+    );
+  });
+
+  const visibleCount = filteredResults.length;
+
+  const title = collapse(`${visibleCount} ${titleTranslate}`);
+  const description = collapse(descriptionTranslate);
+
+  const shareImage = '/openGraph.png';
+
+  return {
+    title,
+    description,
+    metadataBase: new URL(siteUrl),
+    alternates: {
+      canonical: pathname,
+      languages: routing.locales.reduce((acc, loc) => {
+        acc[loc] = `/${loc}/glossary/${toponym}`;
+        return acc;
+      }, {})
+    },
+    openGraph: {
+      type: 'website',
+      locale,
+      siteName: 'Tamga.kg',
+      url: absoluteUrl,
+      title,
+      description,
+      images: [
+        {
+          url: shareImage,
+          width: 1200,
+          height: 630,
+          alt: title
+        }
+      ]
+    },
+
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [shareImage]
+    },
+
+    robots: {
+      index: true,
+      follow: true,
+      'max-snippet': -1,
+      'max-image-preview': 'large',
+      'max-video-preview': -1
+    }
+  };
+}
+
 export default async function GlossaryToponymPage({ params, searchParams }) {
   const { locale, toponym } = await params;
   const sp = await searchParams
@@ -61,9 +157,10 @@ export default async function GlossaryToponymPage({ params, searchParams }) {
 
   const currentSearch = typeof sp?.search === "string" ? sp.search : "";
   if (normalized && currentSearch !== normalized) {
-    const qs = new URLSearchParams(sp);
+    const qs = new URLSearchParams();
     for (const [key, val] of Object.entries(sp || {})) {
       if (val == null) continue;
+
       if (Array.isArray(val)) {
         for (const v of val) {
           if (v != null && v !== "") qs.append(key, String(v));
@@ -72,6 +169,7 @@ export default async function GlossaryToponymPage({ params, searchParams }) {
         if (val !== "") qs.set(key, String(val));
       }
     }
+
     qs.set("search", normalized);
     redirect(`/${locale}/glossary/${toponym}?${qs.toString()}`);
   }

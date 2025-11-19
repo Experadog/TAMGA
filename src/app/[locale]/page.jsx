@@ -21,13 +21,14 @@ export async function generateMetadata({ params }) {
 
   const t = await getTranslations({ locale, namespace: 'home' });
 
-  const title = t('seo.title');
-  const description = t('seo.description');
 
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
   const pathname = `/${locale}`;
   const absoluteUrl = `${siteUrl}${pathname}`;
+
+  const title = t('seo.title') || '';
+  const description = t('seo.description') || '';
 
   const shareImage = '/openGraph.png';
 

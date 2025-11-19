@@ -5,9 +5,81 @@ import chevron from '@/assets/icons/chevron.svg';
 import email from '@/assets/icons/email.svg';
 import location from '@/assets/icons/location.svg';
 import phone from '@/assets/icons/phone.svg';
+import { routing } from "@/i18n/routing";
 import Image from "next/image";
-
 import clss from './page.module.scss';
+
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
+  const pathname = `/${locale}/about`;
+  const absoluteUrl = `${siteUrl}${pathname}`;
+
+  const collapse = (s = '') =>
+    String(s || '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  const tMeta = await getTranslations({
+    locale,
+    namespace: 'about.metadata',
+  });
+
+  const titleTranslate = tMeta('title') || '';
+  const descriptionTranslate = tMeta('description') || '';
+
+
+  const title = collapse(titleTranslate);
+  const description = collapse(descriptionTranslate);
+
+  const shareImage = '/openGraph.png';
+
+  return {
+    title,
+    description,
+    metadataBase: new URL(siteUrl),
+    alternates: {
+      canonical: pathname,
+      languages: routing.locales.reduce((acc, loc) => {
+        acc[loc] = `/${loc}/about`;
+        return acc;
+      }, {})
+    },
+    openGraph: {
+      type: 'website',
+      locale,
+      siteName: 'Tamga.kg',
+      url: absoluteUrl,
+      title,
+      description,
+      images: [
+        {
+          url: shareImage,
+          width: 1200,
+          height: 630,
+          alt: title
+        }
+      ]
+    },
+
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [shareImage]
+    },
+
+    robots: {
+      index: true,
+      follow: true,
+      'max-snippet': -1,
+      'max-image-preview': 'large',
+      'max-video-preview': -1
+    }
+  };
+}
 
 export default async function AboutPage({ params }) {
     const { locale } = await params

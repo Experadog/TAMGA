@@ -1,6 +1,7 @@
 import avaImgFallback from '@/assets/images/ava-img-fallback.png';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Link } from '@/i18n/navigation';
+import { routing } from '@/i18n/routing';
 import { cleanHtml, formatDate, getLocalizedValue } from '@/lib/utils';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
@@ -30,6 +31,80 @@ async function fetchData({ post }) {
         console.error('Error fetching blog data:', error);
         return null;
     }
+}
+
+export async function generateMetadata({ params }) {
+    const { locale, post } = await params;
+
+    const data = await fetchData({ post });
+    if (!data) { throw new Error('Blog Post data not found') }
+
+    const siteUrl =
+        process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
+    const pathname = `/${locale}/blog/${post}`;
+    const absoluteUrl = `${siteUrl}${pathname}`;
+
+    // helpers
+    const collapse = (s = '') => String(s || '').replace(/\s+/g, ' ').trim();
+
+    const tMeta = await getTranslations({ locale, namespace: 'blogDetail.metadata' });
+    const titleTranslate = tMeta('title') || '';
+    const descriptionTranslate = tMeta('description') || '';
+
+    const articleName = getLocalizedValue(data, 'title', locale) || '';
+
+    const titleCore = [articleName, titleTranslate]
+        .filter(Boolean)
+        .join(': ');
+
+    const title = collapse(titleCore);
+    const description = collapse(descriptionTranslate);
+
+    const shareImage = '/openGraph.png';
+
+    return {
+        title,
+        description,
+        metadataBase: new URL(siteUrl),
+        alternates: {
+            canonical: pathname,
+            languages: routing.locales.reduce((acc, loc) => {
+                acc[loc] = `/${loc}/blog/${post}`;
+                return acc;
+            }, {})
+        },
+        openGraph: {
+            type: 'article',
+            locale,
+            siteName: 'Tamga.kg',
+            url: absoluteUrl,
+            title,
+            description,
+            images: [
+                {
+                    url: shareImage,
+                    width: 1200,
+                    height: 630,
+                    alt: title
+                }
+            ]
+        },
+
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [shareImage]
+        },
+
+        robots: {
+            index: true,
+            follow: true,
+            'max-snippet': -1,
+            'max-image-preview': 'large',
+            'max-video-preview': -1
+        }
+    };
 }
 
 

@@ -144,26 +144,25 @@ export async function generateMetadata({ params }) {
 
     // helpers
     const collapse = (s = '') => String(s || '').replace(/\s+/g, ' ').trim();
-    const pick = (...vals) => vals.find(v => typeof v === 'string' && v.trim().length > 0) ?? '';
 
     const tMeta = await getTranslations({ locale, namespace: 'toponym.metadata' });
-    const locTitleTail = tMeta('title');
-    const locDescTail = tMeta('description');
+    const metaTitleTail = tMeta('title') || '';
+    const metaDescTail = tMeta('description') || '';
 
     const name = getLocalizedValue(data, 'name', locale) || '';
     const term = getLocalizedValue(data?.terms_topomyns, 'name', locale) || '';
 
     const rawDescription = getLocalizedValue(data, 'description', locale) || '';
-    const clean = stripHtmlTags(cleanHtml(rawDescription));
-    const normalizedClean = collapse(clean);
+    const cleanDescription = collapse(stripHtmlTags(cleanHtml(rawDescription)));
 
     const titleLeft = collapse([name, term].filter(Boolean).join(' - '));
-    const titleTail = pick(locTitleTail || '');
-    const title = collapse(`${titleLeft} — ${titleTail}`);
+    const title = collapse(
+        [titleLeft, metaTitleTail].filter(Boolean).join(' ')
+    );
 
-    const subjectPart = collapse([term, name].filter(Boolean).join(' '));
-    const mainDesc = pick(normalizedClean, locDescTail || '');
-    const description = collapse(`${subjectPart}${subjectPart ? '. ' : ''}${mainDesc}`);
+    const description = collapse(
+        [cleanDescription, metaDescTail].filter(Boolean).join('. ')
+    );
 
     const shareImage = '/openGraph.png';
 

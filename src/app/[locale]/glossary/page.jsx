@@ -7,6 +7,7 @@ import ToponymlistList from "@/components/ToponymAlphaList/ToponymAlphaList";
 import ToponymCard from "@/components/ToponymCard/ToponymCard";
 import ToponymCardGrid from "@/components/ToponymCardGrid/ToponymCardGrid";
 import ViewToggle from "@/components/ViewToggle/ViewToggle";
+import { routing } from "@/i18n/routing";
 import { fetchOSMData } from "@/lib/utils/fetchOSMData";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
@@ -45,6 +46,78 @@ function dedupePreferBaseSlug(items, locale) {
     }
   }
   return Array.from(byTitle.values());
+}
+
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
+  const pathname = `/${locale}/glossary`;
+  const absoluteUrl = `${siteUrl}${pathname}`;
+
+  const collapse = (s = '') =>
+    String(s || '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  const tMeta = await getTranslations({
+    locale,
+    namespace: 'pageglossary.metadata',
+  });
+
+  const titleTranslate = tMeta('title') || '';
+  const descriptionTranslate = tMeta('description') || '';
+
+
+  const title = collapse(titleTranslate);
+  const description = collapse(descriptionTranslate);
+
+  const shareImage = '/openGraph.png';
+
+  return {
+    title,
+    description,
+    metadataBase: new URL(siteUrl),
+    alternates: {
+      canonical: pathname,
+      languages: routing.locales.reduce((acc, loc) => {
+        acc[loc] = `/${loc}/glossary`;
+        return acc;
+      }, {})
+    },
+    openGraph: {
+      type: 'website',
+      locale,
+      siteName: 'Tamga.kg',
+      url: absoluteUrl,
+      title,
+      description,
+      images: [
+        {
+          url: shareImage,
+          width: 1200,
+          height: 630,
+          alt: title
+        }
+      ]
+    },
+
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [shareImage]
+    },
+
+    robots: {
+      index: true,
+      follow: true,
+      'max-snippet': -1,
+      'max-image-preview': 'large',
+      'max-video-preview': -1
+    }
+  };
 }
 
 export default async function GlossaryPage({ params, searchParams }) {

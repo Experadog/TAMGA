@@ -2,6 +2,7 @@ import blogImgFallback from '@/assets/images/blog-img-fallback.png';
 import { Hero } from '@/components/Hero/Hero';
 import { Pagination } from '@/components/Pagination';
 import { Link } from '@/i18n/navigation';
+import { routing } from '@/i18n/routing';
 import { cleanHtml, formatDate, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from 'next/image';
@@ -29,6 +30,80 @@ async function fetchData({ author }) {
     console.error('Error fetching blog data:', error);
     return null;
   }
+}
+
+export async function generateMetadata({ params }) {
+  const { locale, author } = await params;
+
+  const data = await fetchData({ author });
+  if (!data) { throw new Error('Blog Post data not found') }
+
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
+  const pathname = `/${locale}/blog/authors/${author}`;
+  const absoluteUrl = `${siteUrl}${pathname}`;
+
+  // helpers
+  const collapse = (s = '') => String(s || '').replace(/\s+/g, ' ').trim();
+
+  const tMeta = await getTranslations({ locale, namespace: 'authorDetail.metadata' });
+  const titleTranslate = tMeta('title') || '';
+  const descriptionTranslate = tMeta('description') || '';
+
+  const fullName = collapse(
+    [data.first_name, data.last_name].filter(Boolean).join(' ')
+  );
+
+  const title = collapse(
+    [fullName, titleTranslate].filter(Boolean).join(' — ')
+  );
+  const description = collapse(descriptionTranslate);
+
+  const shareImage = '/openGraph.png';
+
+  return {
+    title,
+    description,
+    metadataBase: new URL(siteUrl),
+    alternates: {
+      canonical: pathname,
+      languages: routing.locales.reduce((acc, loc) => {
+        acc[loc] = `/${loc}/blog/authors/${author}`;
+        return acc;
+      }, {})
+    },
+    openGraph: {
+      type: 'website',
+      locale,
+      siteName: 'Tamga.kg',
+      url: absoluteUrl,
+      title,
+      description,
+      images: [
+        {
+          url: shareImage,
+          width: 1200,
+          height: 630,
+          alt: title
+        }
+      ]
+    },
+
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [shareImage]
+    },
+
+    robots: {
+      index: true,
+      follow: true,
+      'max-snippet': -1,
+      'max-image-preview': 'large',
+      'max-video-preview': -1
+    }
+  };
 }
 
 export default async function AuthorPage({ params, searchParams }) {
