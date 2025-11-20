@@ -1,13 +1,68 @@
+import { Link } from '@/i18n/navigation';
+import { getLocalizedValue } from '@/lib/utils';
 import { getTranslations } from 'next-intl/server';
-import Link from 'next/link';
-
-import star from '@/assets/icons/star.svg';
-
 import Image from 'next/image';
 import './index.scss';
 
+async function fetchRegions() {
+    try {
+        const resp = await fetch(`${process.env.API_URL}/territories/regions/`);
+
+        if (!resp.ok) return [];
+
+        const data = await resp.json();
+        return Array.isArray(data.results) ? data.results : [];
+    } catch (e) {
+        console.error('Error fetching regions:', e);
+        return [];
+    }
+}
+
+async function fetchTermsToponyms() {
+    try {
+        const resp = await fetch(`${process.env.API_URL}/directories/terms-topomyns/`);
+
+        if (!resp.ok) return [];
+
+        const data = await resp.json();
+        return Array.isArray(data.results) ? data.results : [];
+    } catch (e) {
+        console.error('Error fetching terms-toponyms:', e);
+        return [];
+    }
+}
+
 async function Footer({ locale }) {
     const t = await getTranslations({ locale, namespace: 'footer' });
+    const regions = await fetchRegions();
+    const termsToponyms = await fetchTermsToponyms();
+
+    const allowedTerms = [
+        // ru
+        'гора',
+        'река',
+        'озеро',
+        'родник',
+        'долина',
+        'перевал',
+        'водопад',
+        // ky
+        'тоо',
+        'дарыя',
+        'көл',
+        'булак',
+        'өрөөн',
+        'ашуу',
+        'шаркыратма',
+        // en
+        'mountain',
+        'river',
+        'lake',
+        'spring',
+        'valley',
+        'pass',
+        'waterfall',
+    ];
 
     return (
         <footer className='footer'>
@@ -27,84 +82,96 @@ async function Footer({ locale }) {
                     <hr className='footer__hr' />
                 </div>
                 <div className="footer__content">
+
+                    {/* ====== РЕГИОНЫ ====== */}
                     <div className="footer__column">
-                        <Link href='#' className='footer__column-main-link'>{t('about-neuros.heading')}</Link>
+                        <span className='footer__column-main-link'>
+                            {t('about-neuros.heading')}
+                        </span>
                         <ul className='footer__column-list'>
-                            <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='#'>{t('about-neuros.company-overview')}</Link>
-                            </li>
-                            <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='#'>{t('about-neuros.careers')}</Link>
-                            </li>
-                            <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='#'>{t('about-neuros.press-media')}</Link>
-                            </li>
-                            <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='#'>{t('about-neuros.testimonials')}</Link>
-                            </li>
+                            {regions.map(region => {
+                                const name = getLocalizedValue(region, 'name', locale);
+
+                                return (
+                                    <li key={region.id} className='footer__column-item'>
+                                        <Link
+                                            className='footer__column-link'
+                                            href={{
+                                                pathname: `/map`,
+                                                query: {
+                                                    region: region.id,
+                                                    offset: '0',
+                                                    language: locale
+                                                },
+                                            }}
+                                        >
+                                            {name}
+                                        </Link>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     </div>
+
+                    {/* ====== Тематические подборки ====== */}
                     <div className="footer__column">
-                        <Link href='#' className='footer__column-main-link'>{t('support-contact.heading')}</Link>
+                        <span className='footer__column-main-link'>
+                            {t('thematic.heading')}
+                        </span>
                         <ul className='footer__column-list'>
-                            <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='#'>{t('support-contact.contact-us')}</Link>
-                            </li>
-                            <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='#'>{t('support-contact.technical-support')}</Link>
-                            </li>
-                            <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='#'>{t('support-contact.feedback')}</Link>
-                            </li>
-                            <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='#'>{t('support-contact.community-form')}</Link>
-                            </li>
+                            {termsToponyms
+                                .filter(term => {
+                                    const name = getLocalizedValue(term, 'name', locale)?.toLowerCase();
+                                    return name && allowedTerms.includes(name);
+                                })
+                                .map(term => {
+                                    const name = getLocalizedValue(term, 'name', locale);
+                                    return (
+                                        <li key={term.id} className='footer__column-item'>
+                                            <Link
+                                                className='footer__column-link'
+                                                href={{
+                                                    pathname: `/map`,
+                                                    query: {
+                                                        terms_topomyns: term.id,
+                                                        offset: '0',
+                                                        language: locale
+                                                    },
+                                                }}
+                                            >
+                                                {name}
+                                            </Link>
+                                        </li>
+                                    )
+                                })}
                         </ul>
                     </div>
+
+                    {/* ====== О проекте ====== */}
                     <div className="footer__column">
-                        <Link href='#' className='footer__column-main-link'>{t('connect.heading')}</Link>
+                        <span className='footer__column-main-link'>{t('connect.heading')}</span>
                         <ul className='footer__column-list'>
                             <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='#'>
-                                    <Image src={star} width='17' height='17' alt='' />
-                                    Instagram
+                                <Link
+                                    className='footer__column-link'
+                                    href={{ pathname: '/about', hash: 'contacts' }}
+                                >
+                                    {t('contacts')}
                                 </Link>
                             </li>
-                            <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='#'>
-                                    <Image src={star} width='17' height='17' alt='' />
-                                    Facebook
-                                </Link>
-                            </li>
-                            <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='#'>
-                                    <Image src={star} width='17' height='17' alt='' />
-                                    Twitter / X
-                                </Link>
-                            </li>
-                            <li className='footer__column-item'>
-                                <Link className='footer__column-link' href='#'>
-                                    <Image src={star} width='17' height='17' alt='' />
-                                    Linkedin
-                                </Link>
-                            </li>
+                            {/* можно добавить еще ссылки */}
                         </ul>
                     </div>
                 </div>
             </div>
+
             <div className="footer__extra">
-                <span className='footer__copyright'>{t('copyright.year')} · {t('copyright.description')}.</span>
-                <ul className='footer__extra-list'>
-                    <li className='footer__extra-item'>
-                        <Link className='footer__extra-link' href='#'>{t('compliance.term-of-use')}</Link>
-                    </li>
-                    <li className='footer__extra-item'>
-                        <Link className='footer__extra-link' href='#'>{t('compliance.privacy-policy')}</Link>
-                    </li>
-                    <li className='footer__extra-item'>
-                        <Link className='footer__extra-link' href='#'>{t('compliance.security')}</Link>
-                    </li>
-                </ul>
+                <span className='footer__extra__copyright'>
+                    {t('memory')}
+                </span>
+                <span className='footer__extra__copyright'>
+                    {t('year')} • {t('description')} • {t('done')}
+                </span>
             </div>
         </footer>
     );

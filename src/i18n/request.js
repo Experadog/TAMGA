@@ -51,6 +51,21 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
     const rawMessages = await fetchTranslations();
     const messages = transformMessages(rawMessages, locale);
-    
-    return { locale, messages };
+
+    return {
+        locale,
+        messages,
+        onError(error) {
+            // MISSING_MESSAGE игнорируем вообще
+            if (error.code === 'MISSING_MESSAGE') {
+                return;
+            }
+            console.error(error);
+        },
+        getMessageFallback({ key, namespace }) {
+            // чтобы на всякий случай был какой-то текст
+            const fullKey = namespace ? `${namespace}.${key}` : key;
+            return fullKey;
+        }
+    };
 });

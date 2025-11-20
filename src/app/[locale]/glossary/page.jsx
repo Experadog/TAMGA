@@ -63,7 +63,7 @@ export async function generateMetadata({ params }) {
 
   const tMeta = await getTranslations({
     locale,
-    namespace: 'pageglossary.metadata',
+    namespace: 'glossary.metadata',
   });
 
   const titleTranslate = tMeta('title') || '';
@@ -123,7 +123,7 @@ export async function generateMetadata({ params }) {
 export default async function GlossaryPage({ params, searchParams }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: 'glossaryPage' })
+  const t = await getTranslations({ locale, namespace: 'glossary' })
   const sp = await searchParams
 
   const rawView = typeof sp?.view === 'string' ? sp.view.toLowerCase() : '';
@@ -186,7 +186,8 @@ export default async function GlossaryPage({ params, searchParams }) {
         nameCounts.set(key, (nameCounts.get(key) || 0) + 1);
       }
 
-      uniquePool = dedupePreferBaseSlug(uniquePool.concat(batch), locale);
+      // uniquePool = dedupePreferBaseSlug(uniquePool.concat(batch), locale);
+      uniquePool = uniquePool.concat(batch);
 
       fetched += batch.length;
 
@@ -200,7 +201,8 @@ export default async function GlossaryPage({ params, searchParams }) {
   }
 
   // берём первые 60 уникальных для страницы
-  const pageItems = uniquePool.slice(0, itemsPerPage);
+  // const pageItems = uniquePool.slice(0, itemsPerPage);
+  const pageItems = uniquePool;
 
   const data = pageItems.map((item) => {
     const key = normTitle(item, locale).toLowerCase();
@@ -223,7 +225,7 @@ export default async function GlossaryPage({ params, searchParams }) {
 
   return (
     <>
-      <Hero heading={t('title')} description={t('description')} />
+      <Hero heading={t('hero.title')} description={t('hero.description')} />
 
       <section>
         <div className={styles.search}>

@@ -8,14 +8,14 @@ import Image from 'next/image';
 import styles from './index.module.scss';
 
 async function Header({ locale }) {
-    const t = await getTranslations({ locale, namespace: 'header.navigation' });
+    const t = await getTranslations({ locale, namespace: 'header' });
     const startswith = getStartsWithByLocale(locale);
 
     const MENU_ITEMS = [
-        { name: t('search'), path: '/search' },
-        { name: t('glossary'), path: '/glossary' },
+        { name: t('navigation.page-search'), path: '/search' },
+        { name: t('navigation.page-glossary'), path: '/glossary' },
         {
-            name: t('map'),
+            name: t('navigation.page-map'),
             path: {
                 pathname: `/map`,
                 query: {
@@ -25,8 +25,8 @@ async function Header({ locale }) {
                 }
             },
         },
-        { name: t('blog'), path: '/blog' },
-        { name: t('about'), path: '/about' },
+        { name: t('navigation.page-blog'), path: '/blog' },
+        { name: t('navigation.page-about'), path: '/about' },
     ]
 
     return (

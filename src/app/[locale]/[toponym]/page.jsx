@@ -145,23 +145,23 @@ export async function generateMetadata({ params }) {
     // helpers
     const collapse = (s = '') => String(s || '').replace(/\s+/g, ' ').trim();
 
-    const tMeta = await getTranslations({ locale, namespace: 'toponym.metadata' });
-    const metaTitleTail = tMeta('title') || '';
-    const metaDescTail = tMeta('description') || '';
-
+    const tMeta = await getTranslations({ locale, namespace: 'toponym' });
+    const metaTitleTail = tMeta('metadata.title') || '';
     const name = getLocalizedValue(data, 'name', locale) || '';
     const term = getLocalizedValue(data?.terms_topomyns, 'name', locale) || '';
-
-    const rawDescription = getLocalizedValue(data, 'description', locale) || '';
-    const cleanDescription = collapse(stripHtmlTags(cleanHtml(rawDescription)));
-
     const titleLeft = collapse([name, term].filter(Boolean).join(' - '));
     const title = collapse(
         [titleLeft, metaTitleTail].filter(Boolean).join(' ')
     );
 
+    const regionName = getLocalizedValue(data.region?.[0], 'name', locale) || '';
+    const districtName = getLocalizedValue(data.district?.[0], 'name', locale) || '';
     const description = collapse(
-        [cleanDescription, metaDescTail].filter(Boolean).join('. ')
+        tMeta('metadata.description', {
+            toponymName: name,
+            districtName: districtName,
+            regionName: regionName,
+        })
     );
 
     const shareImage = '/openGraph.png';
@@ -223,7 +223,7 @@ export default async function ToponymPage({ params }) {
 
     const t = await getTranslations({ locale, namespace: 'toponym' });
     const l = await getTranslations({ locale, namespace: 'link' });
-    const b = await getTranslations({ locale, namespace: 'breadcrumbs.toponym' });
+    const b = await getTranslations({ locale, namespace: 'breadcrumbs' });
 
     const data = await fetchData({ toponym });
     // if (!data) throw new Error('Toponym data not found');
@@ -257,12 +257,12 @@ export default async function ToponymPage({ params }) {
 
     const breadcrumbsItems = [
         {
-            name: b('home'),
+            name: b('toponym.home'),
             href: `/${locale}`,
             isLink: true
         },
         {
-            name: b('catalog'),
+            name: b('toponym.catalog'),
             href: {
                 pathname: `/map`,
                 query: {

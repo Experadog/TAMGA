@@ -46,9 +46,9 @@ export async function generateMetadata({ params }) {
   // helpers
   const collapse = (s = '') => String(s || '').replace(/\s+/g, ' ').trim();
 
-  const tMeta = await getTranslations({ locale, namespace: 'authorDetail.metadata' });
-  const titleTranslate = tMeta('title') || '';
-  const descriptionTranslate = tMeta('description') || '';
+  const tMeta = await getTranslations({ locale, namespace: 'authorDetail' });
+  const titleTranslate = tMeta('metadata.title') || '';
+  const descriptionTranslate = tMeta('metadata.description') || '';
 
   const fullName = collapse(
     [data.first_name, data.last_name].filter(Boolean).join(' ')
@@ -117,7 +117,7 @@ export default async function AuthorPage({ params, searchParams }) {
   if (!data) notFound();
 
   const t = await getTranslations({ locale, namespace: 'author' });
-  const b = await getTranslations({ locale, namespace: 'breadcrumbs.blog' });
+  const b = await getTranslations({ locale, namespace: 'breadcrumbs' });
   const l = await getTranslations({ locale, namespace: 'link' })
 
   const {
@@ -157,7 +157,7 @@ export default async function AuthorPage({ params, searchParams }) {
 
   const breadcrumbsItems = [
     {
-      name: b('home'),
+      name: b('blog.home'),
       href: `/blog`,
       isLink: true
     },

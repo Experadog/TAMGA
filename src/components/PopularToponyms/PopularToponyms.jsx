@@ -33,7 +33,14 @@ async function fetchClassToponymsCount() {
 export async function PopularToponyms({ locale }) {
   const data = await fetchData();
   const items = Array.isArray(data?.results) ? data.results : [];
-  const statisticData = (await fetchClassToponymsCount()) ?? [];
+  const rawStatistic = await fetchClassToponymsCount();
+  const statisticData = Array.isArray(rawStatistic) ? rawStatistic : [];
+  const excluded = new Set(['Хороним', 'Дримоним', 'Антропотопоним'].map(s => s.toLowerCase()));
+
+  const filteredStatistic = statisticData.filter(item => {
+    const name = (getLocalizedValue(item, 'name', locale) || '').trim().toLowerCase();
+    return !excluded.has(name) && Number(item.count_toponyms) > 0;
+  });
 
   // Топ-4 по count_visits (по убыванию). Если нет значения — считаем 0.
   const top4 = [...items]
@@ -78,14 +85,11 @@ export async function PopularToponyms({ locale }) {
 
 
       <div className={styles.popularToponymsBottom}>
-        {statisticData.length > 0 && (
-          statisticData.map(item =>
-            Number(item.count_toponyms) > 0 && (
-              <ul key={item.id} className={styles.list}>
-                <li className={styles.elOne}>{item.count_toponyms} +</li>
-                <li className={styles.elTwo}>{getLocalizedValue(item, 'name', locale)}</li>
-              </ul>
-            ))
+        {filteredStatistic.map(item =>
+          <ul key={item.id} className={styles.list}>
+            <li className={styles.elOne}>{item.count_toponyms} +</li>
+            <li className={styles.elTwo}>{getLocalizedValue(item, 'name', locale)}</li>
+          </ul>
         )}
       </div>
     </>

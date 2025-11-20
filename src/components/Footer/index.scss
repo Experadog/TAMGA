@@ -122,45 +122,27 @@
 
     &__extra {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        align-items: flex-start;
         justify-content: space-between;
         border-top: 1px solid #d2d5e2;
         margin-top: rem(100);
         padding-block: rem(20);
+        row-gap: rem(15);
 
         @include tablet {
             margin-top: rem(112);
         }
 
         @include mobile {
-            flex-direction: column;
-            align-items: flex-start;
-            row-gap: rem(24);
             margin-top: 2rem;
         }
 
-        &-list {
-            display: flex;
-            column-gap: rem(24);
-        }
-
-        &-link {
-            font-weight: 500;
+        &__copyright {
+            font-weight: 400;
             font-size: rem(14);
-            line-height: 126%;
-            text-align: center;
-            color: #4b5162;
-
-            @include mobile-s {
-                font-size: 12px;
-            }
+            line-height: 140%;
+            color: #626981;
         }
-    }
-
-    &__copyright {
-        font-weight: 400;
-        font-size: rem(14);
-        line-height: 140%;
-        color: #626981;
     }
 }

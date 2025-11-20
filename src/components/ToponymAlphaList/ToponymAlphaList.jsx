@@ -34,9 +34,9 @@ export default function ToponymAlphaList({ items, locale }) {
               .localeCompare(getLocalizedValue(b, 'name', locale) || '', 'ru')
           );
         // разбиваем на 4 колонки (как в макете)
-        const cols = 3;
-        const perCol = Math.ceil(list.length / cols);
-        const chunks = Array.from({ length: cols }, (_, i) => list.slice(i * perCol, (i + 1) * perCol));
+        // const cols = 3;
+        // const perCol = Math.ceil(list.length / cols);
+        // const chunks = Array.from({ length: cols }, (_, i) => list.slice(i * perCol, (i + 1) * perCol));
 
         return (
           <section key={letter} className={cl.section}>
@@ -58,37 +58,40 @@ export default function ToponymAlphaList({ items, locale }) {
                 <Image src={seeMap} alt='' width={24} height={24} />
               </Link>
             </div>
-            <div className={cl.columns}>
-              {chunks.map((chunk, ci) => (
-                <ul key={ci} className={cl.col} role="list">
-                  {chunk.map(it => {
-                    const title = getLocalizedValue(it, 'name', locale) || '';
-                    const matches =
-                      it.matching_toponyms_count_fixed ?? 0;
-                    return (
-                      <li key={it.id} className={cl.rowBlock}>
-                        <Link href={`/${it.slug}`} className={cl.row} prefetch={false}>
-                          <span className={cl.link} >{title}</span>
-                        </Link>
-                        <Link
-                          href={{
-                            pathname: `/glossary/${it.name_en}`,
-                            query: { search: it.name_en }
-                          }}
-                          className={cl.row}
-                          prefetch={false}
-                        >
-                          <span className={cl.meta}>
-                            {matches} совпадений
-                          </span>
-                          <Image className={cl.chev} src={chevron} alt='' width={10} height={10} />
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              ))}
-            </div>
+
+            <ul className={cl.columns} role="list">
+              {list.map(it => {
+                const title = getLocalizedValue(it, 'name', locale) || '';
+                const matches = it.matching_toponyms_count_fixed ?? 0;
+                return (
+                  <li key={it.id} className={cl.rowBlock}>
+                    <Link href={`/${it.slug}`} className={cl.row} prefetch={false}>
+                      <span className={cl.link} >{title}</span>
+                    </Link>
+                    <Link
+                      href={{
+                        pathname: `/glossary/${it.name_en}`,
+                        query: { search: it.name_en }
+                      }}
+                      className={cl.row}
+                      prefetch={false}
+                    >
+                      <span className={cl.meta}>
+                        {matches} совпадений
+                      </span>
+                      <Image
+                        className={cl.chev}
+                        src={chevron}
+                        alt=''
+                        width={10}
+                        height={10}
+                      />
+                    </Link>
+                  </li>
+                )
+
+              })}
+            </ul>
           </section>
         );
       })}

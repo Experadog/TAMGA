@@ -5,80 +5,81 @@ import chevron from '@/assets/icons/chevron.svg';
 import email from '@/assets/icons/email.svg';
 import location from '@/assets/icons/location.svg';
 import phone from '@/assets/icons/phone.svg';
+import { ScrollToHash } from "@/components/ScrollToHash/ScrollToHash";
 import { routing } from "@/i18n/routing";
 import Image from "next/image";
 import clss from './page.module.scss';
 
 export async function generateMetadata({ params }) {
-  const { locale } = await params;
+    const { locale } = await params;
 
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
-  const pathname = `/${locale}/about`;
-  const absoluteUrl = `${siteUrl}${pathname}`;
+    const siteUrl =
+        process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
+    const pathname = `/${locale}/about`;
+    const absoluteUrl = `${siteUrl}${pathname}`;
 
-  const collapse = (s = '') =>
-    String(s || '')
-      .replace(/\s+/g, ' ')
-      .trim();
+    const collapse = (s = '') =>
+        String(s || '')
+            .replace(/\s+/g, ' ')
+            .trim();
 
-  const tMeta = await getTranslations({
-    locale,
-    namespace: 'about.metadata',
-  });
+    const tMeta = await getTranslations({
+        locale,
+        namespace: 'about.metadata',
+    });
 
-  const titleTranslate = tMeta('title') || '';
-  const descriptionTranslate = tMeta('description') || '';
+    const titleTranslate = tMeta('title') || '';
+    const descriptionTranslate = tMeta('description') || '';
 
 
-  const title = collapse(titleTranslate);
-  const description = collapse(descriptionTranslate);
+    const title = collapse(titleTranslate);
+    const description = collapse(descriptionTranslate);
 
-  const shareImage = '/openGraph.png';
+    const shareImage = '/openGraph.png';
 
-  return {
-    title,
-    description,
-    metadataBase: new URL(siteUrl),
-    alternates: {
-      canonical: pathname,
-      languages: routing.locales.reduce((acc, loc) => {
-        acc[loc] = `/${loc}/about`;
-        return acc;
-      }, {})
-    },
-    openGraph: {
-      type: 'website',
-      locale,
-      siteName: 'Tamga.kg',
-      url: absoluteUrl,
-      title,
-      description,
-      images: [
-        {
-          url: shareImage,
-          width: 1200,
-          height: 630,
-          alt: title
+    return {
+        title,
+        description,
+        metadataBase: new URL(siteUrl),
+        alternates: {
+            canonical: pathname,
+            languages: routing.locales.reduce((acc, loc) => {
+                acc[loc] = `/${loc}/about`;
+                return acc;
+            }, {})
+        },
+        openGraph: {
+            type: 'website',
+            locale,
+            siteName: 'Tamga.kg',
+            url: absoluteUrl,
+            title,
+            description,
+            images: [
+                {
+                    url: shareImage,
+                    width: 1200,
+                    height: 630,
+                    alt: title
+                }
+            ]
+        },
+
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [shareImage]
+        },
+
+        robots: {
+            index: true,
+            follow: true,
+            'max-snippet': -1,
+            'max-image-preview': 'large',
+            'max-video-preview': -1
         }
-      ]
-    },
-
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: [shareImage]
-    },
-
-    robots: {
-      index: true,
-      follow: true,
-      'max-snippet': -1,
-      'max-image-preview': 'large',
-      'max-video-preview': -1
-    }
-  };
+    };
 }
 
 export default async function AboutPage({ params }) {
@@ -87,6 +88,7 @@ export default async function AboutPage({ params }) {
     const t = await getTranslations({ locale, namespace: 'about' })
     return (
         <>
+            <ScrollToHash />
             <Hero heading={t('title')} description={t('description')} />
 
             <section className={`${clss.about__aim} ${clss.section}`}>
@@ -167,7 +169,7 @@ export default async function AboutPage({ params }) {
                 </div>
             </section>
 
-            <section className={`${clss.about__contacts} ${clss.section}`}>
+            <section id="contacts" className={`${clss.about__contacts} ${clss.section}`}>
                 <h2 className={clss.about__contactsHeading}>{t('contacts.title')}</h2>
                 <ul className={clss.about__contactsList}>
                     <li className={clss.about__contactsItem}>

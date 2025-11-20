@@ -49,9 +49,9 @@ export async function generateMetadata({ params }) {
     const collapse = (s = '') => String(s || '').replace(/\s+/g, ' ').trim();
     const pick = (...vals) => vals.find(v => typeof v === 'string' && v.trim().length > 0) ?? '';
 
-    const tMeta = await getTranslations({ locale, namespace: 'etymologies.metadata' });
-    const localizedTitleTail = tMeta('title', { count: Number(data?.count_etymologies) || 0 });
-    const localizedDescTail = tMeta('description');
+    const tMeta = await getTranslations({ locale, namespace: 'etymologies' });
+    const localizedTitleTail = tMeta('metadata.title', { count: Number(data?.count_etymologies) || 0 });
+    const localizedDescTail = tMeta('metadata.description');
 
     const name = getLocalizedValue(data, 'name', locale);
 

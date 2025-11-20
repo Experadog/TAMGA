@@ -46,23 +46,20 @@
 }
 
 .columns {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: rem(44);
+  column-count: 3;
+  column-gap: rem(44);
   width: 100%;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 
   @include tablet {
-    grid-template-columns: repeat(2, 1fr);
+    column-count: 2;
   }
 
   @include mobile {
-    grid-template-columns: repeat(1, 1fr);
+    column-count: 1;
   }
-}
-
-.col {
-  display: grid;
-  gap: rem(8);
 }
 
 .rowBlock {
