@@ -1,17 +1,19 @@
-import styles from './MainForm.module.scss'
+import { getTranslations } from 'next-intl/server';
+import styles from './MainForm.module.scss';
 
-function MainForm() {
+async function MainForm({ locale }) {
+  const t = await getTranslations({ locale, namespace: 'home' });
   return (
     <div className={styles.formBlock}>
       <div className={styles.form__bg} />
       <div className={styles.contentLeft}>
-        <h3 className={styles.title}>Как внести данные?</h3>
+        <h3 className={styles.title}>{t('form.title')}</h3>
         <p className={styles.description}>
-          Каждый желающий может добавить дополнительные данные к существующей базе. Необходимо заполнить соответствующую форму
+          {t('form.description')}
         </p>
       </div>
       <div className={styles.contentRight}>
-        <button className={styles.button}>Добавить название</button>
+        <button className={styles.button}>{t('add-title')}</button>
       </div>
     </div>
   )

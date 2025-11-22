@@ -10,9 +10,11 @@ import LocationControl from './LocationControl';
 import ToponymMarkers from './ToponymMarkers';
 
 import 'leaflet/dist/leaflet.css';
+import { useTranslations } from 'next-intl';
 
 export default function SearchableMapComponent({ searchTerm, searchType, locale }) {
     const mapRef = useRef();
+    const t = useTranslations('searchableMapComponent');
 
     // Создаем URL для поиска топонимов
     const apiUrl = `/api/toponyms?search_etymologies=${encodeURIComponent(searchTerm)}`;
@@ -31,11 +33,11 @@ export default function SearchableMapComponent({ searchTerm, searchType, locale 
     const getEmptyMessage = () => {
         switch (searchType) {
             case 'etymology':
-                return 'Топонимы с данной этимологией не найдены';
+                return t('etymology');
             case 'topoformant':
-                return 'Топонимы с данным топоформантом не найдены';
+                return t('topoformant');
             default:
-                return 'Топонимы не найдены';
+                return t('toponym');
         }
     };
 
@@ -72,7 +74,7 @@ export default function SearchableMapComponent({ searchTerm, searchType, locale 
                         boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
                         zIndex: 1000,
                     }}>
-                        Загрузка топонимов...
+                        {t('loading')}
                     </div>
                 )}
 
@@ -88,7 +90,7 @@ export default function SearchableMapComponent({ searchTerm, searchType, locale 
                         boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
                         zIndex: 1000,
                     }}>
-                        Ошибка загрузки данных
+                        {t('error')}
                     </div>
                 )}
 

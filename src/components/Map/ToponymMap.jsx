@@ -8,6 +8,7 @@ import FullScreenControl from './FullScreenControl';
 import LocationControl from './LocationControl';
 
 import 'leaflet/dist/leaflet.css';
+import { useTranslations } from "next-intl";
 
 const checkLeafletAvailability = () => {
     return typeof window !== 'undefined' && window.L;
@@ -20,6 +21,7 @@ export default function ToponymMap({ toponym, osmData }) {
     const [isMapReady, setIsMapReady] = useState(false);
     const [leafletReady, setLeafletReady] = useState(false);
     const mapRef = useRef(null);
+    const t = useTranslations('toponymMap');
 
     // ★ вычисляем наличие валидной точки
     const hasPoint =
@@ -122,7 +124,7 @@ export default function ToponymMap({ toponym, osmData }) {
                 border: '1px solid #e0e0e0',
                 color: '#666'
             }}>
-                ️ Инициализация карты...
+                {t('initializing-the-map')}
             </div>
         );
     }
@@ -180,35 +182,6 @@ export default function ToponymMap({ toponym, osmData }) {
                     </>
                 )}
 
-                {/* Render single polygon/polyline for ways */}
-                {/* {osmData?.coords?.length > 0 && osmData.elementType === 'way' && isMapReady && (
-                    <>
-                        {osmData.isClosedWay ? (
-                            <Polygon
-                                positions={osmData.coords}
-                                pathOptions={{
-                                    color: "#0094EB",
-                                    weight: 3,
-                                    fill: true,
-                                    fillColor: "#0094EB",
-                                    fillOpacity: 0.2,
-                                    stroke: true
-                                }}
-                            />
-                        ) : (
-                            <Polyline
-                                positions={osmData.coords}
-                                pathOptions={{
-                                    color: "#0094EB",
-                                    weight: 4,
-                                    opacity: 1,
-                                    stroke: true
-                                }}
-                            />
-                        )}
-                    </>
-                )} */}
-
                 {/* ★ Маркер только если точка валидная */}
                 {(!osmData?.coords?.length || (osmData.elementType !== 'way' && osmData.elementType !== 'relation')) && isMapReady && hasPoint && (
                     <CircleMarker
@@ -239,7 +212,7 @@ export default function ToponymMap({ toponym, osmData }) {
                         fontSize: 14
                     }}
                 >
-                    Координаты отсутствуют — объект на карте не отмечен
+                    {t('no-coordinates')}
                 </div>
             )}
         </div>

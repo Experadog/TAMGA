@@ -1,5 +1,6 @@
 import { Link } from '@/i18n/navigation';
 import { fetchOSMData } from '@/lib/utils/fetchOSMData';
+import { getTranslations } from 'next-intl/server';
 import { getLocalizedValue } from '../../lib/utils/get-localize-value';
 import ToponymCard from '../ToponymCard/ToponymCard';
 import styles from './PopularToponyms.module.scss';
@@ -31,6 +32,7 @@ async function fetchClassToponymsCount() {
 }
 
 export async function PopularToponyms({ locale }) {
+  const t = await getTranslations({ locale, namespace: 'home' });
   const data = await fetchData();
   const items = Array.isArray(data?.results) ? data.results : [];
   const rawStatistic = await fetchClassToponymsCount();
@@ -60,12 +62,12 @@ export async function PopularToponyms({ locale }) {
   return (
     <>
       <div className={styles.popularToponymsTop}>
-        <h2 className={styles.title}>Популярные топонимы</h2>
+        <h2 className={styles.title}>{t('popular.title')}</h2>
         <div className={styles.descriptionBlock}>
           <p className={styles.description}>
-            We understand that every heartbeat, every breath, and every moment matters. As a beacon of health and healing in England, we are dedicated to
+            {t('popular.description')}
           </p>
-          <Link href='/glossary' className={styles.button}>Посмотреть все</Link>
+          <Link href='/glossary' className={styles.button}>{t('popular.view-all')}</Link>
         </div>
 
         <ul className={styles.cardsBlock}>
@@ -79,7 +81,7 @@ export async function PopularToponyms({ locale }) {
         </ul>
 
         <div className={styles.buttonBlock}>
-          <Link href='/glossary' className={`${styles.button} ${styles.buttonDown}`}>Посмотреть все</Link>
+          <Link href='/glossary' className={`${styles.button} ${styles.buttonDown}`}>{t('popular.view-all')}</Link>
         </div>
       </div>
 

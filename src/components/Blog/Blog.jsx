@@ -42,7 +42,7 @@ export default async function Blog({ locale, searchParams }) {
       <h2 className={styles.blog__contentHeading}>{t('blog.title')}</h2>
       <div className={styles.descriptionBlock}>
         <p className={styles.blog__contentDesc}>{t('blog.description')}</p>
-        <Link href='/blog' className={styles.button}>Посмотреть все</Link>
+        <Link href='/blog' className={styles.button}>{t('popular.view-all')}</Link>
       </div>
 
       <ul className={styles.blog__contentList}>
@@ -87,7 +87,7 @@ export default async function Blog({ locale, searchParams }) {
         ))}
       </ul>
       <div className={styles.buttonBlock}>
-        <Link href='/blog' className={`${styles.button} ${styles.buttonDown}`}>Посмотреть все</Link>
+        <Link href='/blog' className={`${styles.button} ${styles.buttonDown}`}>{t('popular.view-all')}</Link>
       </div>
     </>
   )

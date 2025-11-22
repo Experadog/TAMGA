@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './FilterPanel.module.scss';
 
 export default function FilterForm({ locale, directories }) {

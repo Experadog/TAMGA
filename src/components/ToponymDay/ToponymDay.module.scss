@@ -361,6 +361,7 @@
   font-size: rem(16);
   cursor: pointer;
   transition: background 0.2s ease;
+  white-space: nowrap;
 
 
   &:hover {

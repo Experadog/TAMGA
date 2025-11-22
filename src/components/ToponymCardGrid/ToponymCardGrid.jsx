@@ -3,10 +3,12 @@ import arrow from '@/assets/icons/arrowRight.svg';
 import MapClickable from '@/components/ToponymCard/MapClickable';
 import { Link } from '@/i18n/navigation';
 import { cleanHtml, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
+import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import styles from './ToponymCardGrid.module.scss';
 
-function ToponymCardGrid({ osmData, toponym, locale }) {
+async function ToponymCardGrid({ osmData, toponym, locale }) {
+  const t = await getTranslations({ locale, namespace: 'home' });
 
   const {
     slug,
@@ -44,10 +46,10 @@ function ToponymCardGrid({ osmData, toponym, locale }) {
             className={styles.similar}
             prefetch={false}
           >
-            {matching_toponyms_count} cовпадений
+            {matching_toponyms_count} {t('popular.matches')}
           </Link>
           <Link href={`/${slug}`} className={styles.moreBtn} prefetch={false}>
-            Подробнее
+            {t('more-details')}
             <Image
               src={arrow}
               alt=''

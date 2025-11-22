@@ -242,7 +242,7 @@ export default async function GlossaryPage({ params, searchParams }) {
       <div id="results-top" />
       <section className={styles.results}>
         <div className={styles.results__count}>
-          <h3 className={styles.results__count__heading}>Найдено результатов: {totalCount}</h3>
+          <h3 className={styles.results__count__heading}>{t('search-results')} {totalCount}</h3>
           <Suspense fallback={null}>
             <ViewToggle modes={['horizontal', 'vertical', 'list']} />
           </Suspense>

@@ -3,10 +3,11 @@ import arrow from '@/assets/icons/arrowRight.svg';
 import chevron from '@/assets/icons/chevron.svg';
 import { Link } from '@/i18n/navigation';
 import { cleanHtml, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
+import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import styles from './ToponymDay.module.scss';
 
-function ToponymDayCard({ osmData, toponym, locale, dateISO, prevHref, nextHref }) {
+async function ToponymDayCard({ osmData, toponym, locale, dateISO, prevHref, nextHref }) {
 
   const {
     slug,
@@ -15,12 +16,14 @@ function ToponymDayCard({ osmData, toponym, locale, dateISO, prevHref, nextHref 
     osm_id
   } = toponym || {};
 
+  const t = await getTranslations({ locale, namespace: 'home' });
+
   const region0 = Array.isArray(region) ? region[0] : null;
 
   return (
     <div className={styles.toponymDayLeft}>
       <div className={styles.cardTop}>
-        <h2 className={styles.title}>Топоним дня</h2>
+        <h2 className={styles.title}>{t('toponym-day.title')}</h2>
         <div className={styles.dateBlock}>
           {prevHref ? (
             <Link href={prevHref} prefetch scroll={false} className={styles.arrowBtn} aria-label="Предыдущий день">
@@ -49,24 +52,24 @@ function ToponymDayCard({ osmData, toponym, locale, dateISO, prevHref, nextHref 
             {toponym ? (
               <ClientMapWrapper toponym={toponym} osmId={osm_id} osmData={osmData} />
             ) : (
-              <div className={styles.cardImageDefault}>Нет данных на эту дату</div>
+              <div className={styles.cardImageDefault}>{t('no-data')}</div>
             )}
           </div>
         </div>
         <div className={styles.info}>
           <div className={styles.infoBlock}>
-            <h3 className={styles.name}>{toponym ? getLocalizedValue(toponym, 'name', locale) : 'Название'}</h3>
-            <p className={styles.meta}>{toponym ? (region0 ? getLocalizedValue(region0, 'name', locale) : 'Регион') : 'Регион'}</p>
-            <p className={styles.meta}>{toponym ? getLocalizedValue(terms_topomyns, 'name', locale) : 'Тип объекта'}</p>
+            <h3 className={styles.name}>{toponym ? getLocalizedValue(toponym, 'name', locale) : t('name')}</h3>
+            <p className={styles.meta}>{toponym ? (region0 ? getLocalizedValue(region0, 'name', locale) : t('region')) : t('region')}</p>
+            <p className={styles.meta}>{toponym ? getLocalizedValue(terms_topomyns, 'name', locale) : t('object-type')}</p>
             <p className={styles.metaDescription}>
-              {toponym ? cleanHtml(stripHtmlTags(getLocalizedValue(toponym, 'description', locale))) : 'Краткое описание'}
+              {toponym ? cleanHtml(stripHtmlTags(getLocalizedValue(toponym, 'description', locale))) : t('brief-description')}
             </p>
           </div>
 
           <div className={styles.moreBlock}>
             {toponym && slug ? (
               <Link href={`/${slug}`} className={styles.moreBtn}>
-                Подробнее
+                {t('more-details')}
                 <Image
                   src={arrow}
                   alt=''
@@ -77,7 +80,7 @@ function ToponymDayCard({ osmData, toponym, locale, dateISO, prevHref, nextHref 
               </Link>
             ) : (
               <button className={styles.moreBtn} disabled>
-                Подробнее
+                {t('more-details')}
                 <Image
                   src={arrow}
                   alt=''

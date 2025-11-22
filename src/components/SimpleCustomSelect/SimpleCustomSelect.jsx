@@ -30,7 +30,7 @@ export default function SimpleCustomSelect({
     const isInlineSearch = remoteMode && forceSearch;
     const [inlineOpen, setInlineOpen] = useState(false);
 
-    const t = useTranslations('filters.group')
+    const t = useTranslations('filters')
 
     const defaultGetOptionLabel = (option) => {
         return option.name_ky || option.name_ru || option.name_en || option.name || option.title || option.toString();
@@ -185,7 +185,7 @@ export default function SimpleCustomSelect({
             return selectedNode ? optionLabel(selectedNode) : selectedValues[0];
         }
         if (selectedValues.length > 1) {
-            return `${t('choosed')}: ${selectedValues.length}`;
+            return `${t('group.choosed')}: ${selectedValues.length}`;
         }
         return '';
     };
@@ -228,12 +228,12 @@ export default function SimpleCustomSelect({
                         <div className={styles.dropdown}>
                             <div className={styles.optionsList}>
                                 {loading ? (
-                                    <div className={styles.noOptions}>Загрузка…</div>
+                                    <div className={styles.noOptions}>{t('group.loading')}</div>
                                 ) : filteredTree.length > 0 ? (
                                     renderOptionsRecursive(filteredTree)
                                 ) : (
                                     query.trim().length > 0 ? (
-                                        <div className={styles.noOptions}>Ничего не найдено</div>
+                                        <div className={styles.noOptions}>{t('group.nothing-found')}</div>
                                     ) : null
                                 )}
                             </div>
@@ -286,11 +286,11 @@ export default function SimpleCustomSelect({
                                 {remoteMode && !query.trim() ? (
                                     <div className={styles.noOptions}>{emptyHint}</div>
                                 ) : loading ? (
-                                    <div className={styles.noOptions}>Загрузка…</div>
+                                    <div className={styles.noOptions}>{t('group.loading')}</div>
                                 ) : filteredTree.length > 0 ? (
                                     renderOptionsRecursive(filteredTree)
                                 ) : (
-                                    <div className={styles.noOptions}>Ничего не найдено</div>
+                                    <div className={styles.noOptions}>{t('group.nothing-found')}</div>
                                 )}
                             </div>
                         </div>

@@ -2,11 +2,13 @@ import ClientMapWrapper from '@/app/[locale]/[toponym]/_components/ClientMapWrap
 import arrow from '@/assets/icons/arrowRight.svg';
 import { Link } from '@/i18n/navigation';
 import { cleanHtml, getLocalizedValue } from '@/lib/utils';
+import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import MapClickable from './MapClickable';
 import styles from './ToponymCard.module.scss';
 
-function ToponymCard({ osmData, toponym, locale }) {
+async function ToponymCard({ osmData, toponym, locale }) {
+  const t = await getTranslations({ locale, namespace: 'home' });
 
   const {
     slug,
@@ -53,10 +55,10 @@ function ToponymCard({ osmData, toponym, locale }) {
             className={styles.similar}
             prefetch={false}
           >
-            {matching_toponyms_count} cовпадений
+            {matching_toponyms_count} {t('popular.matches')}
           </Link>
           <Link href={`/${slug}`} className={styles.moreBtn} prefetch={false}>
-            Подробнее
+            {t('more-details')}
             <Image
               src={arrow}
               alt=''

@@ -4,6 +4,7 @@ import { useMap } from 'react-leaflet';
 import { useFetch } from '../../lib/hooks/useFetch';
 
 import * as L from 'leaflet';
+import { useTranslations } from 'next-intl';
 
 const loadBoundaryCanvas = () => {
     if (typeof window !== 'undefined' && !L.TileLayer.BoundaryCanvas) {
@@ -15,6 +16,7 @@ const loadBoundaryCanvas = () => {
 };
 
 function BoundaryCanvasTileLayer({ tileUrl }) {
+    const t = useTranslations('map');
     const map = useMap();
     const [loading, setLoading] = useState(true);
 
@@ -102,7 +104,7 @@ function BoundaryCanvasTileLayer({ tileUrl }) {
                 zIndex: 1000,
             }}
         >
-            {isError ? 'Загрузка карты...' : 'Загрузка границ Кыргызстана...'}
+            {isError ? t('loading-map') : t('borders-loading')}
         </div>
     ) : null;
 }

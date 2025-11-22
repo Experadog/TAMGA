@@ -3,6 +3,7 @@
 import human from '@/assets/icons/human.svg';
 import search from '@/assets/icons/search.svg';
 import { getLocalizedValue } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -17,6 +18,8 @@ export const MainSearch = ({ locale: localeProp, variant = 'default' }) => {
   const params = useParams();
 
   const locale = localeProp || params?.locale || 'ky';
+
+  const t = useTranslations('home');
 
   const [query, setQuery] = useState('');
   const [items, setItems] = useState([]);
@@ -220,7 +223,7 @@ export const MainSearch = ({ locale: localeProp, variant = 'default' }) => {
                 type="search"
                 name="search"
                 autoComplete="off"
-                placeholder={'Поиск топонимов'}
+                placeholder={t('search.placeholder')}
                 value={query}
                 onChange={(e) => {
                   setQuery(e.target.value);
@@ -252,7 +255,6 @@ export const MainSearch = ({ locale: localeProp, variant = 'default' }) => {
                         aria-selected={idx === activeIdx}
                         className={`${styles.item} ${idx === activeIdx ? styles.active : ''}`}
                         onMouseDown={(e) => e.preventDefault()}
-                        // onMouseEnter={() => setActiveIdx(idx)}
                         onClick={() => onPick(it)}
                       >
                         {title}
@@ -272,7 +274,7 @@ export const MainSearch = ({ locale: localeProp, variant = 'default' }) => {
                 {/* Якорь (SVG) */}
                 <Image className={styles.labelHuman} src={human} width={24} height={24} alt="" />
               </span>
-              Где я?
+              {t('search.whereiam')}
             </button>
           </form>
         </div>
@@ -294,7 +296,7 @@ export const MainSearch = ({ locale: localeProp, variant = 'default' }) => {
               type="search"
               name="search"
               autoComplete="off"
-              placeholder={'Поиск по каталогу'}
+              placeholder={t('catalog-search.placeholder')}
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
@@ -326,7 +328,6 @@ export const MainSearch = ({ locale: localeProp, variant = 'default' }) => {
                       aria-selected={idx === activeIdx}
                       className={`${styles.item} ${idx === activeIdx ? styles.active : ''}`}
                       onMouseDown={(e) => e.preventDefault()}
-                      // onMouseEnter={() => setActiveIdx(idx)}
                       onClick={() => onPick(it)}
                     >
                       {title}
@@ -336,17 +337,6 @@ export const MainSearch = ({ locale: localeProp, variant = 'default' }) => {
               </ul>
             )}
           </div>
-
-          {/* <button
-            type="button"
-            className={styles.whereBtn}
-            onClick={onWhereAmI}
-          >
-            <span className={styles.iconAnchor} aria-hidden="true">
-              <Image className={styles.labelHuman} src={human} width={24} height={24} alt="" />
-            </span>
-            Где я?
-          </button> */}
         </form>
       )}
     </>

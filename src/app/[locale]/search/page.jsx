@@ -209,7 +209,7 @@ export default async function SearchPage({ params, searchParams }) {
       {identicals.length > 0 && (
         <section className={styles.identicalSection}>
           <div className={styles.identicalSection__container}>
-            <h3 className={styles.identicalSection__heading}>Идентичные топонимы:</h3>
+            <h3 className={styles.identicalSection__heading}>{t('identical')}</h3>
             <ul className={styles.identicalSection__list}>
               {identicals.map((identical, idx) => (
                 <li
@@ -233,7 +233,7 @@ export default async function SearchPage({ params, searchParams }) {
 
       <section className={styles.results}>
         <div className={styles.results__count}>
-          <h3 className={styles.results__count__heading}>Найдено результатов: {totalCount}</h3>
+          <h3 className={styles.results__count__heading}>{t('results')} {totalCount}</h3>
           <Suspense fallback={null}>
             <ViewToggle modes={['horizontal', 'vertical']} />
           </Suspense>

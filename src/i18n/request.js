@@ -3,7 +3,7 @@ import { getRequestConfig } from 'next-intl/server';
 import { routing } from './routing';
 
 async function fetchTranslations() {
-    const res = await fetch(`${process.env.API_URL}/translate/?limit=200`);
+    const res = await fetch(`${process.env.API_URL}/translate/?limit=300`);
     if (!res.ok) throw new Error(`Failed to fetch translations: ${res.statusText}`);
 
     const { results } = await res.json();

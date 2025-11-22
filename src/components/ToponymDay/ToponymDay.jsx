@@ -1,6 +1,7 @@
 import { Link } from '@/i18n/navigation';
 import { fetchOSMData } from '@/lib/utils/fetchOSMData';
 import { fetchToponymOfDay, navHrefs, pickDateFromParams, toISO } from '@/lib/utils/toponymDay';
+import { getTranslations } from 'next-intl/server';
 import styles from './ToponymDay.module.scss';
 import ToponymDayCard from './ToponymDayCard';
 
@@ -25,6 +26,7 @@ export async function ToponymDay({ locale, searchParams }) {
   const sp = await searchParams;
   const { current, now, min, max } = pickDateFromParams(sp);
   const dateISO = toISO(current);
+  const t = await getTranslations({ locale, namespace: 'home' });
 
   const toponym = await fetchToponymOfDay(fetchData, current, now);
 
@@ -49,7 +51,7 @@ export async function ToponymDay({ locale, searchParams }) {
     osmData = { point: [toponym.latitude, toponym.longitude], elementType: 'node' };
   }
 
-  const basePath = `/${locale}`;
+  const basePath = `/`;
   const { prevHref, nextHref } = navHrefs(basePath, current, min, max, now);
 
   return (
@@ -65,13 +67,13 @@ export async function ToponymDay({ locale, searchParams }) {
       />
       <div className={styles.toponymDayRight}>
         <div className={styles.topBlock}>
-          <h2 className={styles.topBlockTitle}>О проекте</h2>
+          <h2 className={styles.topBlockTitle}>{t('about-project.title')}</h2>
           <p className={styles.topBlockDescription}>
-            Our design team helps clients achieve their marketing and business goals through user-friendly, engaging target branding that appeals to a website. Our design team helps clients achieve their marketing and business goals throug ...
+            {t('about-project.description')}
           </p>
         </div>
         <div className={styles.bottomBlock}>
-          <Link href='/about' className={styles.bottomBlockButton}>Подробнее</Link>
+          <Link href='/about' className={styles.bottomBlockButton}>{t('more-details')}</Link>
         </div>
       </div>
     </section>

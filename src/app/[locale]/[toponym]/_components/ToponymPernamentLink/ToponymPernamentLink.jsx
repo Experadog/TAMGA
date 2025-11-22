@@ -1,20 +1,22 @@
 'use client';
 
-import { useRef } from 'react';
+import bufferIcon from '@/assets/icons/buffer.svg';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import bufferIcon from '@/assets/icons/buffer.svg'; 
+import { useRef } from 'react';
 import clss from './index.module.scss';
 
 export function ToponymPernamentLink({ fullPath }) {
     const spanRef = useRef(null);
+    const t = useTranslations('toponym');
 
     const copyToClipboard = async () => {
         try {
             const text = spanRef.current?.innerText || '';
             await navigator.clipboard.writeText(text);
-            alert('Ссылка скопирована!');
+            alert(t('permanent.link'));
         } catch (err) {
-            alert('Ошибка копирования');
+            alert(t('permanent.error'));
             console.error(err);
         }
     };

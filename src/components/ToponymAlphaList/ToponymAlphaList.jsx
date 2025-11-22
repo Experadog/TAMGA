@@ -2,6 +2,7 @@ import chevron from '@/assets/icons/chevron.svg';
 import seeMap from '@/assets/icons/seeOnMap.svg';
 import { Link } from '@/i18n/navigation';
 import { getLocalizedValue } from '@/lib/utils';
+import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import cl from './ToponymAlphaList.module.scss';
 
@@ -13,7 +14,8 @@ function firstLetter(title) {
   return ch === 'Ё' ? 'Е' : ch;
 }
 
-export default function ToponymAlphaList({ items, locale }) {
+export default async function ToponymAlphaList({ items, locale }) {
+  const t = await getTranslations({ locale, namespace: 'glossary' });
   const groups = items.reduce((acc, it) => {
     const title = getLocalizedValue(it, 'name', locale) || '';
     const key = firstLetter(title);
@@ -54,7 +56,7 @@ export default function ToponymAlphaList({ items, locale }) {
                 }}
                 scroll={true}
               >
-                <span className={cl.seeMap}>Посмотреть на карте</span>
+                <span className={cl.seeMap}>{t('show-map')}</span>
                 <Image src={seeMap} alt='' width={24} height={24} />
               </Link>
             </div>
@@ -77,7 +79,7 @@ export default function ToponymAlphaList({ items, locale }) {
                       prefetch={false}
                     >
                       <span className={cl.meta}>
-                        {matches} совпадений
+                        {matches} {t('matches')}
                       </span>
                       <Image
                         className={cl.chev}

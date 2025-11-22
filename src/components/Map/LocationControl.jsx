@@ -3,11 +3,13 @@
 import L from 'leaflet';
 import { LocateControl } from 'leaflet.locatecontrol';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
+import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 
 const LocationControl = () => {
+    const t = useTranslations('map');
     const map = useMap();
     const sp = useSearchParams();
     const shouldLocate = sp.get('locate') === '1';
@@ -17,7 +19,7 @@ const LocationControl = () => {
 
         const locateControl = new LocateControl({
             position: 'topleft',
-            strings: { title: 'Показать мое местоположение' },
+            strings: { title: t('show-my-location') },
             locateOptions: {
                 enableHighAccuracy: true,
                 timeout: 10000,

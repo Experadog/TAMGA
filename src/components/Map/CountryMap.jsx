@@ -11,8 +11,10 @@ import LocationControl from './LocationControl';
 import ToponymMarkers from './ToponymMarkers';
 
 import 'leaflet/dist/leaflet.css';
+import { useTranslations } from 'next-intl';
 
 export default function CountryMap({ locale }) {
+    const t = useTranslations('map');
     const mapRef = useRef();
     const sp = useSearchParams();
 
@@ -86,7 +88,7 @@ export default function CountryMap({ locale }) {
                         boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
                         zIndex: 1000,
                     }}>
-                        Загрузка топонимов...
+                        {t('loading-toponyms')}
                     </div>
                 )}
 
@@ -102,7 +104,7 @@ export default function CountryMap({ locale }) {
                         boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
                         zIndex: 1000,
                     }}>
-                        Ошибка загрузки данных
+                        {t('loading-error')}
                     </div>
                 )}
 

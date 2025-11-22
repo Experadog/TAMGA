@@ -109,10 +109,10 @@ export default async function Home({ params, searchParams }) {
       </section>
 
       <section className={styles.mapContainer}>
-        <h2 className={styles.title}>Интерактивная карта</h2>
+        <h2 className={styles.title}>{t('map.title')}</h2>
         <div className={styles.descriptionBlock}>
           <p className={styles.description}>
-            We understand that every heartbeat, every breath, and every moment matters. As a beacon of health and healing in England, we are dedicated to
+            {t('map.description')}
           </p>
           <Link
             href={{
@@ -125,7 +125,7 @@ export default async function Home({ params, searchParams }) {
             }}
             className={styles.button}
           >
-            Перейти на карту
+            {t('go-to-map')}
           </Link>
         </div>
         <div className={styles.mapWrapper}>
@@ -148,7 +148,7 @@ export default async function Home({ params, searchParams }) {
             }}
             className={`${styles.button} ${styles.buttonDown}`}
           >
-            Перейти на карту
+            {t('go-to-map')}
           </Link>
         </div>
       </section>
@@ -159,7 +159,7 @@ export default async function Home({ params, searchParams }) {
       </section>
       <section className={styles.formContainer}>
         <Suspense fallback={null}>
-          <MainForm />
+          <MainForm locale={locale} />
         </Suspense>
       </section>
     </>

@@ -108,7 +108,7 @@
 
 /* Кнопка «Где я?» (белая, с тонкой рамкой) */
 .whereBtn {
-  width: rem(109);
+  // width: rem(109);
   height: rem(56);
   padding: rem(0) rem(16) rem(0) rem(12);
   border: rem(2) solid rgba(0, 0, 0, 0.08);
@@ -133,7 +133,7 @@
   }
 
   @include mobile {
-    width: rem(77);
+    // width: rem(77);
     height: rem(24);
     padding: 0;
     background: none;
