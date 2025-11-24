@@ -1,0 +1,35 @@
+@use '../../assets/styles/helpers' as *;
+
+.selectWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.select {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 32px; // чтобы текст не прилипал к стрелке
+}
+
+.selectArrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.select {
+  width: 100%;
+  height: rem(56);
+  border-radius: 16px;
+  border: 1px solid #D8D8D8;
+  padding: 10px 12px;
+  font-size: 16px;
+  outline: none;
+}

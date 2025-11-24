@@ -1,0 +1,25 @@
+@use '../../assets/styles/helpers/' as *;
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fieldLabel {
+  font-weight: 500;
+  color: #000000;
+  font-weight: 400;
+  font-size: rem(16);
+  line-height: 20px;
+  letter-spacing: 0px;
+}
+
+.fieldRequired {
+  color: #ef4444;
+}
+
+.fieldError {
+  font-size: 12px;
+  color: #ef4444;
+}

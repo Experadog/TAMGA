@@ -1,0 +1,251 @@
+@use '../../assets/styles/helpers' as *;
+
+.button {
+  color: #383838;
+  border: none;
+  padding: rem(16) rem(42);
+  border-radius: rem(50);
+  white-space: nowrap;
+  background: #FFFFFF;
+  transition: background 0.2s ease;
+  font-weight: 500;
+  font-size: rem(16);
+
+  &:hover {
+    background: #F5F5F5;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  height: rem(56);
+  border-radius: 16px;
+  border: 1px solid #D8D8D8;
+  padding: 10px 12px;
+  font-size: 16px;
+  outline: none;
+}
+
+.textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  width: 100%;
+  max-width: rem(800);
+  max-height: 95vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 32px 32px 24px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+
+  @include mobile {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+}
+
+.modalHeader {
+  margin-bottom: 24px;
+}
+
+.modalTitle {
+  font-size: rem(24);
+  font-weight: 600;
+  margin-bottom: 8px;
+  line-height: 36px;
+  letter-spacing: -1%;
+  color: #1D1F1E;
+}
+
+.modalSubtitle {
+  color: #7C7C7C;
+  font-weight: 400;
+  font-size: rem(16);
+  line-height: 160%;
+  letter-spacing: 0%;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.modalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.downBlock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: rem(8);
+
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+.captchaPlaceholder {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+  border: none;
+}
+
+.recaptchaBox {
+  min-width: 304px;
+  min-height: 78px;
+  overflow: visible;
+}
+
+.modalActions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.primaryButton {
+  max-width: rem(245);
+  border-radius: 999px;
+  padding: rem(12) rem(32.5);
+  background: #387FF5;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: rem(16);
+  text-align: center;
+  vertical-align: middle;
+
+  &:hover {
+    background: #0063cd;
+    text-decoration: none;
+    color: #ffffff;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  @include mobile {
+    font-size: rem(12);
+  }
+}
+
+.flexButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.secondaryButton {
+  border-radius: 999px;
+  padding: rem(12) rem(32.5);
+  background: #e2e8f0;
+  color: #000000;
+  border: none;
+  font-weight: 600;
+  font-size: rem(16);
+  line-height: 24px;
+  letter-spacing: -0.4%;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+
+  &:hover {
+    background: #b9bcbf;
+  }
+}
+
+/* success modal */
+
+.successModal {
+  width: 100%;
+  max-width: rem(575);
+  background: #ffffff;
+  border-radius: 24px;
+  padding: rem(40);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+  text-align: center;
+
+  @include mobile {
+    max-width: rem(300);
+  }
+}
+
+.successIcon {
+  width: rem(93);
+  height: rem(93);
+  border-radius: 999px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @include mobile {
+    width: rem(70);
+    height: rem(70);
+  }
+}
+
+.successTitle {
+  color: #121212;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: rem(40);
+  text-align: center;
+
+  @include mobile {
+    font-weight: 600;
+    font-size: rem(30);
+  }
+}
+
+.successText {
+  color: #474747;
+  margin-bottom: rem(40);
+  font-weight: 400;
+  font-size: rem(26);
+  text-align: center;
+  max-width: rem(490);
+
+  @include mobile {
+    font-weight: 400;
+    font-size: rem(16);
+    margin-bottom: rem(25);
+  }
+}

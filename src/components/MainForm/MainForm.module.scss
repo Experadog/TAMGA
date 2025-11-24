@@ -78,25 +78,3 @@
   letter-spacing: 0%;
   color: #fff;
 }
-
-.contentRight {}
-
-.button {
-  color: #383838;
-  border: none;
-  padding: rem(16) rem(42);
-  border-radius: rem(50);
-  white-space: nowrap;
-  background: #FFFFFF;
-  transition: background 0.2s ease;
-  font-weight: 500;
-  font-size: rem(16);
-
-  &:hover {
-    background: #F5F5F5;
-  }
-
-  &:active {
-    transform: translateY(1px);
-  }
-}
