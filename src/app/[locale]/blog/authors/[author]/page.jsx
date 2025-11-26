@@ -1,11 +1,13 @@
 import blogImgFallback from '@/assets/images/blog-img-fallback.png';
 import { Hero } from '@/components/Hero/Hero';
+import MainForm from '@/components/MainForm/MainForm';
 import { Pagination } from '@/components/Pagination';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { cleanHtml, formatDate, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from 'next/image';
+import { Suspense } from 'react';
 import styles from './page.module.scss';
 
 async function fetchData({ author }) {
@@ -155,6 +157,8 @@ export default async function AuthorPage({ params, searchParams }) {
 
   const authorType = locale == 'ru' ? 'Автор' : locale == 'ky' ? 'Автор' : 'Author'
 
+  const biografy = getLocalizedValue(data, 'bio', locale) || '';
+
   const breadcrumbsItems = [
     {
       name: b('blog.home'),
@@ -176,8 +180,15 @@ export default async function AuthorPage({ params, searchParams }) {
         breadcrumbsItems={breadcrumbsItems}
       />
       <section className={`container ${styles.blog__content}`}>
-        <h2 className={styles.blog__contentHeading}>{t('list.title')}</h2>
-        <p className={styles.blog__contentDesc}>{t('list.description')}</p>
+        <div className={styles.blog__contentBlock}>
+          <h2 className={styles.blog__contentHeading}>{t('list.title')}</h2>
+          {biografy && (
+            <p className={styles.blog__contentDesc}>
+              {biografy}
+            </p>
+          )}
+        </div>
+
 
         <ul className={styles.blog__contentList}>
           {blogs.map((blog) => (
@@ -227,6 +238,11 @@ export default async function AuthorPage({ params, searchParams }) {
           itemsPerPage={itemsPerPage}
         />
 
+      </section>
+      <section className={styles.formContainer}>
+        <Suspense fallback={null}>
+          <MainForm />
+        </Suspense>
       </section>
     </>
   )

@@ -1,5 +1,13 @@
 @use '../../../assets/styles/helpers/' as *;
 
+.formContainer {
+    margin-bottom: rem(100);
+
+    @include mobile {
+        margin-bottom: rem(64);
+    }
+}
+
 .toponymBreadcrumb {
     @include tablet {
         display: none;
@@ -277,6 +285,10 @@
     }
 }
 
+.oldName {
+    font-size: rem(18);
+}
+
 .toponymPlastList {
     margin-top: rem(16);
     display: flex;
@@ -326,6 +338,10 @@
         height: 100%;
         display: flex;
         align-items: center;
+
+        &:hover {
+            color: var(--color-accent);
+        }
     }
 
     &__value {
@@ -333,6 +349,10 @@
         font-size: 20px;
         color: var(--color-accent-light);
         opacity: 0.78;
+
+        &:hover {
+            color: var(--color-accent);
+        }
     }
 
     &__valueDelimeter {

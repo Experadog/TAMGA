@@ -1,0 +1,81 @@
+@use '../../assets/styles/helpers/' as *;
+
+.selectWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.selectButton {
+  border: 1px solid #D8D8D8;
+  padding: rem(13) rem(16);
+  border-radius: rem(12);
+  outline: none;
+  background-color: #fff;
+  cursor: pointer;
+  min-width: rem(220);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: rem(8);
+
+  font-size: rem(14);
+  line-height: 1.2;
+}
+
+.icon {
+  width: rem(10);
+  height: rem(6);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M5.00065 3.5026L8.25065 0.252604C8.40343 0.0998263 8.59787 0.0234375 8.83398 0.0234375C9.0701 0.0234375 9.26454 0.0998264 9.41732 0.252604C9.5701 0.405382 9.64648 0.599826 9.64648 0.835938C9.64648 1.07205 9.5701 1.26649 9.41732 1.41927L5.58398 5.2526C5.50065 5.33594 5.41037 5.39497 5.31315 5.42969C5.21593 5.46441 5.11176 5.48177 5.00065 5.48177C4.88954 5.48177 4.78537 5.46441 4.68815 5.42969C4.59093 5.39497 4.50065 5.33594 4.41732 5.2526L0.583984 1.41927C0.431207 1.26649 0.354817 1.07205 0.354817 0.835937C0.354817 0.599826 0.431207 0.405382 0.583984 0.252604C0.736762 0.099826 0.931207 0.0234371 1.16732 0.0234371C1.40343 0.0234371 1.59787 0.099826 1.75065 0.252604L5.00065 3.5026Z' fill='%23646464'/></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.open .icon {
+  transform: rotate(180deg);
+}
+
+/* список опций, отдельно под селектом */
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: rem(4);
+
+  background: #fff;
+  border-radius: rem(12);
+  border: 1px solid #D8D8D8;
+  box-shadow: 0 rem(4) rem(16) rgba(0, 0, 0, 0.08);
+
+  list-style: none;
+  padding: rem(6);
+  z-index: 20;
+  min-width: 100%;
+  max-height: rem(260);
+  overflow-y: auto;
+}
+
+.dropdown li {
+  padding: rem(8) rem(16);
+  font-size: rem(14);
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: rem(12);
+  margin-bottom: rem(6);
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+}
+
+.dropdown li:last-child {
+  margin-bottom: 0;
+}
+
+.activeItem {
+  font-weight: 600;
+  background-color: #f2f2f2;
+}

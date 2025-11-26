@@ -13,10 +13,12 @@ import chevronIcon from '@/assets/icons/chevron.svg';
 import coordinatesIcon from '@/assets/icons/coordinates.svg';
 import twoArrowsIcon from '@/assets/icons/two-arrow.svg';
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import MainForm from "@/components/MainForm/MainForm";
 import { Link } from "@/i18n/navigation";
 import { getStartsWithByLocale } from "@/lib/utils/getStartsWithByLocale";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import ClientMapWrapper from "./_components/ClientMapWrapper";
 import { ToponymPernamentLink } from "./_components/ToponymPernamentLink/ToponymPernamentLink";
 
@@ -250,7 +252,8 @@ export default async function ToponymPage({ params }) {
         archived_records,
         historical_backgrounds,
         topoformants,
-        osm_id
+        osm_id,
+        old_name
     } = data;
 
     const heading = getLocalizedValue(data, 'name', locale);
@@ -410,6 +413,18 @@ export default async function ToponymPage({ params }) {
                         </ToponymDetails>
                     </section>
 
+                    {old_name && (
+                        <section className={clss.toponymArticle__section}>
+                            <ToponymDetails heading={t('old-name')} headingLevel={2}>
+                                <div className={clss.toponymOfficialNaming}>
+                                    <div className={clss.toponymOfficialNaming__wrapper}>
+                                        <span className={`${clss.toponymOfficialNaming__value} ${clss.oldName}`}>{old_name}</span>
+                                    </div>
+                                </div>
+                            </ToponymDetails>
+                        </section>
+                    )}
+
                     <section className={clss.toponymArticle__section}>
                         <ToponymDetails heading={t('official-naming.heading')} headingLevel={2}>
                             <div className={clss.toponymOfficialNaming}>
@@ -550,11 +565,14 @@ export default async function ToponymPage({ params }) {
                                         <Image src={coordinatesIcon} width={22} height={22} alt="" />
                                     </div>
                                     <div className={clss.toponymCoordinates__info}>
-                                        <div className={clss.toponymCoordinates__label}>
+                                        <Link
+                                            className={clss.toponymCoordinates__label}
+                                            href={`/search-on-map`}
+                                        >
                                             <p className={clss.toponymCoordinates__value}>{latitude} c.ш.</p>
                                             <p className={`${clss.toponymCoordinates__value} ${clss.toponymCoordinates__valueDelimeter}`}> - </p>
                                             <p className={clss.toponymCoordinates__value}>{longitude} в.д.</p>
-                                        </div>
+                                        </Link>
                                         <div className={clss.toponymCoordinates__coordinates}>
                                             <span className={clss.toponymCoordinates__coordinatesItem}>
                                                 <Image src={twoArrowsIcon} alt="" />
@@ -657,6 +675,8 @@ export default async function ToponymPage({ params }) {
                     </section>
                 </article>
 
+
+
                 <aside className={clss.toponymAside}>
                     {(region?.length > 0 || city?.length > 0 || district?.length > 0 || aiyl_aimak?.length > 0 || aiyl?.length > 0) && (
                         <section className={`${clss.toponymAside__section} ${clss.toponymAside__section_sticky}`}>
@@ -693,6 +713,11 @@ export default async function ToponymPage({ params }) {
                     )} */}
                 </aside>
             </div>
+            <section className={clss.formContainer}>
+                <Suspense fallback={null}>
+                    <MainForm toponym={data} />
+                </Suspense>
+            </section>
         </>
     );
 }

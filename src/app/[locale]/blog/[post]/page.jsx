@@ -1,11 +1,16 @@
 import avaImgFallback from '@/assets/images/ava-img-fallback.png';
+import blogImgFallback from '@/assets/images/blog-img-fallback.png';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import MainForm from '@/components/MainForm/MainForm';
+import ToponymCardGrid from '@/components/ToponymCardGrid/ToponymCardGrid';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
-import { cleanHtml, formatDate, getLocalizedValue } from '@/lib/utils';
+import { cleanHtml, formatDate, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
+import { fetchOSMData } from '@/lib/utils/fetchOSMData';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import clss from './page.module.scss';
 import './styles.scss';
 
@@ -30,6 +35,55 @@ async function fetchData({ post }) {
     } catch (error) {
         console.error('Error fetching blog data:', error);
         return null;
+    }
+}
+
+async function fetchTopToponyms(slug) {
+    try {
+        const resp = await fetch(
+            `${process.env.API_URL}/blogs/${slug}/top-toponyms/`
+        );
+
+        if (!resp.ok) {
+            console.error('Error fetching top toponyms:', resp.status);
+            return [];
+        }
+
+        const json = await resp.json();
+
+        let arr = [];
+
+        if (Array.isArray(json)) arr = json;
+        else if (Array.isArray(json.results)) arr = json.results;
+
+        // Ограничиваем до 3
+        return arr.slice(0, 3);
+    } catch (error) {
+        console.error('Error fetching top toponyms:', error);
+        return [];
+    }
+}
+
+async function fetchSimilarBlogs(slug) {
+    try {
+        const resp = await fetch(
+            `${process.env.API_URL}/blogs/${slug}/similar/`
+        );
+
+        if (!resp.ok) {
+            console.error('Error fetching similar blogs:', resp.status);
+            return [];
+        }
+
+        const json = await resp.json();
+
+        if (Array.isArray(json)) return json;
+        if (Array.isArray(json.results)) return json.results;
+
+        return [];
+    } catch (error) {
+        console.error('Error fetching similar blogs:', error);
+        return [];
     }
 }
 
@@ -112,14 +166,32 @@ export default async function BlogDetail({ params }) {
     const { locale, post } = await params;
     setRequestLocale(locale);
 
+    const truncateText = (text, maxLength = 120) => {
+        if (!text) return '';
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength).trim() + '...';
+    };
+
     const data = await fetchData({ post });
     // if (!data) throw new Error('Post data not found');
     if (!data) notFound();
+
+    const topToponyms = await fetchTopToponyms(data.slug);
+    const blogs = await fetchSimilarBlogs(data.slug);
+
+    const cards = await Promise.all(
+        topToponyms.map(async (item) => {
+            const isCity = item?.terms_topomyns?.name_en?.toLowerCase() === 'city';
+            const osmData = item?.osm_id ? await fetchOSMData(item.osm_id, isCity) : null;
+            return { item, osmData };
+        })
+    );
 
     const { image, autors, sources, published_date, inspectors } = data;
 
     const t = await getTranslations({ locale, namespace: 'blog-details' });
     const b = await getTranslations({ locale, namespace: 'breadcrumbs' });
+    const l = await getTranslations({ locale, namespace: 'link' });
 
     const title = getLocalizedValue(data, 'title', locale);
     const content = getLocalizedValue(data, 'content', locale);
@@ -143,6 +215,8 @@ export default async function BlogDetail({ params }) {
         }
     ];
 
+
+
     return (
         <>
             <Link href={`/blog`} className={clss.blogBackLink}>
@@ -154,92 +228,184 @@ export default async function BlogDetail({ params }) {
                 </span>
             </Link>
             <Breadcrumbs items={breadcrumbsItems} className={clss.blogBreadcrumbs} />
-            <article className={clss.blogPost}>
-                <section className={clss.blogPost__section}>
-                    {title && <h1 className={clss.blogPost__title}>{title}</h1>}
-                    {published_date &&
-                        <p className={clss.blogPost__date}>
-                            {formatDate(published_date, locale)}
-                        </p>
-                    }
-                    {autors?.length > 0 && (
-                        <div className={clss.blogPost__autors}>
-                            <ul className={clss.blogPost__autorsList}>
-                                {autors.map((author) => (
-                                    <Link key={author?.id} href={`/blog/authors/${data.autors[0].slug}`}>
-                                        <li className={clss.blogPost__author}>
-                                            {author?.avatar
-                                                ? <Image className={clss.blogPost__authorImage} src={author?.avatar} alt={author?.first_name} width={56} height={56} />
+            <div className={clss.blogWrapper}>
+                <article className={clss.blogPost}>
+                    <section className={clss.blogPost__section}>
+                        {title && <h1 className={clss.blogPost__title}>{title}</h1>}
+                        {published_date &&
+                            <p className={clss.blogPost__date}>
+                                {formatDate(published_date, locale)}
+                            </p>
+                        }
+                        {autors?.length > 0 && (
+                            <div className={clss.blogPost__autors}>
+                                <ul className={clss.blogPost__autorsList}>
+                                    {autors.map((author) => (
+                                        <Link key={author?.id} href={`/blog/authors/${data.autors[0].slug}`}>
+                                            <li className={clss.blogPost__author}>
+                                                {author?.avatar
+                                                    ? <Image className={clss.blogPost__authorImage} src={author?.avatar} alt={author?.first_name} width={56} height={56} />
+                                                    : <Image className={clss.blogPost__authorImage} src={avaImgFallback} alt="Avatar" width={56} height={56} />
+                                                }
+
+                                                <div className={clss.blogPost__authorInfo}>
+                                                    <p className={clss.blogPost__authorName}>{author?.first_name} {author?.last_name}</p>
+                                                    <p className={clss.blogPost__authorRole}>{t('author.heading')}</p>
+                                                </div>
+                                            </li>
+                                        </Link>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </section>
+
+                    <section className={clss.blogPost__section}>
+                        {image &&
+                            <Image className={clss.blogPost__image} src={image} alt='' width={930} height={532} loading='lazy' />
+                        }
+                    </section>
+
+                    <section className={clss.blogPost__section}>
+                        {inspectors?.length > 0 && (
+                            <div className={clss.blogPost__inspector}>
+                                <ul className={clss.blogPost__autorsList}>
+                                    {inspectors.map((inspector) => (
+                                        <li key={inspector?.id} className={clss.blogPost__author}>
+                                            {inspector?.avatar
+                                                ? <Image className={clss.blogPost__authorImage} src={inspector?.avatar} alt={inspector?.first_name} width={56} height={56} />
                                                 : <Image className={clss.blogPost__authorImage} src={avaImgFallback} alt="Avatar" width={56} height={56} />
                                             }
 
                                             <div className={clss.blogPost__authorInfo}>
-                                                <p className={clss.blogPost__authorName}>{author?.first_name} {author?.last_name}</p>
-                                                <p className={clss.blogPost__authorRole}>{t('author.heading')}</p>
+                                                <p className={clss.blogPost__authorName}>{inspector?.first_name} {inspector?.last_name}</p>
+                                                <p className={clss.blogPost__authorRole}>{t('inspector.heading')}</p>
                                             </div>
                                         </li>
-                                    </Link>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </section>
+
+                    <section className={clss.blogPost__section}>
+                        <div className={`${clss.blogPost__content} htmlContent`} dangerouslySetInnerHTML={{ __html: cleanContent }} />
+                    </section>
+
+                    <section className={clss.blogPost__section}>
+                        {sources?.length > 0 && (
+                            <>
+                                <h4 className={clss.blogPost__sourcesTitle}>{t('sources.heading')}</h4>
+                                <ul className={clss.blogPost__sourceList}>
+                                    {sources.map((source) => (
+                                        <li key={source.id}>
+                                            <a className={clss.blogPost__sourceLink} href={source?.file} target='_blank' rel='noopener noreferrer'>
+                                                {getLocalizedValue(source, 'name', locale)}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
+                    </section>
+
+                </article>
+
+
+                {cards.length > 0 && (
+                    <aside className={clss.toponymAside}>
+                        <h2 className={clss.toponymAside__title}>
+                            {t('popular.title')}
+                        </h2>
+                        <ul className={clss.results__cards}>
+                            {cards.map(({ item, osmData }) => (
+                                <li key={item.id}>
+                                    <ToponymCardGrid toponym={item} osmData={osmData} locale={locale} />
+                                </li>
+                            ))}
+                        </ul>
+                    </aside>
+                )}
+            </div>
+
+            {blogs.length > 0 && (
+                <section className={clss.similar__block}>
+                    <h2 className={clss.similar__title}>{t('similar-title')}</h2>
+                    <ul className={clss.blog__contentList}>
+                        {blogs.slice(0, 3).map((blog) => (
+                            <li className={clss.blog__contentItem} key={blog.id}>
+                                <Link href={`/blog/${blog.slug}`} className={clss.blog__contentItemMainLink}>
+                                    {blog?.image ? (
+                                        <Image
+                                            className={clss.blog__contentItemImg}
+                                            src={blog.image}
+                                            width={264}
+                                            height={264}
+                                            loading="lazy"
+                                            alt=""
+                                            unoptimized
+                                        />
+                                    ) : (
+                                        <Image
+                                            className={clss.blog__contentItemImg}
+                                            src={blogImgFallback}
+                                            width={264}
+                                            height={264}
+                                            loading="lazy"
+                                            alt=""
+                                        />
+                                    )}
+                                    <div className={clss.blog__contentItemContent}>
+                                        <span className={clss.blog__contentItemDate}>
+                                            {formatDate(blog.published_date, locale)}
+                                        </span>
+                                        <h3 className={clss.blog__contentItemHeading}>
+                                            {getLocalizedValue(blog, 'title', locale) || blog.title_ky}
+                                        </h3>
+                                        <p className={clss.blog__contentItemDesc}>
+                                            {truncateText(
+                                                cleanHtml(
+                                                    stripHtmlTags(getLocalizedValue(blog, 'content', locale))
+                                                )
+                                            )}
+                                        </p>
+                                        <span className={clss.blog__contentItemLink}>
+                                            <span className={clss.blog__contentLink}>{l('more-details')}</span>
+                                            <svg
+                                                width="22"
+                                                height="13"
+                                                viewBox="0 0 22 13"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    d="M15.3195 1.5L21 6.5L15.3195 11.5M20.211 6.5H1"
+                                                    stroke="#000"
+                                                    strokeWidth="2"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <div className={clss.bottomBlock}>
+                        <Link href='/blog' className={clss.bottomBlockButton}>
+                            {l('see-all')}
+                        </Link>
+                    </div>
                 </section>
+            )}
 
-                <section className={clss.blogPost__section}>
-                    {image &&
-                        <Image className={clss.blogPost__image} src={image} alt='' width={930} height={532} loading='lazy' />
-                    }
-                </section>
-
-                <section className={clss.blogPost__section}>
-                    {inspectors?.length > 0 && (
-                        <div className={clss.blogPost__inspector}>
-                            <ul className={clss.blogPost__autorsList}>
-                                {inspectors.map((inspector) => (
-                                    <li key={inspector?.id} className={clss.blogPost__author}>
-                                        {inspector?.avatar
-                                            ? <Image className={clss.blogPost__authorImage} src={inspector?.avatar} alt={inspector?.first_name} width={56} height={56} />
-                                            : <Image className={clss.blogPost__authorImage} src={avaImgFallback} alt="Avatar" width={56} height={56} />
-                                        }
-
-                                        <div className={clss.blogPost__authorInfo}>
-                                            <p className={clss.blogPost__authorName}>{inspector?.first_name} {inspector?.last_name}</p>
-                                            <p className={clss.blogPost__authorRole}>{t('inspector.heading')}</p>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                </section>
-
-                <section className={clss.blogPost__section}>
-                    <div className={`${clss.blogPost__content} htmlContent`} dangerouslySetInnerHTML={{ __html: cleanContent }} />
-                </section>
-
-                <section className={clss.blogPost__section}>
-                    {sources?.length > 0 && (
-                        <>
-                            <h4 className={clss.blogPost__sourcesTitle}>{t('sources.heading')}</h4>
-                            <ul className={clss.blogPost__sourceList}>
-                                {sources.map((source) => (
-                                    <li key={source.id}>
-                                        <a className={clss.blogPost__sourceLink} href={source?.file} target='_blank' rel='noopener noreferrer'>
-                                            {getLocalizedValue(source, 'name', locale)}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        </>
-                    )}
-                </section>
-
-            </article >
-
-
-            <aside>
-
-            </aside>
+            <section className={clss.formContainer}>
+                <Suspense fallback={null}>
+                    <MainForm />
+                </Suspense>
+            </section>
         </>
     );
 }

@@ -46,7 +46,7 @@ export default async function Blog({ locale, searchParams }) {
       </div>
 
       <ul className={styles.blog__contentList}>
-        {blogs.map((blog) => (
+        {blogs.slice(0, 3).map((blog) => (
           <li className={styles.blog__contentItem} key={blog.id}>
             <Link href={`/blog/${blog.slug}`} className={styles.blog__contentItemMainLink}>
               {blog?.image ? (

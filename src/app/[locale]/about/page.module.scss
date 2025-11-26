@@ -1,5 +1,17 @@
 @use '../../../assets/styles/helpers/' as *;
 
+.formContainer {
+    margin-top: rem(100);
+
+    @include tablet {
+        margin-top: rem(84);
+    }
+
+    @include mobile {
+        margin-top: rem(64);
+    }
+}
+
 .section {
     padding: rem(100) 0;
 
@@ -276,7 +288,7 @@
         width: rem(48);
         height: rem(48);
         border-radius: 50%;
-        background-color: #387ff5;    
+        background-color: #387ff5;
     }
 
     &__contactsTitle {
@@ -295,5 +307,91 @@
         text-decoration: underline;
         text-decoration-skip-ink: none;
         color: #1d1f1e;
+    }
+}
+
+.popularToponymsBottom {
+    background: rgba(0, 123, 255, 1);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    border-radius: rem(24);
+    padding: rem(100) rem(64);
+
+    @include tablet {
+        padding: rem(48);
+        row-gap: rem(32);
+        column-gap: rem(104);
+    }
+
+    @include mobile {
+        gap: rem(24);
+        padding: rem(24) rem(20);
+    }
+}
+
+.list {
+    width: rem(236);
+    height: rem(102);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: rem(16);
+
+    @include tablet {
+        width: rem(113);
+        height: rem(86);
+        gap: rem(0);
+    }
+
+    @include mobile {
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        width: 100%;
+        height: rem(36);
+        column-gap: rem(24);
+    }
+}
+
+.elOne {
+    font-size: rem(48);
+    font-weight: 500;
+    line-height: rem(60);
+    letter-spacing: -3%;
+    color: #fff;
+    white-space: nowrap;
+
+    @include tablet {
+        font-size: rem(32);
+    }
+
+    @include mobile {
+        font-size: rem(28);
+        line-height: 100%;
+    }
+}
+
+.elTwo {
+    font-size: rem(18);
+    font-weight: 400;
+    line-height: rem(26);
+    letter-spacing: -0.4%;
+    color: #fff;
+    white-space: nowrap;
+
+    @include tablet {
+        font-size: rem(18);
+    }
+
+    @include mobile {
+        font-size: rem(18);
+
+        &::after {
+            content: ":";
+            display: inline-block;
+            margin-left: rem(4);
+        }
     }
 }

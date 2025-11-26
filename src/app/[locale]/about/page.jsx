@@ -5,10 +5,26 @@ import chevron from '@/assets/icons/chevron.svg';
 import email from '@/assets/icons/email.svg';
 import location from '@/assets/icons/location.svg';
 import phone from '@/assets/icons/phone.svg';
+import MainForm from "@/components/MainForm/MainForm";
 import { ScrollToHash } from "@/components/ScrollToHash/ScrollToHash";
 import { routing } from "@/i18n/routing";
+import { getLocalizedValue } from "@/lib/utils";
 import Image from "next/image";
+import { Suspense } from "react";
 import clss from './page.module.scss';
+
+async function fetchClassToponymsCount() {
+    try {
+        const resp = await fetch(`${process.env.API_URL}/directories/class-topomyns-count`, {
+            next: { revalidate: 300 }
+        })
+        const data = await resp.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching class toponym count:', error);
+        return null;
+    }
+}
 
 export async function generateMetadata({ params }) {
     const { locale } = await params;
@@ -86,6 +102,16 @@ export default async function AboutPage({ params }) {
     const { locale } = await params
     setRequestLocale(locale);
     const t = await getTranslations({ locale, namespace: 'about' })
+
+    const rawStatistic = await fetchClassToponymsCount();
+    const statisticData = Array.isArray(rawStatistic) ? rawStatistic : [];
+    const excluded = new Set(['Хороним', 'Дримоним', 'Антропотопоним'].map(s => s.toLowerCase()));
+
+    const filteredStatistic = statisticData.filter(item => {
+        const name = (getLocalizedValue(item, 'name', locale) || '').trim().toLowerCase();
+        return !excluded.has(name) && Number(item.count_toponyms) > 0;
+    });
+
     return (
         <>
             <ScrollToHash />
@@ -113,6 +139,17 @@ export default async function AboutPage({ params }) {
                 <div className="container">
                     <h2 className={clss.about__missionTitle}>{t('mission.title')}</h2>
                     <p className={clss.about__missionDescription}>{t('mission.description')}</p>
+                </div>
+            </section>
+
+            <section className={`${clss.section} ${clss.statisticBlock}`}>
+                <div className={clss.popularToponymsBottom}>
+                    {filteredStatistic.map(item =>
+                        <ul key={item.id} className={clss.list}>
+                            <li className={clss.elOne}>{item.count_toponyms} +</li>
+                            <li className={clss.elTwo}>{getLocalizedValue(item, 'name', locale)}</li>
+                        </ul>
+                    )}
                 </div>
             </section>
 
@@ -206,7 +243,7 @@ export default async function AboutPage({ params }) {
                             </div>
                             <span className={clss.about__contactsTitle}>{t('contacts.instagram.title')}</span>
                         </div>
-                        <a style={{ textDecoration: 'none' }} href={`${t('contacts.instagram.link')}`} className={clss.about__contactsLink}>tamgatopto</a>
+                        <a style={{ textDecoration: 'none' }} href={`${t('contacts.instagram.link')}`} className={clss.about__contactsLink}>{t('contacts.instagram.text')}</a>
                     </li>
                     <li className={clss.about__contactsItem}>
                         <div className={clss.about__contactsInfo}>
@@ -215,9 +252,15 @@ export default async function AboutPage({ params }) {
                             </div>
                             <span className={clss.about__contactsTitle}>{t('contacts.facebook.title')}</span>
                         </div>
-                        <a style={{ textDecoration: 'none' }} href={`${t('contacts.facebook.link')}`} className={clss.about__contactsLink}>tamgatopto</a>
+                        <a style={{ textDecoration: 'none' }} href={`${t('contacts.facebook.link')}`} className={clss.about__contactsLink}>{t('contacts.facebook.text')}</a>
                     </li>
                 </ul>
+
+                <section className={clss.formContainer}>
+                    <Suspense fallback={null}>
+                        <MainForm />
+                    </Suspense>
+                </section>
             </section>
         </>
     )

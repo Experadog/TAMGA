@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import RequestFormModal from '../RequestFormModal/RequestFormModal';
 import styles from './MainForm.module.scss';
 
-async function MainForm({ locale }) {
+async function MainForm({ locale, toponym }) {
   const t = await getTranslations({ locale, namespace: 'home' });
   return (
     <div className={styles.formBlock}>
@@ -14,7 +14,7 @@ async function MainForm({ locale }) {
         </p>
       </div>
       <div className={styles.contentRight}>
-        <RequestFormModal buttonLabel={t('add-title')} />
+        <RequestFormModal buttonLabel={t('add-title')} toponym={toponym} />
         {/* <button className={styles.button}>{t('add-title')}</button> */}
       </div>
     </div>

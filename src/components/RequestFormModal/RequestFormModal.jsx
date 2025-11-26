@@ -26,7 +26,7 @@ const INITIAL_FORM_STATE = {
   author: '',
 };
 
-export default function RequestFormModal({ buttonLabel }) {
+export default function RequestFormModal({ buttonLabel, toponym }) {
   const locale = useLocale();
   const t = useTranslations('form');
 
@@ -53,6 +53,26 @@ export default function RequestFormModal({ buttonLabel }) {
   } = useRequestFormDictionaries(isOpen);
 
   const captchaMessage = errors.captcha || captchaErrors;
+
+  useEffect(() => {
+    if (!isOpen || !toponym) return;
+
+    const auto = {
+      name: getLocalizedValue(toponym, 'name', locale) || '',
+      terms_topomyns: toponym.terms_topomyns?.id || 0,
+      region: toponym.region?.[0]?.id || 0,
+      district: toponym.district?.[0]?.id || 0,
+    };
+
+    if (auto.region) {
+      loadDistricts(auto.region);
+    }
+
+    setForm(prev => ({
+      ...prev,
+      ...auto
+    }));
+  }, [isOpen, toponym]);
 
   // Блокировка скролла
   useEffect(() => {
@@ -130,10 +150,16 @@ export default function RequestFormModal({ buttonLabel }) {
     setIsSubmitting(true);
 
     try {
+      const payload = {
+        ...form,
+        recaptcha: captchaToken,
+        ...(toponym?.id ? { toponym: toponym.id } : {})
+      };
+
       const resp = await fetch('https://api.tamga.kg/api/v1/toponyms/request-users/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, recaptcha: captchaToken }),
+        body: JSON.stringify(payload),
       });
 
       if (!resp.ok) throw new Error();

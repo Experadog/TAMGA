@@ -1,0 +1,21 @@
+@use '../../../assets/styles/helpers/' as *;
+
+.section {
+  margin: rem(24) 0 rem(124);
+  height: rem(750);
+
+  @include tablet {
+    height: rem(733);
+    margin-bottom: rem(100);
+  }
+
+  @include mobile {
+    height: rem(488);
+    margin-bottom: rem(64);
+  }
+}
+
+.mapContainer {
+  height: 100%;
+  max-height: rem(750);
+}

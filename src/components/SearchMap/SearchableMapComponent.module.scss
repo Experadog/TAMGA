@@ -1,0 +1,78 @@
+@use '../../assets/styles/helpers' as *;
+
+.mapWrapper {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+/* Оверлей по центру поверх карты */
+.centerOverlay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: rem(16);
+  z-index: 1500;
+}
+
+/* Пин в центре */
+.pin {
+  width: rem(48);
+  height: rem(48);
+  border-radius: 999px;
+  background-color: #00c271;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 rem(4) rem(16) rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+.pinInner {
+  width: rem(24);
+  height: rem(24);
+}
+
+/* Белая карточка с координатами */
+.card {
+  pointer-events: auto;
+  background-color: #fff;
+  border-radius: rem(16);
+  padding: rem(20) rem(32);
+  box-shadow: 0 rem(10) rem(40) rgba(0, 0, 0, 0.18);
+  min-width: rem(320);
+  text-align: center;
+}
+
+.cardText {
+  margin: 0 0 rem(16);
+  font-size: rem(16);
+  font-weight: 500;
+  color: #000;
+}
+
+/* Кнопка "искать тут" */
+.searchButton {
+  border: none;
+  border-radius: 999px;
+  padding: rem(10) rem(32);
+  font-size: rem(15);
+  font-weight: 500;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: #0065d1;
+  }
+
+  &:active {
+    background-color: #0052aa;
+  }
+}

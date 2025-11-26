@@ -26,14 +26,20 @@ export default function HorizontalFilters({ locale, pageKind = 'auto' }) {
                 ? 'search'
                 : pathname?.includes('/glossary')
                     ? 'glossary'
-                    : 'map';
+                    : pathname?.includes('/search-on-map/results')
+                        ? 'coordsMap'
+                        : 'map';
 
     const basePathByKind = {
         search: `/${locale}/search`,
         glossary: `/${locale}/glossary`,
         map: `/${locale}/map`,
+        coordsMap: `/${locale}/search-on-map/results`,
     };
-    const shouldReplace = inferredKind === 'search' || inferredKind === 'glossary';
+    const shouldReplace =
+        inferredKind === 'search' ||
+        inferredKind === 'glossary' ||
+        inferredKind === 'coordsMap';
 
     const t = useTranslations('filters');
 
@@ -600,8 +606,21 @@ export default function HorizontalFilters({ locale, pageKind = 'auto' }) {
             if (currentView) params.set('view', currentView);
         } catch { }
 
+        if (inferredKind === 'coordsMap') {
+            try {
+                const lat = searchParams.get('latitude');
+                const lng = searchParams.get('longitude');
+                const rad = searchParams.get('radius');
+
+                if (lat) params.set('latitude', lat);
+                if (lng) params.set('longitude', lng);
+                if (rad) params.set('radius', rad);
+            } catch { }
+        }
+
         const queryString = params.toString();
         const basePath = basePathByKind[inferredKind];
+
         const newUrl = queryString ? `${basePath}?${queryString}` : basePath;
         // На странице поиска — не уходим со страницы и не создаём запись в истории
         if (shouldReplace) router.replace(newUrl, { scroll: false });

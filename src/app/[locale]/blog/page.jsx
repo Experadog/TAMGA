@@ -1,11 +1,14 @@
 import blogImgFallback from '@/assets/images/blog-img-fallback.png';
+import BlogCategorySelect from '@/components/BlogCategorySelect/BlogCategorySelect';
 import { Hero } from '@/components/Hero/Hero';
+import MainForm from '@/components/MainForm/MainForm';
 import { Pagination } from '@/components/Pagination';
 import { Link } from '@/i18n/navigation';
 import { routing } from "@/i18n/routing";
 import { cleanHtml, formatDate, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from 'next/image';
+import { Suspense } from 'react';
 import styles from './page.module.scss';
 
 export async function generateMetadata({ params }) {
@@ -85,6 +88,7 @@ export default async function Blog({ params, searchParams }) {
     setRequestLocale(locale);
     const sp = await searchParams
     const page = sp?.page ? parseInt(sp.page) : 1;
+    const category = sp.category ? String(sp.category) : '';
 
     const t = await getTranslations({ locale, namespace: 'blog' });
     const l = await getTranslations({ locale, namespace: 'link' })
@@ -98,17 +102,47 @@ export default async function Blog({ params, searchParams }) {
     const itemsPerPage = 9;
     const offset = (page - 1) * itemsPerPage;
 
+    let categories = [];
     try {
-        let response = await fetch(`${process.env.API_URL}/blogs/?limit=${itemsPerPage}&offset=${offset}`)
+        const catResp = await fetch(`${process.env.API_URL}/blogs/categories/list/`, {
+            next: { revalidate: 300 },
+        });
+
+        if (catResp.ok) {
+            const json = await catResp.json();
+            categories = Array.isArray(json?.results) ? json.results : json || [];
+        }
+    } catch (e) {
+        console.error('Error fetching blog categories:', e);
+        categories = [];
+    }
+
+    let data;
+    try {
+        const params = new URLSearchParams();
+        params.set('limit', String(itemsPerPage));
+        params.set('offset', String(offset));
+
+        if (category) {
+            params.set('category', category);
+        }
+
+        const response = await fetch(
+            `${process.env.API_URL}/blogs/?${params.toString()}`,
+            {
+                // cache: 'no-store',
+                next: { revalidate: 60 },
+            }
+        );
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        var data = await response.json()
+        data = await response.json();
     } catch (error) {
         console.error('Error fetching blogs:', error);
-        var data = { results: [], count: 0 };
+        data = { results: [], count: 0 };
     }
 
     let blogs = data.results || []
@@ -118,7 +152,14 @@ export default async function Blog({ params, searchParams }) {
         <>
             <Hero heading={t('hero.title')} description={t('hero.description')} />
             <section className={`container ${styles.blog__content}`}>
-                <h2 className={styles.blog__contentHeading}>{t('list.title')}</h2>
+                <div className={styles.title__filter}>
+                    <h2 className={styles.blog__contentHeading}>{t('list.title')}</h2>
+                    <BlogCategorySelect
+                        categories={categories}
+                        currentCategory={category}
+                        locale={locale}
+                    />
+                </div>
                 <p className={styles.blog__contentDesc}>{t('list.description')}</p>
 
                 <ul className={styles.blog__contentList}>
@@ -169,6 +210,12 @@ export default async function Blog({ params, searchParams }) {
                     itemsPerPage={itemsPerPage}
                 />
 
+            </section>
+
+            <section className={styles.formContainer}>
+                <Suspense fallback={null}>
+                    <MainForm />
+                </Suspense>
             </section>
         </>
     )

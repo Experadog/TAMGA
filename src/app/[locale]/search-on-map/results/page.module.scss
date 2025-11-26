@@ -1,0 +1,267 @@
+@use '../../../../assets/styles/helpers/' as *;
+
+.resultsSection {
+  padding: rem(50) 0 rem(120);
+
+  @include tablet {
+    padding: rem(24) 0 rem(100);
+  }
+
+  @include mobile {
+    padding: rem(16) 0 rem(64);
+  }
+}
+
+.backBtn {
+  display: none;
+
+  @include tablet {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: rem(24);
+  }
+
+  @include mobile {
+    margin-bottom: rem(20);
+  }
+
+}
+
+.backBtnVoid {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: rem(30);
+
+  @include tablet {
+    margin-bottom: rem(24);
+  }
+
+  @include mobile {
+    margin-bottom: rem(20);
+  }
+}
+
+.pageTitle {
+  font-size: rem(24);
+  font-weight: 600;
+  margin-bottom: rem(16);
+}
+
+/* Карточка с координатами + кнопка */
+.coordsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: rem(16);
+
+  padding: rem(24);
+  border-radius: rem(16);
+  background-color: #ffffff;
+  border: 1px solid #e0e7f2;
+  box-shadow: 0 rem(8) rem(24) rgba(15, 23, 42, 0.04);
+
+  margin-bottom: rem(24);
+
+  @include mobile {
+    padding: rem(16);
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.coordsMain {
+  display: flex;
+  align-items: center;
+  gap: rem(12);
+  min-width: 0;
+}
+
+.coordsIcon {
+  width: rem(40);
+  height: rem(40);
+  border-radius: 999px;
+  background-color: #00C274;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.coordsIconInner {
+  width: rem(24);
+  height: rem(24);
+}
+
+/* текст координат */
+.coordsInfo {
+  display: flex;
+  flex-direction: column;
+  gap: rem(12);
+  min-width: 0;
+
+  @include mobile {
+    gap: rem(6);
+  }
+}
+
+.coordsText {
+  font-size: rem(24);
+  font-weight: 500;
+  color: #000000;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 100%;
+  letter-spacing: 0%;
+
+  @include mobile {
+    font-size: rem(16);
+  }
+}
+
+.coordsMeta {
+  display: flex;
+  align-items: center;
+  gap: rem(8);
+  font-size: rem(18);
+  font-weight: 400;
+  color: #364253;
+
+  @include mobile {
+    font-size: rem(14);
+  }
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+
+  &__Icon {
+    width: rem(24);
+    height: rem(24);
+  }
+}
+
+
+/* кнопка "Изменить местоположение" */
+.changeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: rem(6);
+  width: rem(247);
+  height: rem(48);
+  white-space: nowrap;
+
+  padding: rem(14) rem(20);
+  border-radius: rem(999);
+  border: 1px solid #387FF5;
+  background-color: #ffffff;
+
+  font-size: rem(16);
+  font-weight: 400;
+  color: #387FF5;
+  text-decoration: none;
+
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+
+  @include mobile {
+    justify-content: center;
+    font-size: rem(14);
+  }
+
+  &:hover {
+    text-decoration: none;
+    background-color: #387FF5;
+    color: #ffffff;
+    box-shadow: 0 rem(6) rem(18) rgba(47, 128, 237, 0.3);
+  }
+}
+
+.changeButtonIcon {
+  position: relative;
+  width: rem(24);
+  height: rem(24);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    transition: opacity 0.15s ease;
+  }
+
+  img:nth-child(1) {
+    opacity: 1;
+  }
+
+  img:nth-child(2) {
+    opacity: 0;
+  }
+}
+
+.changeButton:hover .changeButtonIcon {
+  img:nth-child(1) {
+    opacity: 0;
+  }
+
+  img:nth-child(2) {
+    opacity: 1;
+  }
+}
+
+
+
+
+.results {
+  margin-top: rem(32);
+  display: flex;
+  flex-direction: column;
+  gap: rem(32);
+  padding-bottom: rem(100);
+
+  @include tablet {
+    gap: rem(24);
+  }
+
+  @include mobile {
+    margin-top: rem(24);
+    padding-bottom: rem(64);
+  }
+
+  &__count {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &__heading {
+      font-weight: 500;
+      font-size: rem(16);
+      line-height: rem(20);
+      letter-spacing: -0.6%;
+      color: #475569;
+    }
+  }
+
+  &__cards {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: rem(24);
+
+    &_grid {
+      @include tablet {
+        justify-content: center;
+      }
+    }
+
+    @include mobile {
+      justify-content: center;
+    }
+  }
+}
