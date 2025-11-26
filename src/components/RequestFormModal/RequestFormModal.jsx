@@ -28,7 +28,7 @@ const INITIAL_FORM_STATE = {
 
 export default function RequestFormModal({ buttonLabel, toponym }) {
   const locale = useLocale();
-  const t = useTranslations('form');
+  const t = useTranslations('mainFormComp');
 
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
