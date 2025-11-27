@@ -13,7 +13,7 @@ export const Pagination = ({ currentPage = 1, totalPages = 1, totalCount = 0 }) 
     const createPageURL = (pageNumber) => {
         const params = new URLSearchParams(searchParams);
         params.set('page', pageNumber.toString());
-        return `${pathname}?${params.toString()}#results-top`;
+        return `${pathname}?${params.toString()}`;
     };
 
     const getPageNumbers = () => {
@@ -45,13 +45,13 @@ export const Pagination = ({ currentPage = 1, totalPages = 1, totalCount = 0 }) 
         <div className={styles.pagination}>
             <nav className={styles.pagination__nav}>
                 {currentPage > 1 && (
-                    <Link href={createPageURL(1)} className={styles.pagination__arrow}>
+                    <Link scroll={false} href={createPageURL(1)} className={styles.pagination__arrow}>
                         «
                     </Link>
                 )}
 
                 {currentPage > 1 && (
-                    <Link href={createPageURL(currentPage - 1)} className={styles.pagination__arrow}>
+                    <Link scroll={false} href={createPageURL(currentPage - 1)} className={styles.pagination__arrow}>
                         ‹
                     </Link>
                 )}
@@ -66,6 +66,7 @@ export const Pagination = ({ currentPage = 1, totalPages = 1, totalCount = 0 }) 
                         </span>
                     ) : (
                         <Link
+                            scroll={false}
                             key={`page-${page}`} // можно оставить просто page, теперь он уникален
                             href={createPageURL(page)}
                             className={`${styles.pagination__page} ${page === currentPage ? styles.pagination__page_active : ''
@@ -79,6 +80,7 @@ export const Pagination = ({ currentPage = 1, totalPages = 1, totalCount = 0 }) 
 
                 {currentPage < totalPages && (
                     <Link
+                        scroll={false}
                         href={createPageURL(currentPage + 1)}
                         className={styles.pagination__arrow}
                     >
@@ -88,6 +90,7 @@ export const Pagination = ({ currentPage = 1, totalPages = 1, totalCount = 0 }) 
 
                 {currentPage < totalPages && (
                     <Link
+                        scroll={false}
                         href={createPageURL(totalPages)}
                         className={styles.pagination__arrow}
                     >

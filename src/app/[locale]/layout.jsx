@@ -5,6 +5,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 // import { Onest } from "next/font/google";
 import { Footer } from "@/components/Footer";
+import MainScrollToTop from "@/components/MainScrollToTop/MainScrollToTop";
 import { notFound } from "next/navigation";
 import Script from "next/script";
 import { Suspense } from "react";
@@ -68,6 +69,7 @@ export default async function RootLayout({ children, params }) {
       </head>
       {/* <body className={onest.variable}> */}
       <body className="font-onest">
+        <MainScrollToTop />
         <NextIntlClientProvider locale={locale} >
           {GA_ID ? (
             <Suspense fallback={null}>

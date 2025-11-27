@@ -3,6 +3,7 @@ import HorizontalFilters from "@/components/HorizontalFilters/HorizontalFilters"
 import MainForm from "@/components/MainForm/MainForm";
 import { MainSearch } from "@/components/MainSearch/MainSearch";
 import { Pagination } from "@/components/Pagination";
+import ScrollToResultsTop from "@/components/ScrollToResultsTop/ScrollToResultsTop";
 import ToponymlistList from "@/components/ToponymAlphaList/ToponymAlphaList";
 import ToponymCard from "@/components/ToponymCard/ToponymCard";
 import ToponymCardGrid from "@/components/ToponymCardGrid/ToponymCardGrid";
@@ -121,6 +122,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function GlossaryPage({ params, searchParams }) {
+  // await new Promise(r => setTimeout(r, 300000));
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'glossary' })
@@ -265,6 +267,9 @@ export default async function GlossaryPage({ params, searchParams }) {
           )
         )}
 
+        <Suspense fallback={null}>
+          <ScrollToResultsTop />
+        </Suspense>
 
         <Suspense fallback={null}>
           <Pagination

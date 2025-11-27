@@ -2,8 +2,8 @@ import { getTranslations } from 'next-intl/server';
 import RequestFormModal from '../RequestFormModal/RequestFormModal';
 import styles from './MainForm.module.scss';
 
-async function MainForm({ locale, toponym }) {
-  const t = await getTranslations({ locale, namespace: 'home' });
+async function MainForm({ locale, toponym, namespace = 'home' }) {
+  const t = await getTranslations({ locale, namespace });
   return (
     <div className={styles.formBlock}>
       <div className={styles.form__bg} />

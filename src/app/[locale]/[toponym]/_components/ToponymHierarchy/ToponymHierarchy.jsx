@@ -17,7 +17,7 @@ export async function ToponymHierarchy({ region, city, district, aiylAimak, aiyl
 
     const republicName = {
         ru: 'Кыргызстан',
-        en: 'Kyrgyzstan',
+        en: 'Qyrğyzstan',
         ky: 'Кыргызстан'
     }
 

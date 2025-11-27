@@ -715,7 +715,7 @@ export default async function ToponymPage({ params }) {
             </div>
             <section className={clss.formContainer}>
                 <Suspense fallback={null}>
-                    <MainForm toponym={data} />
+                    <MainForm toponym={data} namespace="toponym" />
                 </Suspense>
             </section>
         </>

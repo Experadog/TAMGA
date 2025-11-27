@@ -1,9 +1,16 @@
+@use '../../assets/styles/helpers/' as *;
+
 .loaderBlock {
-  height: 80vh;
+  min-height: calc(100vh - 75px);
+  height: 100%;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @include tablet {
+    min-height: calc(100vh - 68px);
+  }
 }
 
 .loader {
