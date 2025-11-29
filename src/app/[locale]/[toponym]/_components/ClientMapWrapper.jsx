@@ -1,6 +1,5 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 
@@ -23,7 +22,6 @@ const ToponymMap = dynamic(() => import('@/components/Map/ToponymMap'), {
 });
 
 export default function ClientMapWrapper({ toponym, osmId, osmData }) {
-    const t = useTranslations('map');
     return (
         <Suspense fallback={
             <div style={{
@@ -36,7 +34,7 @@ export default function ClientMapWrapper({ toponym, osmId, osmData }) {
                 border: '1px solid #e0e0e0',
                 color: '#666'
             }}>
-                {t('loading-map')}
+                Загрузка карты...
             </div>
         }>
             <ToponymMap

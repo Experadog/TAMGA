@@ -363,7 +363,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding-right: 13%;
+
     }
 
     &__coordinatesItem {
@@ -379,6 +379,10 @@
     &__longitudeImg {
         transform: rotate(90deg);
     }
+}
+
+.left {
+    padding-right: 13%;
 }
 
 .toponymArchivedRecords {

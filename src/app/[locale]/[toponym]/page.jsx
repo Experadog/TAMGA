@@ -150,6 +150,7 @@ export async function generateMetadata({ params }) {
     const tMeta = await getTranslations({ locale, namespace: 'toponym' });
     const metaTitleTail = tMeta('metadata.title') || '';
     const name = getLocalizedValue(data, 'name', locale) || '';
+    const termsToponymsName = getLocalizedValue(data.terms_topomyns, 'name', locale) || '';
     const term = getLocalizedValue(data?.terms_topomyns, 'name', locale) || '';
     const titleLeft = collapse([name, term].filter(Boolean).join(' - '));
     const title = collapse(
@@ -163,6 +164,7 @@ export async function generateMetadata({ params }) {
             toponymName: name,
             districtName: districtName,
             regionName: regionName,
+            termsToponymsName: termsToponymsName,
         })
     );
 
@@ -226,6 +228,7 @@ export default async function ToponymPage({ params }) {
     const t = await getTranslations({ locale, namespace: 'toponym' });
     const l = await getTranslations({ locale, namespace: 'link' });
     const b = await getTranslations({ locale, namespace: 'breadcrumbs' });
+    const m = await getTranslations({ locale, namespace: 'mapSearch' });
 
     const data = await fetchData({ toponym });
     // if (!data) throw new Error('Toponym data not found');
@@ -569,12 +572,12 @@ export default async function ToponymPage({ params }) {
                                             className={clss.toponymCoordinates__label}
                                             href={`/search-on-map`}
                                         >
-                                            <p className={clss.toponymCoordinates__value}>{latitude} c.ш.</p>
+                                            <p className={clss.toponymCoordinates__value}>{latitude} {m('latitude')}</p>
                                             <p className={`${clss.toponymCoordinates__value} ${clss.toponymCoordinates__valueDelimeter}`}> - </p>
-                                            <p className={clss.toponymCoordinates__value}>{longitude} в.д.</p>
+                                            <p className={clss.toponymCoordinates__value}>{longitude} {m('longitude')}</p>
                                         </Link>
                                         <div className={clss.toponymCoordinates__coordinates}>
-                                            <span className={clss.toponymCoordinates__coordinatesItem}>
+                                            <span className={`${clss.toponymCoordinates__coordinatesItem} ${clss.left}`}>
                                                 <Image src={twoArrowsIcon} alt="" />
                                                 {t('coordinates.latitude')}
                                             </span>
