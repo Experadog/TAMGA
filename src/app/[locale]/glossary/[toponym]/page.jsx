@@ -1,10 +1,7 @@
-// import backIcon from "@/assets/icons/backIcon.svg";
 import MapClient from "@/components/Map/MapClient";
-// import { Link } from "@/i18n/navigation";
-import { getLocalizedValue, stripHtmlTags } from "@/lib/utils";
-// import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { getLocalizedValue, stripHtmlTags } from "@/lib/utils";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 import clss from './page.module.scss';
@@ -61,6 +58,8 @@ export async function generateMetadata({ params }) {
   const data = await fetchMatchesBySlug(toponym);
   if (!data) { throw new Error('Toponym data not found') }
 
+
+
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://tamga.kg';
   const pathname = `/${locale}/glossary/${toponym}`;
@@ -71,13 +70,7 @@ export async function generateMetadata({ params }) {
       .replace(/\s+/g, ' ')
       .trim();
 
-  const tMeta = await getTranslations({
-    locale,
-    namespace: 'identicalToponymsPage.metadata',
-  });
-
-  const titleTranslate = tMeta('title') || '';
-  const descriptionTranslate = tMeta('description') || '';
+  const tMeta = await getTranslations({ locale, namespace: 'identicalToponymsPage.metadata', });
 
   const rawResults = Array.isArray(data.results) ? data.results : [];
 
@@ -98,9 +91,20 @@ export async function generateMetadata({ params }) {
   });
 
   const visibleCount = filteredResults.length;
+  const identicalToponymsName = decodeURIComponent(String(toponym || ''));
 
-  const title = collapse(`${visibleCount} ${titleTranslate}`);
-  const description = collapse(descriptionTranslate);
+  const title = collapse(
+    tMeta('title', {
+      identicalToponymsName,
+      identicalToponymCount: visibleCount
+    })
+  );
+  const description = collapse(
+    tMeta('description', {
+      identicalToponymsName,
+      identicalToponymCount: visibleCount
+    })
+  );
 
   const shareImage = '/openGraph.png';
 
@@ -200,15 +204,14 @@ export default async function GlossaryToponymPage({ params, searchParams }) {
       <div className={clss.toponymWrapper}>
         <article className={clss.toponymArticle}>
           <div className={clss.mapWrapper}>
-            <MapClient locale={locale} />
+            <MapClient
+              locale={locale}
+              glossaryToponyms={safeData.results}
+            />
           </div>
         </article>
 
         <aside className={clss.toponymAside}>
-          {/* <Link href={`/glossary`} className={clss.backButton}>
-            <Image src={backIcon} alt="" width={24} height={24} />
-            <span className={clss.backText}>Назад</span>
-          </Link> */}
           <span className={clss.dictionary}>{t('identical.title')}</span>
           {safeData.results.length > 0 &&
             <ul className={clss.list}>

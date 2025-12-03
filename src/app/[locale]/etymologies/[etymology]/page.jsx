@@ -1,6 +1,6 @@
 import SearchableMapClient from '@/components/Map/SearchableMapClient';
 import { routing } from "@/i18n/routing";
-import { cleanHtml, getLocalizedValue, stripHtmlTags } from '@/lib/utils';
+import { cleanHtml, getLocalizedValue } from '@/lib/utils';
 import { getTranslations } from 'next-intl/server';
 import { headers } from "next/headers";
 import { notFound } from 'next/navigation';
@@ -45,30 +45,28 @@ export async function generateMetadata({ params }) {
     const pathname = `/${locale}/etymologies/${etymology}`;
     const absoluteUrl = `${siteUrl}${pathname}`;
 
-    // helpers
-    const collapse = (s = '') => String(s || '').replace(/\s+/g, ' ').trim();
-    const pick = (...vals) => vals.find(v => typeof v === 'string' && v.trim().length > 0) ?? '';
+    const etymologyName = getLocalizedValue(data, 'name', locale) || '';
+
+    const synonymList = Array.isArray(data.synonyms)
+        ? data.synonyms
+            .map(s => getLocalizedValue(s, 'name', locale))
+            .filter(Boolean)
+        : [];
+    const etymologySynonymsName = synonymList.join(', ');
+    const etymologiesToponymsCount = Number(data?.count_etymologies || 0);
 
     const tMeta = await getTranslations({ locale, namespace: 'etymologies' });
-    const localizedTitleTail = tMeta('metadata.title', { count: Number(data?.count_etymologies) || 0 });
-    const localizedDescTail = tMeta('metadata.description');
 
-    const name = getLocalizedValue(data, 'name', locale);
-
-    const synonymList = (data?.synonyms ?? [])
-        .map(s => getLocalizedValue(s, 'name', locale))
-        .filter(Boolean);
-    const synonymsPart = synonymList.length ? ` (${synonymList.join(', ')})` : '';
-
-    const rawDescription = getLocalizedValue(data, 'description', locale) || '';
-    const clean = stripHtmlTags(cleanHtml(rawDescription));
-    const normalizedClean = collapse(clean);
-
-    const titleLeft = collapse([name, synonymsPart].join('')).trim();
-    const titleTail = pick(localizedTitleTail || '');
-    const title = collapse(`${titleLeft} — ${titleTail}`);
-
-    const description = collapse(pick(normalizedClean, localizedDescTail || ''));
+    const title = tMeta('metadata.title', {
+        etymologyName,
+        etymologySynonymsName,
+        etymologiesToponymsCount
+    });
+    const description = tMeta('metadata.description', {
+        etymologyName,
+        etymologySynonymsName,
+        etymologiesToponymsCount
+    });
 
     const shareImage = '/openGraph.png';
 

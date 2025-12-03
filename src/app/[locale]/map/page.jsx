@@ -45,11 +45,11 @@ export async function generateMetadata({ params }) {
 
   const tMeta = await getTranslations({
     locale,
-    namespace: 'map.metadata',
+    namespace: 'map',
   });
 
-  const titleTranslate = tMeta('title') || '';
-  const descriptionTranslate = tMeta('description') || '';
+  const titleTranslate = tMeta('metadata.title') || '';
+  const descriptionTranslate = tMeta('metadata.description') || '';
 
 
   const title = collapse(`${totalCount} ${titleTranslate}`);

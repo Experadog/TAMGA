@@ -48,18 +48,15 @@ export async function generateMetadata({ params }) {
   // helpers
   const collapse = (s = '') => String(s || '').replace(/\s+/g, ' ').trim();
 
-  const tMeta = await getTranslations({ locale, namespace: 'authorDetail' });
-  const titleTranslate = tMeta('metadata.title') || '';
-  const descriptionTranslate = tMeta('metadata.description') || '';
-
   const fullName = collapse(
     [data.first_name, data.last_name].filter(Boolean).join(' ')
   );
 
-  const title = collapse(
-    [fullName, titleTranslate].filter(Boolean).join(' — ')
-  );
-  const description = collapse(descriptionTranslate);
+  const tMeta = await getTranslations({ locale, namespace: 'authorDetail' });
+  const title = tMeta('metadata.title', {
+    authorDetailName: fullName,
+  }) || '';
+  const description = tMeta('metadata.description') || '';
 
   const shareImage = '/openGraph.png';
 

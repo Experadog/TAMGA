@@ -3,10 +3,10 @@
 import dynamic from 'next/dynamic';
 
 const CountryMap = dynamic(() => import('./CountryMap'), {
-  ssr: false, 
+  ssr: false,
 });
 
-export default function MapClient({ locale }) {
-  
-  return <CountryMap locale={locale} />;
+export default function MapClient({ locale, glossaryToponyms }) {
+
+  return <CountryMap locale={locale} glossaryToponyms={glossaryToponyms} />
 }

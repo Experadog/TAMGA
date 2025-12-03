@@ -98,21 +98,22 @@ export async function generateMetadata({ params }) {
     const pathname = `/${locale}/blog/${post}`;
     const absoluteUrl = `${siteUrl}${pathname}`;
 
-    // helpers
-    const collapse = (s = '') => String(s || '').replace(/\s+/g, ' ').trim();
-
     const tMeta = await getTranslations({ locale, namespace: 'blogDetail' });
-    const titleTranslate = tMeta('metadata.title') || '';
-    const descriptionTranslate = tMeta('metadata.description') || '';
 
     const articleName = getLocalizedValue(data, 'title', locale) || '';
 
-    const titleCore = [articleName, titleTranslate]
-        .filter(Boolean)
-        .join(': ');
+    const authorName = data.autors?.[0]
+        ? `${data.autors[0].first_name} ${data.autors[0].last_name}`
+        : '';
 
-    const title = collapse(titleCore);
-    const description = collapse(descriptionTranslate);
+
+    const title = tMeta('metadata.title', {
+        blogDetailName: articleName,
+    }) || '';
+
+    const description = tMeta('metadata.description', {
+        authorDetailName: authorName,
+    }) || '';
 
     const shareImage = '/openGraph.png';
 

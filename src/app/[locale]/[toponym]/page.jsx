@@ -144,29 +144,24 @@ export async function generateMetadata({ params }) {
     const pathname = `/${locale}/${toponym}`;
     const absoluteUrl = `${siteUrl}${pathname}`;
 
-    // helpers
-    const collapse = (s = '') => String(s || '').replace(/\s+/g, ' ').trim();
-
     const tMeta = await getTranslations({ locale, namespace: 'toponym' });
-    const metaTitleTail = tMeta('metadata.title') || '';
-    const name = getLocalizedValue(data, 'name', locale) || '';
     const termsToponymsName = getLocalizedValue(data.terms_topomyns, 'name', locale) || '';
-    const term = getLocalizedValue(data?.terms_topomyns, 'name', locale) || '';
-    const titleLeft = collapse([name, term].filter(Boolean).join(' - '));
-    const title = collapse(
-        [titleLeft, metaTitleTail].filter(Boolean).join(' ')
-    );
-
-    const regionName = getLocalizedValue(data.region?.[0], 'name', locale) || '';
+    const name = getLocalizedValue(data, 'name', locale) || '';
     const districtName = getLocalizedValue(data.district?.[0], 'name', locale) || '';
-    const description = collapse(
-        tMeta('metadata.description', {
-            toponymName: name,
-            districtName: districtName,
-            regionName: regionName,
-            termsToponymsName: termsToponymsName,
-        })
-    );
+    const regionName = getLocalizedValue(data.region?.[0], 'name', locale) || '';
+
+    const title = tMeta('metadata.title', {
+        termsToponymsName: termsToponymsName,
+        toponymName: name,
+    })
+
+
+    const description = tMeta('metadata.description', {
+        termsToponymsName: termsToponymsName,
+        toponymName: name,
+        districtName: districtName,
+        regionName: regionName,
+    })
 
     const shareImage = '/openGraph.png';
 

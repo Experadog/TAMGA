@@ -13,9 +13,12 @@ import ToponymMarkers from './ToponymMarkers';
 import 'leaflet/dist/leaflet.css';
 import { useTranslations } from 'next-intl';
 
-export default function CountryMap({ locale }) {
+export default function CountryMap({ locale, glossaryToponyms }) {
     const t = useTranslations('map');
     const mapRef = useRef();
+
+    const isGlossaryPage = Array.isArray(glossaryToponyms);
+
     const sp = useSearchParams();
 
     const cleanSearch = useMemo(() => {
@@ -28,6 +31,7 @@ export default function CountryMap({ locale }) {
 
     // Строим URL из ФАКТИЧЕСКИХ query-параметров
     const apiUrl = useMemo(() => {
+        if (isGlossaryPage) return null; // Не строим URL, если используем переданные данные
         const params = new URLSearchParams();
         // копируем всё как есть (повторяющиеся ключи сохраняются)
         for (const [k, v] of sp.entries()) {
@@ -41,18 +45,31 @@ export default function CountryMap({ locale }) {
         const qs = params.toString();
         return `/api/toponyms/toponym/list/maps${qs ? `?${qs}` : ''}`;
     }, [sp, cleanSearch]);
-    const { data = {}, isLoading: loading, isError: error } = useFetch(apiUrl);
+    const { data = {}, isLoading: loading, isError: error } = useFetch(apiUrl, {
+        enabled: !isGlossaryPage // Отключаем запрос, если данные пришли через пропсы
+    });
 
     // Извлекаем топонимы и пагинацию из ответа
     let toponymsArray = [];
     let count = 0;
+    let actualLoading = loading;
+    let actualError = error;
 
-    if (data.results && Array.isArray(data.results)) {
-        toponymsArray = data.results;
-        count = data.count || 0;
-    } else if (Array.isArray(data)) {
-        toponymsArray = data;
-        count = data.length;
+    if (isGlossaryPage) {
+        // ИСПОЛЬЗУЕМ ПЕРЕДАННЫЕ ДАННЫЕ
+        toponymsArray = glossaryToponyms;
+        count = glossaryToponyms.length;
+        actualLoading = false;
+        actualError = false;
+    } else {
+        // ИСПОЛЬЗУЕМ ДАННЫЕ ИЗ useFetch (старая логика)
+        if (data.results && Array.isArray(data.results)) {
+            toponymsArray = data.results;
+            count = data.count || 0;
+        } else if (Array.isArray(data)) {
+            toponymsArray = data;
+            count = data.length;
+        }
     }
 
     return (
@@ -77,7 +94,7 @@ export default function CountryMap({ locale }) {
                     tileUrl="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
-                {loading && (
+                {actualLoading && (
                     <div style={{
                         position: 'absolute',
                         top: '70px',
@@ -92,7 +109,7 @@ export default function CountryMap({ locale }) {
                     </div>
                 )}
 
-                {error && (
+                {actualError && (
                     <div style={{
                         position: 'absolute',
                         top: '70px',

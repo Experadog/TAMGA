@@ -1,6 +1,7 @@
 import SearchableMapClient from '@/components/Map/SearchableMapClient';
 import { routing } from '@/i18n/routing';
 import { getLocalizedValue, stripHtmlTags } from '@/lib/utils';
+import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { ToponymDetails } from '../../[toponym]/_components/ToponymDetails';
 import clss from './page.module.scss';
@@ -42,13 +43,24 @@ export async function generateMetadata({ params }) {
 
     // helpers
     const collapse = (s = '') => String(s || '').replace(/\s+/g, ' ').trim();
-    const name = getLocalizedValue(data, 'name', locale) || '';
+    const tMeta = await getTranslations({ locale, namespace: 'topoformants' });
+
+    const topoformantName = getLocalizedValue(data, 'name', locale) || '';
+    const topoformantAffixusName = Array.isArray(data.affixes)
+        ? data.affixes
+            .map(a => getLocalizedValue(a, 'name', locale))
+            .filter(Boolean)
+            .join(', ')
+        : '';
+
+    const title = tMeta('metadata.title', {
+        topoformantName,
+        topoformantAffixusName,
+    })
 
     // описание топоформанта (может быть null)
     const rawDescription = getLocalizedValue(data, 'description', locale) || '';
     const description = collapse(stripHtmlTags(rawDescription));
-
-    const title = collapse(name);
 
     const shareImage = '/openGraph.png';
 

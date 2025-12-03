@@ -4,6 +4,20 @@ import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import './index.scss';
 
+async function fetchPages() {
+    try {
+        const resp = await fetch(`${process.env.API_URL}/pages/`);
+
+        if (!resp.ok) return [];
+
+        const data = await resp.json();
+        return Array.isArray(data.results) ? data.results : [];
+    } catch (e) {
+        console.error('Error fetching pages:', e);
+        return [];
+    }
+}
+
 async function fetchRegions() {
     try {
         const resp = await fetch(`${process.env.API_URL}/territories/regions/`);
@@ -36,6 +50,7 @@ async function Footer({ locale }) {
     const t = await getTranslations({ locale, namespace: 'footer' });
     const regions = await fetchRegions();
     const termsToponyms = await fetchTermsToponyms();
+    const pages = await fetchPages();
 
     const allowedTerms = [
         // ru
@@ -159,7 +174,20 @@ async function Footer({ locale }) {
                                     {t('contacts')}
                                 </Link>
                             </li>
-                            {/* можно добавить еще ссылки */}
+                            {/* динамический список страниц */}
+                            {pages.map(page => {
+                                const pageName = getLocalizedValue(page, 'title', locale)
+                                return (
+                                    <li key={page.id} className='footer__column-item'>
+                                        <Link
+                                            className='footer__column-link'
+                                            href={`/resources/${page.slug}`}
+                                        >
+                                            {pageName}
+                                        </Link>
+                                    </li>
+                                )
+                            })}
                         </ul>
                     </div>
                 </div>
