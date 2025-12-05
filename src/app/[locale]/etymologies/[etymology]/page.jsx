@@ -52,19 +52,24 @@ export async function generateMetadata({ params }) {
             .map(s => getLocalizedValue(s, 'name', locale))
             .filter(Boolean)
         : [];
-    const etymologySynonymsName = synonymList.join(', ');
+
     const etymologiesToponymsCount = Number(data?.count_etymologies || 0);
+    const etymologySynonymsName = synonymList.join(', ');
+
+    const synonymsFormatted = etymologySynonymsName
+        ? ` (${etymologySynonymsName})`
+        : '';
+
+    const titleName = `${etymologyName}${synonymsFormatted}`;
 
     const tMeta = await getTranslations({ locale, namespace: 'etymologies' });
 
     const title = tMeta('metadata.title', {
-        etymologyName,
-        etymologySynonymsName,
+        titleName,
         etymologiesToponymsCount
     });
     const description = tMeta('metadata.description', {
-        etymologyName,
-        etymologySynonymsName,
+        titleName,
         etymologiesToponymsCount
     });
 

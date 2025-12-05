@@ -91,7 +91,8 @@ export async function generateMetadata({ params }) {
   });
 
   const visibleCount = filteredResults.length;
-  const identicalToponymsName = decodeURIComponent(String(toponym || ''));
+  const first = filteredResults[0];
+  const identicalToponymsName = getLocalizedValue(first, "name", locale);
 
   const title = collapse(
     tMeta('title', {
